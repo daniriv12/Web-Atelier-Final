@@ -1,0 +1,451 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1.0">
+  <title>Test - Atelier Beats</title>
+  <link rel="stylesheet" href="resources/qunit.css">
+</head>
+<body>
+  <script src="js/model.js"></script>
+
+  <script src="resources/qunit.js"></script>
+  <script src="resources/sinon.js"></script>
+  <script src="resources/sinon-qunit.js"></script>
+  <div id="qunit"></div>
+  <div id="qunit-fixture"></div>
+  <script>
+  test( "User Constructor", function() {
+      //all fields
+      var vassilis = {
+        "_id" : "1v2t3",
+        "firstName" : "Vasileios",
+        "lastName"  : "Triglianos",
+        "userName"  : "vassilis",
+        "email"     : "vasileios.triglianos@usi.ch",
+        "password" : "ciao",
+        "date_created" : new Date(),
+        "playlists" : []
+      };
+
+      //only required fields
+      var masiar = {
+        "_id" : "6m6b6",
+        "userName" : "masiar",
+        "email" : "masiar.babazadeh@usi.ch",
+        "password" : "ciao"
+      };
+
+      //erroneous user
+      var vincenzo = {
+        "email" : "vincenzo.ferme@usi.ch"
+      };
+
+      var masiarFinal = masiar;
+      masiarFinal.firstName = masiar.userName;
+      masiarFinal.lastName = masiar.userName;
+      masiarFinal.date_created = Date.now();
+      masiarFinal.playlists = [];
+
+      deepEqual(user(vassilis._id, vassilis.userName, vassilis.email, vassilis.password, vassilis.firstName, vassilis.lastName, vassilis.date_created, vassilis.playlists), vassilis, "Should create correctly the user vassilis" );
+
+      //check date (it's not deterministic whether or not the Date.now() results it's the same in the expected object and in the constructed object)
+      var newUser = user(masiar._id, masiar.userName, masiar.email, masiar.password);
+      if(newUser.date_created-masiarFinal.date_created>=0){
+        //check the object withoud the date field (already checked before)
+        delete newUser.date_created;
+        delete masiarFinal.date_created;
+
+        deepEqual(newUser, masiarFinal, "Should create correctly the user masiar with defaults");
+      } else {
+        ok(false, "Should create correctly the user masiar with defaults");
+      }
+
+      assert.throws( user.bind(null,null,null,vincenzo.email), "Should not create the user vincenzo");
+  });
+
+
+  test( "Track Constructor", function() {
+      //all fields
+      var caughtSomewhere = {
+          "_id"          : "t0",
+          "name"         : "Caught Somewhere in Time",
+          "artist"       : "a0",
+          "album"        : "al0",
+          "duration"     : 442,
+          "file"         : '/tracks/caught.mp3',
+          "id3Tags"      : [],
+          "release_date" : "Mon Sep 29 1986 00:00:00 GMT+0100 (CET)",
+          "date_created" : "Sat Sep 27 2014 10:26:46 GMT+0200 (CEST)"
+      };
+
+      //only required fields
+      var theClairvoyant = {
+        "_id"      : "t1",
+        "name"     : "The Clairvoyant",
+        "artist"   : "a0",
+        "file"     : '/tracks/clairvoyant.mp3',
+        "duration" : 268
+      };
+
+      //erroneous track
+      var thunderstruck = {
+        "release_date" : "Sat Sep 27 2014 10:26:46 GMT+0200 (CEST)"
+      };
+
+      var theClairvoyantFinal = theClairvoyant;
+      theClairvoyantFinal.album = '';
+      theClairvoyantFinal.id3Tags = [];
+      theClairvoyantFinal.release_date = Date.now();
+      theClairvoyantFinal.date_created = Date.now();
+
+      deepEqual( track(caughtSomewhere._id, caughtSomewhere.name, caughtSomewhere.artist, caughtSomewhere.duration, caughtSomewhere.file, caughtSomewhere.album, caughtSomewhere.id3Tags, caughtSomewhere.release_date, caughtSomewhere.date_created), caughtSomewhere, "Should create correctly the track Caught Somewhere in Time");
+
+      //check date (it's not deterministic whether or not the Date.now() results it's the same in the expected object and in the constructed object)
+      var newTrack = track(theClairvoyant._id, theClairvoyant.name, theClairvoyant.artist, theClairvoyant.duration, theClairvoyant.file);
+      if(newTrack.date_created-theClairvoyantFinal.date_created>=0 && newTrack.release_date-theClairvoyantFinal.release_date>=0){
+        //check the object withoud the date field (already checked before)
+        delete newTrack.date_created;
+        delete newTrack.release_date;
+        delete theClairvoyantFinal.date_created;
+        delete theClairvoyantFinal.release_date;
+
+        deepEqual(newTrack, theClairvoyantFinal, "Should create correctly the track The Clairvoyant with defaults");
+      } else {
+        ok(false, "Should create correctly the track The Clairvoyant with defaults");
+      }
+
+      assert.throws(track.bind(null, null, null, null, null, null, null, null, thunderstruck.release_date), "Should not create the track thunderstruck");
+  });
+
+  test( "Artist Constructor", function() {
+      //all fields
+      var ironMaiden = {
+          "_id"          : "a0",
+          "name"         : "Iron Maiden",
+          "genre"        : "New Wave of British Heavy Metal",
+          "artwork"      : "http://piratevinyldecals.com/wps/wp-content/uploads/2014/01/Iron-Maiden-Army-pv194.png",
+          "date_created" : "Sat Sep 27 2014 10:26:46 GMT+0200 (CEST)"
+      };
+
+      //only required fields
+      var ACDC = {
+          "_id"          : "a1",
+          "name"         : "AC/DC",
+          "genre"       : "Hard Rock"
+      };
+
+      //erroneous artist
+      var metallica = {
+        "date_created" : "Sat Sep 27 2014 10:26:46 GMT+0200 (CEST)"
+      };
+
+      var ACDCFinal = ACDC;
+      ACDCFinal.genre = 'rock';
+      ACDCFinal.artwork = '';
+      ACDCFinal.date_created = Date.now();
+
+      deepEqual( artist(ironMaiden._id, ironMaiden.name, ironMaiden.genre, ironMaiden.artwork, ironMaiden.date_created), ironMaiden, "Should create correctly the artist Iron Maiden");
+
+      //check date (it's not deterministic whether or not the Date.now() results it's the same in the expected object and in the constructed object)
+      var newArtist = artist(ACDC._id, ACDC.name);
+      if(newArtist.date_created-ACDCFinal.date_created>=0){
+        //check the object withoud the date field (already checked before)
+        delete newArtist.date_created;
+        delete ACDCFinal.date_created;
+
+        deepEqual(newArtist, ACDCFinal, "Should create correctly the artist ACDC with defaults");
+      } else {
+        ok(false, "Should create correctly the artist ACDC with defaults");
+      }
+
+      assert.throws(artist.bind(null, null, null, null, null, metallica.date_created), "Should not create the track thunderstruck");
+  });
+
+  test( "Abstract Sound Collection Constructor", function() {
+      //all fields
+      var somewhereInTime = {
+        "_id"          : "al0",
+        "name"         : "Somewhere in Time",
+        "tracks"       : [],
+        "date_created" : new Date()
+      };
+
+      //only required fields
+      var theRazorsEdge = {
+        "_id"          : "al3",
+        "name"         : "The Razors Edge"
+      };
+
+      //erroneous abstract sound collection
+      var anotherCollection = {
+        "date_created" : new Date()
+      };
+
+      var theRazorsEdgeFinal = theRazorsEdge;
+      theRazorsEdgeFinal.tracks = [];
+      theRazorsEdgeFinal.date_created = Date.now();
+
+      deepEqual( abstractSoundCollection(somewhereInTime._id, somewhereInTime.name, somewhereInTime.tracks, somewhereInTime.date_created), somewhereInTime, "Should create correctly the collection Somewhere in Time" );
+
+      //check date (it's not deterministic whether or not the Date.now() results it's the same in the expected object and in the constructed object)
+      var newAbstractSoundCollection = abstractSoundCollection(theRazorsEdge._id, theRazorsEdge.name);
+
+      if(newAbstractSoundCollection.date_created-theRazorsEdgeFinal.date_created>=0){
+        //check the object withoud the date field (already checked before)
+        delete newAbstractSoundCollection.date_created;
+        delete theRazorsEdgeFinal.date_created;
+
+        deepEqual(newAbstractSoundCollection, theRazorsEdgeFinal, "Should create correctly the collection The Razor Edge");
+      } else {
+        ok(false, "Should create correctly the collection The Razor Edge");
+      }
+
+
+      assert.throws( abstractSoundCollection.bind(null, null, null, null, anotherCollection.date_created), "Should not create another Collection");
+  });
+
+  test( "Album Constructor", function() {
+      //all fields
+      var somewhereInTime = {
+        "_id"          : "al0",
+        "name"         : "Somewhere in Time",
+        "artist"       : "Iron Maiden",
+        "artwork"      : "http://sp4.fotolog.com/photo/36/22/82/felix_deadman/1250566555189_f.jpg",
+        "tracks"       : [],
+        "date_created" : new Date(),
+        "release_date" : new Date(),
+        "label"        : "EMI"
+      };
+
+      //only required fields
+      var theRazorsEdge = {
+        "_id"          : "al3",
+        "name"         : "The Razors Edge",
+        "artist"       : "AC/DC",
+        "artwork"      : "http://www.tasawakonline.com/uploads/2014/04/Razors+Edge+ACDC.jpg"
+      };
+
+      //erroneous album
+      var anotherCollection = {
+        "date_created" : new Date()
+      };
+
+      var theRazorsEdgeFinal = theRazorsEdge;
+      theRazorsEdgeFinal.tracks = [];
+      theRazorsEdgeFinal.date_created = Date.now();
+      theRazorsEdgeFinal.release_date = Date.now();
+      theRazorsEdgeFinal.label = 'USI-INF records';
+
+      abstractSoundCollection = this.spy(abstractSoundCollection);
+
+      deepEqual( album(somewhereInTime._id, somewhereInTime.name, somewhereInTime.artist, somewhereInTime.artwork, somewhereInTime.tracks, somewhereInTime.date_created, somewhereInTime.release_date, somewhereInTime.label), somewhereInTime, "Should create correctly the album Somewhere in Time" );
+
+      ok(abstractSoundCollection.calledOnce, "album should call the abstractSoundCollection constructor");
+
+      //check date (it's not deterministic whether or not the Date.now() results it's the same in the expected object and in the constructed object)
+      var newAlbum = album(theRazorsEdge._id, theRazorsEdge.name, theRazorsEdge.artist, theRazorsEdge.artwork);
+      if(newAlbum.date_created-theRazorsEdgeFinal.date_created>=0 && newAlbum.release_date-theRazorsEdgeFinal.release_date>=0){
+        //check the object withoud the date field (already checked before)
+        delete newAlbum.date_created;
+        delete newAlbum.release_date;
+        delete theRazorsEdgeFinal.date_created;
+        delete theRazorsEdgeFinal.release_date;
+
+        deepEqual(newAlbum, theRazorsEdgeFinal, "Should create correctly the collection The Razor Edge");
+      } else {
+        ok(false, "Should create correctly the collection The Razor Edge");
+      }
+
+      equal(abstractSoundCollection.callCount, 2, "album should call the abstractSoundCollection constructor");
+
+      assert.throws( album.bind(null, null, null, null, null, null, anotherCollection.date_created), "Should not create another Collection");
+
+      equal(abstractSoundCollection.callCount, 3, "album should call the abstractSoundCollection constructor");
+  });
+
+  test( "Playlist Constructor", function() {
+      //all fields
+      var strongStuff = {
+        "_id"          : "p0",
+        "name"         : "Strong Stuff",
+        "owner"        : "6m6b6",
+        "tracks"       : [],
+        "date_created" : "Sat Sep 27 2014 11:18:51 GMT+0200 (CEST)"
+      };
+
+      //only required fields
+      var easyGoing = {
+          "_id"          : "p1",
+          "name"         : "Easy Going",
+          "owner"        : "1v2t3"
+      };
+
+      //erroneous playlist
+      var anotherPlaylist = {
+          "date_created" : new Date()
+      };
+
+      var easyGoingFinal = easyGoing;
+      easyGoingFinal.tracks = [];
+      easyGoingFinal.date_created = Date.now();
+
+      abstractSoundCollection = this.spy(abstractSoundCollection);
+
+      deepEqual( playlist(strongStuff._id, strongStuff.name, strongStuff.owner, strongStuff.tracks, strongStuff.date_created), strongStuff, "Should create correctly the playlist Strong Stuff" );
+
+      ok(abstractSoundCollection.calledOnce, "playlist should call the abstractSoundCollection constructor");
+
+      //check date (it's not deterministic whether or not the Date.now() results it's the same in the expected object and in the constructed object)
+      var newPlaylist = playlist(easyGoingFinal._id, easyGoingFinal.name, easyGoingFinal.owner);
+
+      if(newPlaylist.date_created-easyGoingFinal.date_created>=0){
+        //check the object withoud the date field (already checked before)
+        delete newPlaylist.date_created;
+        delete easyGoingFinal.date_created;
+
+        deepEqual(newPlaylist, easyGoingFinal, "Should create correctly the playlist Easy Going");
+      } else {
+        ok(false, "Should create correctly the playlist Easy Going");
+      }
+
+      equal(abstractSoundCollection.callCount, 2, "playlist should call the abstractSoundCollection constructor");
+
+      assert.throws( playlist.bind(null, null, null, null, null, anotherPlaylist.date_created), "Should not create another Collection");
+
+      equal(abstractSoundCollection.callCount, 3, "playlist should call the abstractSoundCollection constructor");
+  });
+
+  QUnit.module("Local Storage", {
+    setup: function(){
+          //clean the local storage
+          delete localStorage.playlists;
+          localStorage.playlists = localStorage.playlists || JSON.stringify({});
+    },
+    teardown: function(){
+          //clean the local storage
+          delete localStorage.playlists;
+    }
+  });
+
+  test( "Playlist Local Storage", function() {
+
+    var pl1 = playlist("pl-1", 'lePlaylist', "lePlayer")
+    notEqual(typeof(pl1), "undefined", "expect pl1 to exist");
+    savePlaylist(pl1);
+
+    var playlists =  JSON.parse(localStorage.playlists);
+    deepEqual( pl1, playlists["pl-1"], "The first playlist should have pl-1 as _id");
+
+    var pl2 = playlist("pl-15", 'lePlaylist2', "lePlayer2")
+    notEqual(typeof(pl2), "undefined", "expect pl2 to exist");
+    savePlaylist(pl2);
+
+    var playlists =  JSON.parse(localStorage.playlists);
+      deepEqual( pl2, playlists["pl-15"], "The second playlist should have pl-15 as _id");
+
+  });
+
+
+  QUnit.module("Fuzzy search", {
+    setup: function(){
+      this.model = [
+        {
+          "_id"          : "t0",
+          "artist"       : "a0",
+          "album"        : "al0",
+          "name"        : "Caught Somewhere in Time",
+        },
+
+        {
+          "_id"          : "t1",
+          "artist"       : "a0",
+          "album"        : "al1",
+          "name"        : "The Clairvoyant",
+        },
+        {
+          "_id"          : "t2",
+          "artist"       : "a1",
+          "album"        : "al2",
+          "name"        : "Thunderstruck",
+        },
+        {
+          "_id"          : "t3",
+          "artist"       : "a1",
+          "album"        : "al3",
+          "name"        : "Hells Bells",
+        },
+        {
+          "_id"          : "t4",
+          "artist"       : "a2",
+          "album"        : "al4",
+          "name"        : "The Call of Ktulu",
+        },
+        {
+          "_id"          : "t5",
+          "artist"       : "a2",
+          "album"        : "al5",
+          "name"        : "Master of Puppets",
+        },
+        {
+          "_id"          : "t6",
+          "artist"       : "a2",
+          "album"        : "al5",
+          "name"        : "Orion",
+        },
+        {
+          "_id"          : "t7",
+          "artist"       : "a3",
+          "album"        : "al6",
+          "name"        : "Raining Blood",
+        },
+        {
+          "_id"          : "t8",
+          "artist"       : "a3",
+          "album"        : "al7",
+          "name"        : "South of Heaven",
+        },
+        {
+          "_id"          : "t9",
+          "artist"       : "a4",
+          "album"        : "al8",
+          "name"        : "All Is Violent, All Is Bright",
+        },
+        {
+          "_id"          : "t10",
+          "artist"       : "a4",
+          "album"        : "al8",
+          "name"        : "A Deafening Distance",
+        }]
+    },
+    teardown: function(){
+          //clean the local storage
+          delete this.model;
+    }
+  });
+
+  test( "Fuzzy search", function() {
+
+    var r1= fuzzyFind(this.model, "artist", 'a')
+    equal(r1.length, 11, "should match all the tracks (11)");
+    for (var i=0, l=this.model.length; i< l; i++){
+      deepEqual(r1[i], this.model[i], "result1[" + i+ "] should match model[" + i+ "]");
+    }
+
+    var r2= fuzzyFind(this.model, "artist", 'a4')
+    equal(r2.length, 2, "should match two tracks");
+    deepEqual(r2[0], this.model[9], "result2[0] should match model[9]");
+    deepEqual(r2[1], this.model[10], "result2[1] should match model[10]");
+
+    var r3= fuzzyFind(this.model, "name", 'Master of Puppets')
+    equal(r3.length, 1, "should match just one track");
+    deepEqual(r3[0], this.model[5], "result3[0] should match model[5]");
+
+    var r4= fuzzyFind(this.model, "name", 'south')
+    equal(r4.length, 1, "should match just one track");
+    deepEqual(r4[0], this.model[8], "result4[0] should match model[8]");
+  });
+
+  </script>
+</body>
+</html>

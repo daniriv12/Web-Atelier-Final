@@ -1,0 +1,106 @@
+body{
+
+    background-color: black;
+    background-image: url("Resources/background.jpg");
+    background-size: 1500px;
+    background-repeat: no-repeat;
+    font-family: sans-serif;
+
+
+}
+
+h1{
+    font-family: "Gotham", Gadget, sans-serif;
+    font-size: 50px;
+    color: black;
+    text-align: center;
+
+
+
+
+}
+
+h2{
+    font-size: 30px;
+
+
+    color: orange;
+    text-shadow:
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
+
+
+    text-align: center;
+    left: 30%;
+    top: 13%;
+}
+
+
+#login{
+
+
+
+
+
+
+    width:40%;
+
+
+    bottom: 0;
+
+    margin-left: 30%;
+    margin-right: 30%;
+    margin-top: 15%;
+
+
+
+}
+
+
+
+
+#login p{
+    color: white;
+}
+
+
+.textbox
+{
+
+    width:90%;
+    margin-left:4%;
+    margin-right:5%;
+    font-size: 100%;
+    text-align: center;
+    height: 50px;
+
+}
+
+
+#submit{
+    background-color: orange;
+    width:90%;
+    margin:5%;
+    font-size: 200%;
+    background-size: 50px;
+    color: white;
+}
+
+p{
+    margin-left: 5%;
+
+}
+
+
+a{
+    color: white;
+    text-decoration: underline;
+
+}
+
+a:hover{
+    color: orange;
+    text-decoration: none;
+}
