@@ -4,43 +4,24 @@ window.onload = function(){
   // implement the logic to render the views here. Ofcourse, you can call other functions
   // to avoid having a huge function
 
-
     if (!localStorage.getItem("playlistIdCounter")){
-    localStorage.setItem("playlistIdCounter", 10)}
-
+        localStorage.setItem("playlistIdCounter", 10)}
 
     if(document.getElementById("music")){
-    populateLibrary();
-    setupPlayer();
-
-
+        populateLibrary();
+        setupPlayer();
 
     }
     if(document.getElementById("artists")){
-    populateArtists();}
+        populateArtists();}
     if(document.getElementById("albums")){
-    populateAlbums();}
-
-
-
+        populateAlbums();}
 
     populateCreatedPlaylists();
 
-
-
-
-
-
-
   //setup audio player
 
-
-
-
-
-
 }
-
 
 
 function getSongById(id){
@@ -48,15 +29,9 @@ function getSongById(id){
         if (window.data.tracks[x]._id == id){
             return window.data.tracks[x];
         }
-
     }
-
     return "Unknown";
-
-
-
 }
-
 
 function getArtistById(id){
 
@@ -64,11 +39,8 @@ function getArtistById(id){
         if (window.data.artists[x]._id == id){
             return window.data.artists[x].name;
         }
-
     }
-
     return "Unknown";
-
 }
 
 function getAlbumById(id){
@@ -78,7 +50,6 @@ function getAlbumById(id){
         if (window.data.albums[x]._id == id){
             return window.data.albums[x].name;
         }
-
     }
 
     return "Unknown";
@@ -91,7 +62,6 @@ function getAlbumObjectById(id){
         if (window.data.albums[x]._id == id){
             return window.data.albums[x];
         }
-
     }
 
     return "Unknown";
@@ -105,15 +75,12 @@ function timeToMinutes(secs){
     if (seconds.toString().length < 2){
         seconds = "0" + seconds.toString();
     }
-
     return (minutes.toString() + ":" + seconds.toString());
-
 }
 
 function populateLibrary() {
     var first1 = "<li id=\"first\"><p class=\"title\">Title</p><p class=\"artist\">Artist</p><p class=\"album\">Album</p><p class=\"time\">Time</p></li>";
     var songs = first1;
-
 
     songIndexGlobal = 0;
     for (var i = 0; i < window.data.tracks.length; i++) {
@@ -141,7 +108,6 @@ function populateArtists(){
         artists = artists + artist;
     }
 
-
     document.getElementById("artists").innerHTML = artists;
 }
 
@@ -155,26 +121,25 @@ function populateAlbums(){
         albums = albums + album;
     }
 
-
     document.getElementById("albums").innerHTML = albums;
 }
 
 function populateCreatedPlaylists(){
 
-    var playlistsToPrint = JSON.stringify(JSON.parse(localStorage.playlists))
+//    var playlistsToPrint = JSON.stringify(JSON.parse(localStorage.playlists));
 
- //   console.log(JSON.stringify(JSON.parse(localStorage.playlists),null,2));
+  // console.log(JSON.stringify(JSON.parse(localStorage.playlists),null,2));
 
   //  console.log(playlistsToPrint.length);
 
     var objects = (JSON.parse(localStorage.playlists));
 
-    for (var x in objects) {
-        //  console.log(x); // id number
-        //console.log(objects[x]); //actual object
-        //console.log(objects[x].name)} //name of each playlist
-        //only testing
-    }
+//    for (var x in objects) {
+//        console.log(x); // id number
+//        console.log(objects[x]); //actual object
+//        console.log(objects[x].name)} //name of each playlist
+//    }
+//    TESTING
 
     var allPlaylists =  "";
     for (var i in objects){
@@ -182,19 +147,11 @@ function populateCreatedPlaylists(){
         var playlist = '<li id="' + objects[i]._id + '" ondblclick="editName(this)" onkeydown="if (event.keyCode == 13){doneEditing(this)} if(event.keyCode == 27){cancelEditing(this)}"><img src="CSS/Resources/playlist.png" alt=""><a href="#" >' + objects[i].name + '</a></li>';
         allPlaylists = allPlaylists + playlist;
 
-
     }
     document.getElementById("play-lists").innerHTML = allPlaylists;
 
-
-//        document.getElementById("music").innerHTML = songs;
-
-
-
-
 }
-
-
+// Search
 function execute(dom){
 
     var matches = fuzzyFind(window.data.tracks, "name", dom);
@@ -202,7 +159,7 @@ function execute(dom){
 
 
     var first1 = "<li id=\"first\"><p class=\"title\">Title</p><p class=\"artist\">Artist</p><p class=\"album\">Album</p><p class=\"time\">Time</p></li>";
-    var songs = first1;
+    var songsFounded = first1;
     songIndexGlobal = 0;
     for (var i = 0; i < matches.length; i++) {
         var track = matches[i];
@@ -211,13 +168,11 @@ function execute(dom){
 
         var song = '<li id="' + track._id + '" ' + ' class="' + songIndex +'" ondblclick="setupPlayer(this)"><p class="title">' + track.name + '</p>' + '<p class="artist"><a href="Artists.html">' + getArtistById(track.artist) + '</a></p>' + '<p class="album"><a href="Albums.html">' + getAlbumById(track.album) + '</a></p>' + '<p class="time">' + timeToMinutes(track.duration) + '</p></li>';
         songIndexGlobal++;
-        songs = songs + song;
+        songsFounded = songsFounded + song;
 
     }
 
-    document.getElementById("music").innerHTML = songs;
-
-
+    document.getElementById("music").innerHTML = songsFounded;
 }
 
 
@@ -257,15 +212,12 @@ function execute(dom){
 * - When a track finishes your player should play the next one
 */
 function setupPlayer(songSent) {
-    // your code goes here
 
     var playingArtist;
     var playingAlbum;
     var playingArtwork;
     var playingArtworkSource;
     var playingSong;
-
-
 
 
     if (songSent) {
@@ -294,22 +246,20 @@ function setupPlayer(songSent) {
     }
 
 
-
-
     document.getElementById("currentTrackArtist").innerHTML = playingArtist;
     document.getElementById("currentTrackName").innerHTML = playingSong.name;
     document.getElementById("currentTrackAlbum").innerHTML = playingAlbum;
     document.getElementById("albumcover").setAttribute("src", playingArtworkSource);
 
 
-
-
     var track1 = document.createElement("audio");
 
     var source = document.createAttribute("src");
     var identification = document.createAttribute("id");
+
     source.value = playingSong.file;
     identification.value = "songPlaying";
+
     track1.setAttributeNode(source);
     track1.setAttributeNode(identification);
 
@@ -320,34 +270,20 @@ function setupPlayer(songSent) {
         //Code here what happens when ended, mimic the setup player.
 
 
-
-
-
-
-
         var nextSongIndexNumber = (parseInt(currentSongIndexNumber,10) + 1);
         var nextSongClass = nextSongIndexNumber.toString();
-        var nextSong = document.getElementsByClassName(nextSongClass);
-
-        songId = nextSong.getAttribute("id");
-
-        playingSong = getSongById(songId);
-        playingArtist = getArtistById(playingSong.artist);
-        playingAlbum = getAlbumById(playingSong.album);
-        playingArtwork = getAlbumObjectById(playingSong.album);
-        playingArtworkSource = playingArtwork.artwork;
-        currentSongIndexNumber = nextSong.getAttribute("class");
-
-
-        console.log(playingSong);
-
-
-
-
-
-
-
-
+        var nextSong = document.getElementsByClassName(nextSongClass)[0];
+        setupPlayer(nextSong);
+//        songId = nextSong[0].getAttribute("id");
+//
+//        playingSong = getSongById(songId);
+//        playingArtist = getArtistById(playingSong.artist);
+//        playingAlbum = getAlbumById(playingSong.album);
+//        playingArtwork = getAlbumObjectById(playingSong.album);
+//        playingArtworkSource = playingArtwork.artwork;
+//        currentSongIndexNumber = nextSong.getAttribute("class");
+//
+//        console.log(playingSong);
     });
 
     console.log(playingSong);
@@ -362,13 +298,14 @@ function setupPlayer(songSent) {
 
     if(songSent){
 
-        document.getElementById("songPlaying").play();
+        if (document.getElementById("toggle-1").checked){
+            document.getElementById("clickable").click();
+        }
+        else {
+            document.getElementById("songPlaying").play();
+        }
     }
-
-
-
-
-
+    UpdateTheTime();
 
 
 //Parts of this taken almost directly from a stackoverflow post, could have rewritten it myself but I would've done the same thing
@@ -394,10 +331,6 @@ function setupPlayer(songSent) {
     }
 
 }
-
-
-
-
 
 function playpause(){
 
@@ -466,8 +399,6 @@ function newPlaylist(){
 
 function editName(dom){
     dom.children[1].setAttribute("contentEditable","true");
-
-
 
 }
 
