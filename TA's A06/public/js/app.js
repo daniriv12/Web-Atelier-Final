@@ -1,4 +1,5 @@
 /* Setup on Page Load */
+
 //<!-- build:remove -->
 window.onload = function(){
 
@@ -934,8 +935,8 @@ function appendNewPlaylistToMenu(pl){
 * - When a track finishes your player should play the next one
 */
 
-
-function setupPlayer(){
+function setupPlayer(trackId){
+    if(trackId)console.log(trackId);
 
     var CurrentSong;
 
@@ -953,6 +954,9 @@ function setupPlayer(){
         tranckInfo.lastChild.lastChild.firstChild.setAttribute("title", track.artist.name);
         tranckInfo.lastChild.lastChild.firstChild.setAttribute("href", "artists/"+track.artist._id);
         tranckInfo.lastChild.lastChild.firstChild.innerHTML = track.name;
+//        var myfile = new File([],tracks[index].file);
+//        if (myfile.open('r')) console.log("esisteee");
+//        else console.log("non esiste");
 
         audioElement.src = tracks[index].file;
     }
@@ -963,7 +967,8 @@ function setupPlayer(){
         function setupAudioElement(tracks) {
             // Buttons
             var playButton = document.getElementById("play-pause");
-            var muteButton = document.getElementById("mute");
+            var next = document.getElementById("next");
+            var previous = document.getElementById("previous");
             var fullScreenButton = document.getElementById("full-screen");
             var volumeOff = document.getElementById("volume-off");
             var volumeUp = document.getElementById("volume-up");
@@ -1010,9 +1015,7 @@ function setupPlayer(){
                     // Update the button icon to 'Pause'
                     playButton.classList.add('fa-play')
                     playButton.classList.remove('fa-pause')
-
                 }
-
             });
 
             // Event listener for the play/pause button
@@ -1031,6 +1034,49 @@ function setupPlayer(){
                     // Update the button icon to 'Play'
                     playButton.classList.remove('fa-pause')
                     playButton.classList.add('fa-play')
+                }
+            });
+            next.addEventListener("click", function () {
+                var state;
+                if(audio.paused == false) state = true;
+
+                CurrentSong++;
+                if (tracks[CurrentSong]){
+                    setTrack(CurrentSong, audio, tracks);
+                    if(state) audio.play();
+                } else{
+                    CurrentSong = 0;
+                    setTrack(CurrentSong, audio, tracks);
+                    // Update the seek bar
+                    seekBar.style.width = 0 + "%";
+                    // Update the elapsed time
+                    timeElapsed.innerHTML = formatTime(Math.floor(0));
+
+                    // Update the button icon to 'Pause'
+                    playButton.classList.add('fa-play')
+                    playButton.classList.remove('fa-pause')
+                }
+            });
+
+            previous.addEventListener("click", function () {
+                var state;
+                if(audio.paused == false) state = true;
+
+                CurrentSong--;
+                if (tracks[CurrentSong]){
+                    setTrack(CurrentSong, audio, tracks);
+                    if(state) audio.play();
+                } else{
+                    CurrentSong = 0;
+                    setTrack(CurrentSong, audio, tracks);
+                    // Update the seek bar
+                    seekBar.style.width = 0 + "%";
+                    // Update the elapsed time
+                    timeElapsed.innerHTML = formatTime(Math.floor(0));
+
+                    // Update the button icon to 'Pause'
+                    playButton.classList.add('fa-play')
+                    playButton.classList.remove('fa-pause')
                 }
             });
 
