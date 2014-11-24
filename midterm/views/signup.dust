@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1.0">
+  <title>Sign Up</title>
+  <link rel="stylesheet" href="css/Signup.css">
+
+    <script src="js/dust-core.min.js"></script>
+    <script src="js/library.js"></script>
+    <script src="js/model.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="views/views.js"></script>
+    <script src="js/ajax.js"></script>
+    <script src="js/app.js"></script>
+</head>
+<body>
+
+<h1>Welcome.</h1>
+
+<div>
+
+    <form action="users" method="POST" class="form-signup">
+              <input class="textbox" name="firstName" placeholder="Firstname" type="text" required>
+              <input class="textbox" name="lastName" placeholder="Lastname" type="text" required>
+              <input class="textbox" name="userName" placeholder="Username" type="text" required>
+              <input class="textbox" name="email" placeholder="Email" type="email" required>
+              <input class="textbox" name="password" placeholder="Password" type="password" required>
+              <input id="submit" type="submit" value= "Live it">
+            </form>
+
+
+
+
+</div>
+
+</body>
+
+
+
+</html>

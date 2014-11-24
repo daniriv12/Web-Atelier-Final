@@ -1,0 +1,246 @@
+body{
+    background-color: black;
+    background-size: 100%;
+    font-family: sans-serif;
+    margin-right: 0;
+}
+
+
+
+
+
+#playlist{
+    margin-top: 200px;
+    width:100%;
+    height:100%;
+    color: white;
+    z-index: -2;
+
+}
+
+#playlist #music{
+    margin-left: 192px;
+    margin-top: 0;
+    list-style-type: none;
+    padding-left: 0;
+    margin-bottom: 0;
+
+
+
+}
+
+#playlist #music li{
+
+    border-style: dotted;
+    border-width: 1px;
+    border-color: darkgray;
+    margin-left: 0;
+    height: 43px;
+    max-height: 43px;
+    overflow: hidden;
+}
+
+#playlist #music li:hover{
+    background-color: rgba(256,256,256,0.2);
+}
+
+
+#first{
+    font-weight: bold;
+}
+
+
+#playlist #music p{
+    width:25%;
+    overflow: hidden;
+    white-space: nowrap;
+    display: inline-block;
+    text-overflow: ellipsis;
+    padding: 10px;
+    margin:0;
+
+}
+
+#playlist #music p a{
+    text-decoration: none;
+    color: white;
+}
+
+#playlist #music p a:hover{
+    text-decoration: underline;
+}
+
+
+
+#playlist #music p.title{
+    width:30%;
+    overflow: hidden;
+}
+
+
+#playlist #music p.time{
+    width:5%;
+    min-width: 40px;
+    overflow: hidden;
+}
+
+
+
+
+input[type=checkbox] {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;}
+
+#albumcover{
+    width:150px;
+    margin: 0;
+}
+
+#player{
+
+    background-color: darkgray;
+    width: 100%;
+    height: 150px;
+    position: fixed;
+    top:50px;
+    margin:0;
+    margin-left: 192px;
+    z-index: 0;
+
+    white-space: nowrap;
+    display: inline-block;
+}
+
+#player #widget {
+
+    background-image: url(Resources/playpause.png);
+    background-size: 80px;
+    background-repeat: no-repeat;
+    width: 400px;
+    height: 80px;
+    left:200px;
+    top:20px;
+    color: white;
+    position: absolute;
+    display: inline-block;
+
+}
+    /* Toggled State */
+input[type=checkbox]:checked ~ #widget {
+    background-image: url(Resources/pause.png);
+    background-repeat: repeat;
+    background-position: 0px -80px;
+
+}
+
+#play-pause{
+    display: block;
+    height:80px;
+    width:80px;
+    border-radius: 50%;
+    min-height: 30px;
+    background: transparent;
+}
+
+#previous{
+    width:30px;
+    margin-top: 10px;
+    margin-right: 15px;
+}
+
+
+#next{
+    width:30px;
+    margin-top: 5px;
+}
+
+#track{
+    width: 100%;
+    left:350px;
+    top: 0;
+    color: white;
+    position: absolute;
+    display: inline-block;
+}
+
+
+#track span{
+    margin:0;
+    position: absolute;
+    margin-left: 10px;
+}
+
+#track #timer2{
+    margin-left:50px;
+}
+
+h2, h3, h4{
+    margin: 10px;
+}
+
+progress{
+    width: 50%;
+    background-color: darkgreen;
+
+
+}
+progress {background-color: black !important;}
+/*taken almost directly from css-tricks.com, figured since the progressbar customization isnt something we apparently should do it would be okay */
+progress::-moz-progress-bar {background-color: darkgreen !important;}
+
+progress::-webkit-progress-value {background-image:
+-webkit-linear-gradient(-45deg,
+transparent 33%, rgba(0, 0, 0, .1) 33%,
+rgba(0,0, 0, .1) 66%, transparent 66%),
+-webkit-linear-gradient(top,
+rgba(255, 255, 255, .25),
+rgba(0, 0, 0, .25)),
+-webkit-linear-gradient(left, orange, cyan);
+
+    border-radius: 2px;
+    background-size: 35px 20px, 100% 100%, 100% 100%;}
+
+
+@media(max-width: 1150px){
+    progress{
+        width: 40%;
+    }
+}
+
+@media(max-width: 950px){
+    progress{
+        width: 30%;
+    }
+}
+
+@media(max-width: 800px){
+    progress{
+        width: 150px;
+    }
+}
+
+
+@media(max-width: 550px){
+
+    #playlist #music{
+        margin-left: 32px;
+    }
+
+    #player{
+        margin-left: 32px;
+
+    }
+
+    h1{
+    display: none;
+
+
+
+    }
+
+
+
+}
+
+
