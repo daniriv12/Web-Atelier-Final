@@ -21,7 +21,7 @@ function bindMenu(){
       menu[elem].onclick = function(e){
         drawLibrary(e);
         setupPlayer();
-      } 
+      }
     }
     else if(menu[elem].getAttribute("href").indexOf("artists.html") > -1)
       menu[elem].onclick = drawArtists;
@@ -103,7 +103,7 @@ function buildTracksData(tracks){
 }
 
 function addLibraryToHistory(addHistory){
-  if((("undefined" == typeof addHistory) 
+  if((("undefined" == typeof addHistory)
     || (addHistory === null))
     || addHistory==true){
 
@@ -156,7 +156,7 @@ function deleteTrack(e){
 
     function removeTrack(){
 
-      var toDelete = target.parentNode.parentNode; 
+      var toDelete = target.parentNode.parentNode;
       var parent = document.getElementById("tracks-list");
 
       parent.removeChild(toDelete);
@@ -275,11 +275,11 @@ function deleteTrack(e){
 
     //console.log(artists);
   }
-  
+
 }
 
 function addArtistsToHistory(addHistory){
- if((("undefined" == typeof addHistory) 
+ if((("undefined" == typeof addHistory)
   || (addHistory === null))
   || addHistory==true){
   var state = {
@@ -347,7 +347,7 @@ function drawArtist(e, addHistory){
     }
 
     function addArtistToHistory(href, addHistory){
-      if((("undefined" == typeof addHistory) 
+      if((("undefined" == typeof addHistory)
         || (addHistory === null))
         || addHistory==true){
         var state = {
@@ -396,7 +396,7 @@ function drawArtist(e, addHistory){
 
       //console.log(target);
 
-      var toDelete = target.parentNode.parentNode; 
+      var toDelete = target.parentNode.parentNode;
       var parent = document.getElementById("artists-list");
 
       parent.removeChild(toDelete);
@@ -460,7 +460,7 @@ function drawArtist(e, addHistory){
 }
 
 function addAlbumsToHistory(addHistory){
-  if((("undefined" == typeof addHistory) 
+  if((("undefined" == typeof addHistory)
     || (addHistory === null))
     || addHistory==true){
     var state = {
@@ -535,7 +535,7 @@ function drawAlbum(e, addHistory){
     }
 
     function addAlbumToHistory(href, addHistory){
-      if((("undefined" == typeof addHistory) 
+      if((("undefined" == typeof addHistory)
         || (addHistory === null))
         || addHistory==true){
         var state = {
@@ -580,7 +580,7 @@ function drawAlbum(e, addHistory){
 
     function removeAlbum(){
 
-      var toDelete = target.parentNode.parentNode; 
+      var toDelete = target.parentNode.parentNode;
       var parent = document.getElementById("albums-list");
 
       parent.removeChild(toDelete);
@@ -611,7 +611,7 @@ function drawAlbum(e, addHistory){
 
 /*
  * The updatePage function handles the update of the page when an onpopstate or onload event is fired.
- * The function gets the hash and the current state, calls the ajaxFind function to update the view 
+ * The function gets the hash and the current state, calls the ajaxFind function to update the view
  * and update the form's input value with the data retrieved from the hash
  *
  * @param {JSON String} state The current state of the search form's button
@@ -732,14 +732,14 @@ function setupPlaylists(){
     var cnt = localStorage.pl_cnt;
     var _id = "pl-"+cnt
     var name = 'New Playlist ' + (++cnt);
-    var newPlaylist =  playlist(_id, name, model.users[0]._id, []); 
+    var newPlaylist =  playlist(_id, name, model.users[0]._id, []);
 
     //update localStorage counter
     localStorage.pl_cnt = cnt;
-    
+
     //persist to localStorage
     savePlaylist(newPlaylist);
-    appendNewPlaylistToMenu(newPlaylist);    
+    appendNewPlaylistToMenu(newPlaylist);
   })
 
   document.addEventListener('click', function (e) {
@@ -934,103 +934,156 @@ function appendNewPlaylistToMenu(pl){
 * - When a track finishes your player should play the next one
 */
 
+
 function setupPlayer(){
-  // Buttons
-  var playButton = document.getElementById("play-pause");
-  var muteButton = document.getElementById("mute");
-  var fullScreenButton = document.getElementById("full-screen");
-  var volumeOff = document.getElementById("volume-off");
-  var volumeUp = document.getElementById("volume-up");
 
-  // Sliders
-  var seekRail = document.getElementById("pl-timeline-rail");
-  var seekBar = document.getElementById("pl-timeline-bar");
-  var volumeRail = document.getElementById("pl-volume-rail");
-  var volumeBar = document.getElementById("pl-volume-bar");
+    var CurrentSong;
 
-  //Labels
-  var timeElapsed = document.getElementById("time-elapsed");
-  var timeTotal = document.getElementById("time-total");
+    function setTrack(index, audioElement,tracks){
+        CurrentSong = index;
 
-  // Audio element
-  var audio = document.createElement('audio');
+        var track = tracks[index];
 
-  audio.addEventListener("loadedmetadata",function(){
-    //set total time
-    timeTotal.innerHTML = formatTime(Math.floor(audio.duration));
+        var tranckInfo = document.getElementsByClassName("pl-info-wrapper")[0];
+        // set artwork
+        tranckInfo.firstChild.firstChild.firstChild.setAttribute("style", "background-image: url("+track.album.artwork+")");
+        // set title/album
+        tranckInfo.lastChild.firstChild.setAttribute("href", "albums/"+track.album._id);
+        tranckInfo.lastChild.firstChild.innerHTML = track.album.name;
+        tranckInfo.lastChild.lastChild.firstChild.setAttribute("title", track.artist.name);
+        tranckInfo.lastChild.lastChild.firstChild.setAttribute("href", "artists/"+track.artist._id);
+        tranckInfo.lastChild.lastChild.firstChild.innerHTML = track.name;
 
-    //set volume
-    volumeBar.style.width = (audio.volume * 100) + "%";
-  })
-  audio.src = 'https://archive.org/download/testmp3testfile/mpthreetest.mp3';
-  document.body.appendChild(audio);
-
-
-  // Event listener for the play/pause button
-  playButton.addEventListener("click", function() {
-    if (audio.paused == true) {
-      // Play the track
-      audio.play();
-
-      // Update the button icon to 'Pause'
-      playButton.classList.remove('fa-play')
-      playButton.classList.add('fa-pause')
-    } else {
-      // Pause the track
-      audio.pause();
-
-      // Update the button icon to 'Play'
-      playButton.classList.remove('fa-pause')
-      playButton.classList.add('fa-play')
+        audioElement.src = tracks[index].file;
     }
-  });
 
-  // Event listener for the seek bar
-  seekRail.addEventListener("click", function(evt) {
-    var frac = (evt.offsetX / seekRail.offsetWidth)
-    seekBar.style.width = (frac * 100) + "%";
+    if (! document.getElementsByTagName('audio')[0]) {
+        doJSONRequest("GET", "/tracks", null, null, setupAudioElement);
 
-    // Calculate the new time
-    var time = audio.duration * frac;
-    audio.currentTime = time;
-  });
+        function setupAudioElement(tracks) {
+            // Buttons
+            var playButton = document.getElementById("play-pause");
+            var muteButton = document.getElementById("mute");
+            var fullScreenButton = document.getElementById("full-screen");
+            var volumeOff = document.getElementById("volume-off");
+            var volumeUp = document.getElementById("volume-up");
 
-  // Update the seek bar as the track plays
-  audio.addEventListener("timeupdate", function() {
-    // Calculate the slider value
-    var value = (100 / audio.duration) * audio.currentTime;
+            // Sliders
+            var seekRail = document.getElementById("pl-timeline-rail");
+            var seekBar = document.getElementById("pl-timeline-bar");
+            var volumeRail = document.getElementById("pl-volume-rail");
+            var volumeBar = document.getElementById("pl-volume-bar");
 
-    // Update the seek bar
-    seekBar.style.width = value + "%";
+            // Labels
+            var timeElapsed = document.getElementById("time-elapsed");
+            var timeTotal = document.getElementById("time-total");
 
-    // Update the elapsed time
-    timeElapsed.innerHTML = formatTime(Math.floor(audio.currentTime));
-  });
+            // audio
+            var audio = document.createElement('audio');
 
-  // Event listener for the volume bar
-  volumeRail.addEventListener("click", function(evt) {
-    var frac = (evt.offsetX / volumeRail.offsetWidth)
-    volumeBar.style.width = (frac * 100) + "%";
+            audio.addEventListener("loadedmetadata", function () {
+                //set total time
+                timeTotal.innerHTML = formatTime(Math.floor(audio.duration));
 
-    audio.volume = frac;
-  });
+                //set volume
+                volumeBar.style.width = (audio.volume * 100) + "%";
+            });
 
-  //Click listener for volume buttons
-  volumeOff.addEventListener("click", function(evt) {
-    volumeBar.style.width = "0%";
-    audio.volume = 0;
+            // Set the first track by default
+            setTrack(0, audio, tracks);
 
-    volumeOff.classList.add("active")
-    volumeUp.classList.remove("active")
-  });
+            document.body.appendChild(audio);
 
-  volumeUp.addEventListener("click", function(evt) {
-    volumeBar.style.width = "100%";
-    audio.volume = 1;
+            audio.addEventListener("ended", function () {
+                CurrentSong++;
+                if (tracks[CurrentSong]){
+                    setTrack(CurrentSong, audio, tracks);
+                    audio.play();
+                } else{
+                    CurrentSong = 0;
+                    setTrack(CurrentSong, audio, tracks);
+                    // Update the seek bar
+                    seekBar.style.width = 0 + "%";
+                    // Update the elapsed time
+                    timeElapsed.innerHTML = formatTime(Math.floor(0));
 
-    volumeUp.classList.add("active")
-    volumeOff.classList.remove("active")
-  });
+                    // Update the button icon to 'Pause'
+                    playButton.classList.add('fa-play')
+                    playButton.classList.remove('fa-pause')
+
+                }
+
+            });
+
+            // Event listener for the play/pause button
+            playButton.addEventListener("click", function () {
+                if (audio.paused == true) {
+                    // Play the track
+                    audio.play();
+
+                    // Update the button icon to 'Pause'
+                    playButton.classList.remove('fa-play')
+                    playButton.classList.add('fa-pause')
+                } else {
+                    // Pause the track
+                    audio.pause();
+
+                    // Update the button icon to 'Play'
+                    playButton.classList.remove('fa-pause')
+                    playButton.classList.add('fa-play')
+                }
+            });
+
+            // Event listener for the seek bar
+            seekRail.addEventListener("click", function (evt) {
+                var frac = (evt.offsetX / seekRail.offsetWidth)
+                seekBar.style.width = (frac * 100) + "%";
+
+                // Calculate the new time
+                audio.currentTime = audio.duration * frac;
+                ;
+            });
+
+            // Update the seek bar as the track plays
+            audio.addEventListener("timeupdate", function () {
+                // Calculate the slider value
+                var value = (100 / audio.duration) * audio.currentTime;
+
+                // Update the seek bar
+                seekBar.style.width = value + "%";
+
+                // Update the elapsed time
+                timeElapsed.innerHTML = formatTime(Math.floor(audio.currentTime));
+            });
+
+            // Event listener for the volume bar
+            volumeRail.addEventListener("click", function (evt) {
+                var frac = (evt.offsetX / volumeRail.offsetWidth)
+                volumeBar.style.width = (frac * 100) + "%";
+
+                audio.volume = frac;
+            });
+
+            //Click listener for volume buttons
+            volumeOff.addEventListener("click", function (evt) {
+                volumeBar.style.width = "0%";
+                audio.volume = 0;
+
+                volumeOff.classList.add("active")
+                volumeUp.classList.remove("active")
+            });
+
+            volumeUp.addEventListener("click", function (evt) {
+                volumeBar.style.width = "100%";
+                audio.volume = 1;
+
+                volumeUp.classList.add("active")
+                volumeOff.classList.remove("active")
+            });
+        }
+    }
+
+
 }
 
 /* Player */
