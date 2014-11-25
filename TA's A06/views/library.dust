@@ -68,14 +68,18 @@
             <button id="next" class="btn btn-icon fa fa-step-forward"></button>
           </div>
           <div class="pl-progress">
-            <div class="time time-elapsed" id="time-elapsed">0:00</div>
+            <div class="time time-elapsed" id="time-elapsed">00:00</div>
             <div class="pl-timeline-wrapper">
               <div class="pl-timeline-rail" id="pl-timeline-rail">
                 <div class="pl-timeline-bar" id="pl-timeline-bar"></div>
               </div>
             </div>
-            <div class="time time-total" id="time-total">2:19</div>
+            <div class="time time-total" id="time-total"></div>
+
           </div>
+
+          <button id="shuffle" class="">normal</button>
+
           <div class="pl-volume">
             <i class="btn-icon fa fa-volume-off" id="volume-off"></i>
             <div class="pl-volume-wrapper">

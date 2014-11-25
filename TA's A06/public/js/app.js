@@ -934,14 +934,19 @@ function appendNewPlaylistToMenu(pl){
 *
 * - When a track finishes your player should play the next one
 */
+var CurrentSong = 0;
+var oldCurrentSong;
+function setupPlayer(trackId, shuffle){
 
-function setupPlayer(trackId){
-    if(trackId)console.log(trackId);
 
-    var CurrentSong;
+
 
     function setTrack(index, audioElement,tracks){
-        CurrentSong = index;
+
+        if(oldCurrentSong >= 0){
+            var oldTrackId = tracks[oldCurrentSong]._id;
+            changeTrackColor(oldTrackId,"black")
+        }
 
         var track = tracks[index];
 
@@ -954,24 +959,38 @@ function setupPlayer(trackId){
         tranckInfo.lastChild.lastChild.firstChild.setAttribute("title", track.artist.name);
         tranckInfo.lastChild.lastChild.firstChild.setAttribute("href", "artists/"+track.artist._id);
         tranckInfo.lastChild.lastChild.firstChild.innerHTML = track.name;
-//        var myfile = new File([],tracks[index].file);
-//        if (myfile.open('r')) console.log("esisteee");
-//        else console.log("non esiste");
 
         audioElement.src = tracks[index].file;
+        changeTrackColor(tracks[index]._id,"#ff0000");
+    }
+
+    function changeTrackColor(id,color){
+
+        var childNodes = document.querySelector('#tracks-list').childNodes;
+        for( var i = 0 , j = childNodes.length; i < j ; i++ ){
+            if(childNodes[i].id == id ){
+                childNodes[i].firstChild.style.color = color;
+                return;
+            }
+        }
     }
 
     if (! document.getElementsByTagName('audio')[0]) {
         doJSONRequest("GET", "/tracks", null, null, setupAudioElement);
 
-        function setupAudioElement(tracks) {
+        function setupAudioElement(trackList) {
+            var tracks = [];
+            for(var i in trackList){
+                tracks.push(trackList[i]);
+            }
             // Buttons
             var playButton = document.getElementById("play-pause");
             var next = document.getElementById("next");
             var previous = document.getElementById("previous");
-            var fullScreenButton = document.getElementById("full-screen");
+//            var fullScreenButton = document.getElementById("full-screen");
             var volumeOff = document.getElementById("volume-off");
             var volumeUp = document.getElementById("volume-up");
+            var shuffle = document.getElementById("shuffle");
 
             // Sliders
             var seekRail = document.getElementById("pl-timeline-rail");
@@ -1000,6 +1019,7 @@ function setupPlayer(trackId){
             document.body.appendChild(audio);
 
             audio.addEventListener("ended", function () {
+                oldCurrentSong = CurrentSong;
                 CurrentSong++;
                 if (tracks[CurrentSong]){
                     setTrack(CurrentSong, audio, tracks);
@@ -1039,7 +1059,7 @@ function setupPlayer(trackId){
             next.addEventListener("click", function () {
                 var state;
                 if(audio.paused == false) state = true;
-
+                oldCurrentSong = CurrentSong;
                 CurrentSong++;
                 if (tracks[CurrentSong]){
                     setTrack(CurrentSong, audio, tracks);
@@ -1061,7 +1081,7 @@ function setupPlayer(trackId){
             previous.addEventListener("click", function () {
                 var state;
                 if(audio.paused == false) state = true;
-
+                oldCurrentSong = CurrentSong;
                 CurrentSong--;
                 if (tracks[CurrentSong]){
                     setTrack(CurrentSong, audio, tracks);
@@ -1077,6 +1097,52 @@ function setupPlayer(trackId){
                     // Update the button icon to 'Pause'
                     playButton.classList.add('fa-play')
                     playButton.classList.remove('fa-pause')
+                }
+            });
+
+            function shuffleArray(array) {
+                for (var i = array.length - 1; i > 0; i--) {
+                    var j = Math.floor(Math.random() * (i + 1));
+                    var temp = array[i];
+                    array[i] = array[j];
+                    array[j] = temp;
+                }
+                return array;
+            }
+
+            shuffle.addEventListener("click", function () {
+                var currentId;
+                if(shuffle.innerHTML == "normal"){
+
+                    shuffle.innerHTML = "shuffle";
+
+                    currentId = tracks[CurrentSong]._id;
+
+                    tracks = shuffleArray(tracks);
+                    for( var i = 0 , j = tracks.length; i < j ; i++ ) {
+                        if(tracks[i]._id == currentId){
+                            var b = tracks[i];
+                            tracks[i] = tracks[0];
+                            tracks[0] = b;
+                            CurrentSong = 0;
+                            return
+                        }
+                    }
+                } else{
+                    shuffle.innerHTML = "normal";
+
+                    currentId = tracks[CurrentSong]._id;
+
+                    tracks = [];
+                    for(var i in trackList){
+                        tracks.push(trackList[i]);
+                    }
+
+                    for( var i = 0 , j = tracks.length; i < j ; i++ ) {
+                        if(tracks[i]._id == currentId){
+                            CurrentSong = i;
+                        }
+                    }
                 }
             });
 
