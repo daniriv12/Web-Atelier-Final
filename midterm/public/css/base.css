@@ -82,7 +82,7 @@
   }
 
   .container.main-wrapper{
-    background-color:  #a44b4d;
+    background-color:  orange;
   }
 
   /* ---------------- Typography ---------------- */
@@ -404,7 +404,7 @@
   /* ---------------- Player ---------------- */
 
   .player{
-    background: rgb(66, 66, 66);
+    background: darkgray;
     padding:10px;
   }
 
@@ -826,9 +826,9 @@
 
 /* ---------------- Main Nav ---------------- */
 #main-nav{
-  width:300px;
+  width:280px;
   height: 100%;
-  background: #a44b4d;
+  background: orange;
   font-size: 16px;
   transition:width 150ms ease-out;
 }
@@ -836,7 +836,7 @@
 #main-nav h2 {
   margin: 0;
   padding: 1em;
-  color: rgba(0,0,0,0.4);
+  color: rgba(0,0,0,0.8);
   font-size: 2em;
 }
 
@@ -925,7 +925,7 @@ ul.nav-menu.horizontal-menu li > a:hover{
 }
 
 .main-content{
-  background: #F0F0F0;
+  background: black;
 }
 
 .main-content-absolute-menu{
@@ -1199,7 +1199,7 @@ a.create-playlist:hover, a.create-playlist:active{
 /* ---------------- User nav ---------------- */
 
 #user-nav{
-  background: #a44b4d;
+  background: orange;
   width:100%;
   height:60px;
 }

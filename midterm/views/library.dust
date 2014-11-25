@@ -15,7 +15,7 @@
     <nav id="main-nav" class="main-nav-float">
        <label id="main-menu-toggle-label" for="main-menu-toggle"><i class="fa fa-bars"></i></label>
        <input type="checkbox" id="main-menu-toggle">
-       <h2 class="fat logo">AtelierBeats.</h2>
+       <h2 class="fat logo">AtelierBeats 2.</h2>
 
        <div class="main-nav-content">
         <ul id="main-menu" class="nav-menu">
@@ -39,8 +39,8 @@
     <section class="main-content main-content-float-menu clearfix">
       <nav id="user-nav" class="clearfix">
         <ul class="nav-menu horizontal-menu float-right clearfix">
-          <li><a href="#">triglian</a></li>
-          <li><a href="#">logout</a></li>
+          <li><a href="#">Daniel</a></li>
+          <li><a href="#">Logout</a></li>
         </ul>
       </nav>
       <section class="player">
