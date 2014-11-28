@@ -98,9 +98,41 @@ function buildTracksData(tracks){
 
   }
 
-  return tracksData;
+    //@DIN order the tracks list alphabetically
+    var alphabeticalTracksData = sortTracksAlphabetically(tracksData)
+
+  return alphabeticalTracksData;
 
 }
+
+
+function sortTracksAlphabetically(tracksList) {
+
+    var tracksNames = [];
+    for (var i = 0; i<tracksList.length; i++) {
+        tracksNames[i] = tracksList[i].name
+    }
+
+    //console.log(tracksNames)
+    //console.log(tracksNames.sort())
+
+    var sortedTracksList = [];
+
+    for (var i=0; i<tracksNames.length; i++) {
+        for (var j=0; j<tracksNames.length; j++) {
+            if (tracksNames[i] == tracksList[j].name) {
+                sortedTracksList[i] = tracksList[j]
+            }
+                }
+    }
+
+    //console.log(sortedTracksList)
+
+
+ return sortedTracksList
+
+ }
+
 
 function addLibraryToHistory(addHistory){
   if((("undefined" == typeof addHistory) 
@@ -141,6 +173,7 @@ function bindTracksDelete(){
   }
 }
 
+//@DIN: DELETE FUNCTIONALITY DATABASE CONSISTENCY
 function deleteTrack(e){
 
   var href;
@@ -151,18 +184,65 @@ function deleteTrack(e){
     href = target.getAttribute("href");
   }
 
-    //execute the AJAX call to the delete a single album
-    doJSONRequest("DELETE", href, null, null, removeTrack);
+    var trackID = href.split("/")[1]
 
-    function removeTrack(){
+    //get to-delete track details
+    var getTrack = "tracks/" + trackID
+    doJSONRequest("GET", getTrack, null, null, getTrackDetails)
+    function getTrackDetails(track) {
+        //console.log(track)
+        //console.log(track.artist._id)
+        //console.log(track.album._id)
+        var trackArtistID = track.artist._id;
+        var trackAlbumID = track.album._id;
 
-      var toDelete = target.parentNode.parentNode; 
-      var parent = document.getElementById("tracks-list");
 
-      parent.removeChild(toDelete);
+        //execute the AJAX call to the delete a single album
+        doJSONRequest("DELETE", href, null, null, removeTrackCheckArtistCheckAlbums());
 
-    }
+        function removeTrackCheckArtistCheckAlbums() {
 
+            var toDelete = target.parentNode.parentNode;
+            var parent = document.getElementById("tracks-list");
+
+            parent.removeChild(toDelete);
+        }
+
+            //check if any remaining track has just-deleted-tracks-Album/Artist
+            doJSONRequest("GET", "/tracks", null, null, checkOtherAlbumsOtherArtists);
+            function checkOtherAlbumsOtherArtists(tracks) {
+                var otherAlbum = false;
+                var otherArtist = false;
+
+                tracks.forEach(function(track) {
+                    if (track.album._id == trackAlbumID) {
+                        otherAlbum = true;
+                    }
+
+                    if (track.artist._id == trackArtistID) {
+                        otherArtist = true;
+                    }
+                })
+
+                if (!otherAlbum) {
+                    //console.log("no remaining tracks in album!")
+                    var toRemoveAlbum = "albums/" + trackAlbumID
+                    doJSONRequest("DELETE", toRemoveAlbum, null, null, albumRemoved);
+                    function albumRemoved() {
+                        //album removed from database - will not be rendered in albums view
+
+                        if (!otherArtist) {
+                            //console.log("no remaining tracks in artist!")
+                            var toRemoveArtist = "artists/" + trackArtistID
+                            doJSONRequest("DELETE", toRemoveArtist, null, null, artistRemoved);
+                            function artistRemoved() {
+                                //artist removed from database - will not be rendered in artists view
+                            }
+                        }
+                    }
+                }
+            }
+        }
   }
 
   function bindEditTrackName(){
@@ -377,6 +457,7 @@ function drawArtist(e, addHistory){
     }
   }
 
+  //@DIN DELETE FUNCTIONALITY DATABASE CONSISTENCY
   function deleteArtist(e){
 
     var href;
@@ -387,22 +468,72 @@ function drawArtist(e, addHistory){
       href = target.getAttribute("href");
     }
 
-    //execute the AJAX call to the delete a single album
-    doJSONRequest("DELETE", href, null, null, removeArtist);
+    var artistID = href.split("/")[1]
 
-    function removeArtist(){
+    //deleting an Artist --> FIRST need to delete all their tracks + albums !
 
-      //console.log(responseText);
+    //AJAX request to get all tracks - remove each track with artistID
+    doJSONRequest("GET", "/tracks", null, null, removeArtistTracks);
 
-      //console.log(target);
+    function removeArtistTracks(tracks) {
 
-      var toDelete = target.parentNode.parentNode; 
-      var parent = document.getElementById("artists-list");
+        tracks.forEach(function (track) {
+            if (track.artist._id == artistID) {
 
-      parent.removeChild(toDelete);
+                var trackToDelete = "tracks/" + track._id
 
+                //execute the AJAX call to delete a single track
+                doJSONRequest("DELETE", trackToDelete, null, null, removeTrack);
+
+                function removeTrack() {
+
+                    //track removed from database - will then not be rendered in tracks view
+
+                }
+
+            }
+        })
+
+        //AJAX request to get all albums - remove each album with artistID
+        doJSONRequest("GET", "/albums", null, null, removeArtistAlbums);
+
+        function removeArtistAlbums(albums) {
+
+            albums.forEach(function (album) {
+
+                if (album.artist._id == artistID) {
+
+                    var albumToDelete = "albums/" + album._id
+
+                    //execute the AJAX call to delete a single album
+                    doJSONRequest("DELETE", albumToDelete, null, null, removeAlbum);
+
+                    function removeAlbum() {
+
+                        //album removed from database - will then not be rendered in album view
+
+                    }
+
+                }
+            })
+
+            //ONLY NOW that tracks and albums have been deleted - can safely delete artist
+            doJSONRequest("DELETE", href, null, null, removeArtist);
+
+            function removeArtist() {
+
+                //console.log(responseText);
+
+                //console.log(target);
+
+                var toDelete = target.parentNode.parentNode;
+                var parent = document.getElementById("artists-list");
+
+                parent.removeChild(toDelete);
+
+            }
+        }
     }
-
   }
 
   /* Artists */
@@ -565,6 +696,7 @@ function drawAlbum(e, addHistory){
     }
   }
 
+  //@DIN: DELETE FUNCTIONALITY DATABASE CONSISTENCY
   function deleteAlbum(e){
 
     var href;
@@ -575,18 +707,75 @@ function drawAlbum(e, addHistory){
       href = target.getAttribute("href");
     }
 
-    //execute the AJAX call to the delete a single album
-    doJSONRequest("DELETE", href, null, null, removeAlbum);
+      var albumID = href.split("/")[1]
 
-    function removeAlbum(){
+      //remove all tracks that belong to the Album
+      doJSONRequest("GET", "/tracks", null, null, removeAlbumTracks);
 
-      var toDelete = target.parentNode.parentNode; 
-      var parent = document.getElementById("albums-list");
+      function removeAlbumTracks(tracks) {
 
-      parent.removeChild(toDelete);
+          tracks.forEach(function (track) {
+              if (track.album._id == albumID) {
 
-    }
+                  var trackToDelete = "tracks/" + track._id
 
+                  //execute the AJAX call to delete a single track
+                  doJSONRequest("DELETE", trackToDelete, null, null, removeTrack);
+
+                  function removeTrack() {
+                      //track removed from database - will then not be rendered in tracks view
+                  }
+
+              }
+          })
+
+          //get albums artist
+          var getAlbum = "albums/" + albumID
+          doJSONRequest("GET", getAlbum, null, null, getAlbumArtist);
+          function getAlbumArtist(album) {
+
+              //console.log(album)
+
+              var artistID = album.artist._id;
+
+
+              //Only now execute the AJAX call to the delete a single album
+              doJSONRequest("DELETE", href, null, null, removeAlbumCheckArtist);
+
+              function removeAlbumCheckArtist() {
+
+                  var toDelete = target.parentNode.parentNode;
+                  var parent = document.getElementById("albums-list");
+
+                  parent.removeChild(toDelete);
+
+
+                  //check all other albums - if there is no other with just-deleted-album-ARTIST, -> remove artist
+                  doJSONRequest("GET", "/albums", null, null, checkOtherAlbums)
+                  function checkOtherAlbums(albums) {
+                      var otherAlbum = false;
+
+                      //console.log(albums)
+
+                      albums.forEach(function(album) {
+                          if (album.artist._id == artistID) {
+                              otherAlbum = true;
+                          }
+                      })
+
+                      if (!otherAlbum) {
+                          //console.log("no other albums!!")
+                          var toRemoveArtist = "artists/" + artistID
+                          doJSONRequest("DELETE", toRemoveArtist, null, null, artistRemoved);
+
+                          function artistRemoved() {
+                              //artist removed from database - will not be rendered in artists view
+                          }
+                      }
+                  }
+              }
+          }
+      }
   }
 
   /* Albums */
