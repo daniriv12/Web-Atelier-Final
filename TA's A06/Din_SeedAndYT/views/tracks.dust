@@ -4,6 +4,7 @@
 		<div class="fl-tl-th fl-tl-artist">Artist</div>
 		<div class="fl-tl-th fl-tl-album">Album</div>
 		<div class="fl-tl-th fl-tl-time">Time</div>
+		<div class="fl-tl-th fl-tl-vid"> Vid </div>
 		<div class="fl-tl-th fl-tl-delete"></div>
 	</div>
 	{#tracks}

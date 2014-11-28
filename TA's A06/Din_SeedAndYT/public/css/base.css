@@ -588,6 +588,13 @@
     padding: 0 5px 0 12px;
   }
 
+  .fl-tl-vid {
+      flex: 0 0 100px;
+      text-align: right;
+      width: 78px;
+      padding: 0 5px 0 12px;
+  }
+
   .fl-tl-pencil {
     padding-left: 6px;
   }
@@ -644,6 +651,13 @@
       position:absolute;
       right:5px;
       top: 5px;
+    }
+
+    .fl-tl-vid {
+        font-size: 12px;
+        position: absolute;
+        right: 10px;
+        top: 10px;
     }
     .fl-tl-delete {
       font-size: 13px;
