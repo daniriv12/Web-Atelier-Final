@@ -144,14 +144,13 @@ function sortArtists() {
 
 //called onclick - sort library alphabetically > albums
 function sortAlbums() {
-    console.log("reached sortTracks")
+    //console.log("reached sortTracks")
 
     doJSONRequest("GET", "/tracks", null, null, renderOrderedTracks);
 
     function renderOrderedTracks(tracks) {
         var tracksData = buildTracksData(tracks)
-        var orderedTracks = sortTracksAlphabetically(tracksData)
-        console.log(orderedTracks)
+        var orderedTracks = sortAlbumsAlphabetically(tracksData)
 
         var data = {
             "tracks" : orderedTracks
@@ -251,11 +250,33 @@ function sortArtistsAlphabetically(tracksList) {
             }
         }
     }
-
     return sortedTracksList
-
 }
 
+function sortAlbumsAlphabetically(tracksList) {
+
+    var albumNames = [];
+
+    for (var i = 0; i<tracksList.length; i++) {
+        albumNames[i] = tracksList[i].album.name
+    }
+
+    albumNames.sort()
+
+    var sortedTracksList = []
+
+    for (var i = 0; i < albumNames.length; i++) {
+        for (var j = 0; j < tracksList.length; j++) {
+            if (albumNames[i] == tracksList[j].album.name) {
+                sortedTracksList[i] = tracksList[j]
+                tracksList.splice(j, 1)
+                break;
+            }
+        }
+    }
+
+    return sortedTracksList
+}
 
 function addLibraryToHistory(addHistory){
   if((("undefined" == typeof addHistory) 
