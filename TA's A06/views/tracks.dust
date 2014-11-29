@@ -1,7 +1,7 @@
 <section class="flex-tracklist" id="tracks-list">
 	<div class="fl-tl-thead fl-tl-row">
-		<div class="fl-tl-th fl-tl-name"><a href="tracks/">Song</a></div>
-		<div class="fl-tl-th fl-tl-artist">Artist</div>
+		<div class="fl-tl-th fl-tl-name"><u onclick="sortTracks()" onmouseover="" style="cursor: pointer;"> SONG </u> </div>
+		<div class="fl-tl-th fl-tl-artist"><u onclick="sortArtists()" onmouseover="" style="cursor: pointer;"> ARTIST </u></div>
 		<div class="fl-tl-th fl-tl-album">Album</div>
 		<div class="fl-tl-th fl-tl-time">Time</div>
 		<div class="fl-tl-th fl-tl-delete"></div>

@@ -74,6 +74,109 @@ function drawLibrary(e, addHistory){
   }
 }
 
+//called onlick - sort library alphabetically > tracks
+function sortTracks() {
+    //console.log("reached sortTracks")
+
+    doJSONRequest("GET", "/tracks", null, null, renderOrderedTracks);
+
+    function renderOrderedTracks(tracks) {
+        var tracksData = buildTracksData(tracks)
+        var orderedTracks = sortTracksAlphabetically(tracksData)
+
+        var data = {
+            "tracks" : orderedTracks
+        };
+
+        dust.render("tracks", data, function(err, out) {
+
+            var content = document.getElementById("content");
+
+            content.innerHTML = out;
+
+            bindAlbumLink();
+
+            bindArtistLink();
+
+            bindTracksDelete();
+
+            bindEditTrackName();
+
+        });
+
+    }
+
+}
+
+//called onclick - sort library alphabetically > artists
+function sortArtists() {
+    //console.log("reached sortArtists")
+
+    doJSONRequest("GET", "/tracks", null, null, renderOrderedArtists);
+
+    function renderOrderedArtists(tracks) {
+        var tracksData = buildTracksData(tracks)
+        var orderedArtistTracks = sortArtistsAlphabetically(tracksData)
+
+        var data = {
+            "tracks" : orderedArtistTracks
+        };
+
+        dust.render("tracks", data, function(err, out) {
+
+            var content = document.getElementById("content");
+
+            content.innerHTML = out;
+
+            bindAlbumLink();
+
+            bindArtistLink();
+
+            bindTracksDelete();
+
+            bindEditTrackName();
+
+        });
+
+    }
+
+}
+
+//called onclick - sort library alphabetically > albums
+function sortAlbums() {
+    console.log("reached sortTracks")
+
+    doJSONRequest("GET", "/tracks", null, null, renderOrderedTracks);
+
+    function renderOrderedTracks(tracks) {
+        var tracksData = buildTracksData(tracks)
+        var orderedTracks = sortTracksAlphabetically(tracksData)
+        console.log(orderedTracks)
+
+        var data = {
+            "tracks" : orderedTracks
+        };
+
+        dust.render("tracks", data, function(err, out) {
+
+            var content = document.getElementById("content");
+
+            content.innerHTML = out;
+
+            bindAlbumLink();
+
+            bindArtistLink();
+
+            bindTracksDelete();
+
+            bindEditTrackName();
+
+        });
+
+    }
+
+}
+
 function buildTracksData(tracks){
 
   var tracksData = [];
@@ -98,10 +201,7 @@ function buildTracksData(tracks){
 
   }
 
-    //@DIN order the tracks-list alphabetically
-    var alphabeticalTracksData = sortTracksAlphabetically(tracksData)
-
-  return alphabeticalTracksData;
+  return tracksData;
 
 }
 
@@ -113,9 +213,7 @@ function sortTracksAlphabetically(tracksList) {
         tracksNames[i] = tracksList[i].name
     }
 
-    console.log(tracksNames)
     tracksNames.sort()
-    console.log(tracksNames)
 
     var sortedTracksList = [];
 
@@ -127,12 +225,36 @@ function sortTracksAlphabetically(tracksList) {
                 }
     }
 
-    console.log(sortedTracksList)
-
-
  return sortedTracksList
 
- }
+}
+
+//@DIN order the tracks-list alphabetically
+function sortArtistsAlphabetically(tracksList) {
+
+    var artistNames = [];
+    for (var i = 0; i<tracksList.length; i++) {
+        artistNames[i] = tracksList[i].artist.name
+    }
+
+    artistNames.sort()
+
+    var sortedTracksList = [];
+
+    for (var i=0; i<artistNames.length; i++) {
+        for (var j = 0; j<tracksList.length; j++) {
+            if (artistNames[i] == tracksList[j].artist.name) {
+                sortedTracksList[i] = tracksList[j]
+                tracksList.splice(j, 1)
+                break;
+
+            }
+        }
+    }
+
+    return sortedTracksList
+
+}
 
 
 function addLibraryToHistory(addHistory){
@@ -168,13 +290,12 @@ function createHTMLLibrary(tracks){
 
 function bindTracksDelete(){
   var tracks = document.querySelectorAll(".fl-tl-delete a");
-    console.log(tracks)
 
   for (var elem = 0; elem < tracks.length; ++elem) {
     tracks[elem].onclick = deleteTrack;
-      console.log(tracks[elem])
   }
 }
+
 
 //@DIN: DELETE FUNCTIONALITY DATABASE CONSISTENCY
 function deleteTrack(e){
