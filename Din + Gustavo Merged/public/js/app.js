@@ -967,14 +967,19 @@ function setupPlayer(trackId, shuffle){
     }
 
     function changeTrackColor(id,color){
-
-        var childNodes = document.querySelector('#tracks-list').childNodes;
-        for( var i = 0 , j = childNodes.length; i < j ; i++ ){
-            if(childNodes[i].id == id ){
-                childNodes[i].firstChild.style.color = color;
-                return;
+        try{
+            var childNodes = document.querySelector('#tracks-list').childNodes;
+            for( var i = 0 , j = childNodes.length; i < j ; i++ ){
+                if(childNodes[i].id == id ){
+                    childNodes[i].firstChild.style.color = color;
+                    return;
+                }
             }
+        }catch (err){
+//            NOTHING
         }
+
+
     }
 
     if (! document.getElementsByTagName('audio')[0]) {
