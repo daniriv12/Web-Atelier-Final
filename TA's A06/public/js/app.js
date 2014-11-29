@@ -98,14 +98,14 @@ function buildTracksData(tracks){
 
   }
 
-    //@DIN order the tracks list alphabetically
+    //@DIN order the tracks-list alphabetically
     var alphabeticalTracksData = sortTracksAlphabetically(tracksData)
 
   return alphabeticalTracksData;
 
 }
 
-
+//@DIN order the tracks-list alphabetically
 function sortTracksAlphabetically(tracksList) {
 
     var tracksNames = [];
@@ -113,8 +113,9 @@ function sortTracksAlphabetically(tracksList) {
         tracksNames[i] = tracksList[i].name
     }
 
-    //console.log(tracksNames)
-    //console.log(tracksNames.sort())
+    console.log(tracksNames)
+    tracksNames.sort()
+    console.log(tracksNames)
 
     var sortedTracksList = [];
 
@@ -126,7 +127,7 @@ function sortTracksAlphabetically(tracksList) {
                 }
     }
 
-    //console.log(sortedTracksList)
+    console.log(sortedTracksList)
 
 
  return sortedTracksList
@@ -167,9 +168,11 @@ function createHTMLLibrary(tracks){
 
 function bindTracksDelete(){
   var tracks = document.querySelectorAll(".fl-tl-delete a");
+    console.log(tracks)
 
   for (var elem = 0; elem < tracks.length; ++elem) {
     tracks[elem].onclick = deleteTrack;
+      console.log(tracks[elem])
   }
 }
 
@@ -228,7 +231,7 @@ function deleteTrack(e){
                     //console.log("no remaining tracks in album!")
                     var toRemoveAlbum = "albums/" + trackAlbumID
                     doJSONRequest("DELETE", toRemoveAlbum, null, null, albumRemoved);
-                    function albumRemoved() {
+                    function albumRemoved() { //need to make sure this finishes first before possibly removing artist
                         //album removed from database - will not be rendered in albums view
 
                         if (!otherArtist) {
