@@ -123,12 +123,13 @@ function addLibraryToHistory(addHistory){
 
 //NOTE: Still used by setupSearch
 function createHTMLLibrary(tracks){
+
   var newHtml = "";
   tracks.forEach(function(track){
     var artist = findOne(model.artists, "_id", track.artist);
     var album = findOne(model.albums, "_id", track.album);
 
-    newHtml+= '<div id="'+ track._id +'"" class="fl-tl-row" draggable="true" ondragstart="drag(event)">';
+    newHtml+= '<div id="'+ track._id +'"" class="fl-tl-row" draggable="true" ondragstart="drag(event)" ondblclick="setupPlayer(this)">';
     newHtml+= '<div class="fl-tl-cell fl-tl-name"><a href="#">'+ track.name + '</a></div>\n';
     newHtml+= '<div class="fl-tl-cell fl-tl-artist"><a href="artists/'+ encodeURI(artist.name)+ '">'+ artist.name +'</a></div>\n';
     newHtml+= '<div class="fl-tl-cell fl-tl-album"><a href="albums/'+ encodeURI(album.name)+ '">'+ album.name +'</a></div>\n';
@@ -172,7 +173,7 @@ function deleteTrack(e){
 
 
         //execute the AJAX call to the delete a single album
-        doJSONRequest("DELETE", href, null, null, removeTrackCheckArtistCheckAlbums());
+        doJSONRequest("DELETE", href, null, null, removeTrackCheckArtistCheckAlbums);
 
         function removeTrackCheckArtistCheckAlbums() {
 
@@ -217,6 +218,19 @@ function deleteTrack(e){
             }
         }
     }
+    var index = findTrackIndexById(target.parentNode.parentNode.id);
+    var currentID = tracks[CurrentSong]._id;
+
+    if (oldCurrentSong > 0 ) var oldID = tracks[oldCurrentSong]._id;
+
+    if (currentID == tracks[index]._id){
+        document.getElementById("next").click();
+        currentID = tracks[CurrentSong]._id;
+    }
+    tracks.splice(index, 1);
+
+    CurrentSong = findTrackIndexById(currentID);
+    oldCurrentSong = findTrackIndexById(oldID);
 }
 
   function bindEditTrackName(){
@@ -1184,60 +1198,145 @@ function appendNewPlaylistToMenu(pl){
 *
 * - When a track finishes your player should play the next one
 */
+
+function findTrackIndexById(trackID){
+    for (var i = 0 , j = tracks.length; i < j; i++) {
+        if (tracks[i]._id == trackID) return i;
+    }
+    return -1;
+}
+
+var tracks = [];
 var CurrentSong = 0;
 var oldCurrentSong;
-function setupPlayer(trackId, shuffle){
 
-
-
+function setupPlayer(selectedTrack){
 
     function setTrack(index, audioElement,tracks){
 
         if(oldCurrentSong >= 0){
-            var oldTrackId = tracks[oldCurrentSong]._id;
-            changeTrackColor(oldTrackId,"black")
+            try{
+                var oldTrackId = tracks[oldCurrentSong]._id;
+                changeTrackColor(oldTrackId,"black")
+            } catch (err){}
+
         }
 
         var track = tracks[index];
 
-        var tranckInfo = document.getElementsByClassName("pl-info-wrapper")[0];
+        var trackInfo = document.getElementsByClassName("pl-info-wrapper")[0];
         // set artwork
-        tranckInfo.firstChild.firstChild.firstChild.setAttribute("style", "background-image: url("+track.album.artwork+")");
+        trackInfo.firstChild.firstChild.firstChild.setAttribute("style", "background-image: url("+track.album.artwork+")");
         // set title/album
-        tranckInfo.lastChild.firstChild.setAttribute("href", "albums/"+track.album._id);
-        tranckInfo.lastChild.firstChild.innerHTML = track.album.name;
-        tranckInfo.lastChild.lastChild.firstChild.setAttribute("title", track.artist.name);
-        tranckInfo.lastChild.lastChild.firstChild.setAttribute("href", "artists/"+track.artist._id);
-        tranckInfo.lastChild.lastChild.firstChild.innerHTML = track.name;
+        trackInfo.lastChild.firstChild.setAttribute("href", "albums/"+track.album._id);
+        trackInfo.lastChild.firstChild.innerHTML = track.album.name;
+        trackInfo.lastChild.lastChild.firstChild.setAttribute("title", track.artist.name);
+        trackInfo.lastChild.lastChild.firstChild.setAttribute("href", "artists/"+track.artist._id);
+        trackInfo.lastChild.lastChild.firstChild.innerHTML = track.name;
 
         audioElement.src = tracks[index].file;
         changeTrackColor(tracks[index]._id,"#ff0000");
     }
 
     function changeTrackColor(id,color){
-
-        var childNodes = document.querySelector('#tracks-list').childNodes;
-        for( var i = 0 , j = childNodes.length; i < j ; i++ ){
-            if(childNodes[i].id == id ){
-                childNodes[i].firstChild.style.color = color;
-                return;
+        try{
+            var childNodes = document.querySelector('#tracks-list').childNodes;
+            for( var i = 0 , j = childNodes.length; i < j ; i++ ){
+                if(childNodes[i].id == id ){
+                    childNodes[i].firstChild.style.color = color;
+                    return;
+                }
             }
-        }
+        }catch (err){}
     }
 
-    if (! document.getElementsByTagName('audio')[0]) {
-        doJSONRequest("GET", "/tracks", null, null, setupAudioElement);
+    doJSONRequest("GET", "/tracks", null, null, setupAudioElement);
 
-        function setupAudioElement(trackList) {
-            var tracks = [];
-            for(var i in trackList){
+    function setupAudioElement(trackList) {
+
+        if (selectedTrack) {
+            var selectedTrackId = selectedTrack.id,
+                currentId = tracks[CurrentSong]._id,
+                audioElement = document.getElementsByTagName("audio")[0],
+                state;
+            if (audioElement.paused == false) state = true;
+
+            if(document.location.hash.indexOf("library") > -1){
+                tracks = [];
+                for (var i in trackList) {
+                    tracks.push(trackList[i]);
+                }
+                if (document.getElementById("shuffle").innerHTML == "shuffle"){
+
+                    tracks = shuffleArray(tracks);
+
+                    var index = findTrackIndexById(selectedTrackId);
+                    var b = tracks[index];
+                    tracks[index] = tracks[0];
+                    tracks[0] = b;
+
+                    CurrentSong = [0];
+                    oldCurrentSong = findTrackIndexById(currentId);
+
+                    setTrack(CurrentSong,audioElement,tracks);
+
+                } else{
+
+                    oldCurrentSong = findTrackIndexById(currentId);
+                    CurrentSong = findTrackIndexById(selectedTrackId);
+                    setTrack(CurrentSong,audioElement,tracks);
+                }
+            } else{
+
+                var songs = [];
+                for(var i = 1; i < selectedTrack.parentNode.childNodes.length; i++){
+                    songs.push(selectedTrack.parentNode.childNodes[i].id)
+                }
+                tracks = [];
+                for (var i in trackList){
+                    if (songs.indexOf(trackList[i]._id) > -1){
+                        tracks.push(trackList[i]);
+                    }
+                }
+
+                if (document.getElementById("shuffle").innerHTML == "shuffle"){
+
+                    tracks = shuffleArray(tracks);
+
+                    var index = findTrackIndexById(selectedTrackId);
+                    var b = tracks[index];
+                    tracks[index] = tracks[0];
+                    tracks[0] = b;
+
+                    CurrentSong = [0];
+                    oldCurrentSong = findTrackIndexById(currentId);
+
+                    setTrack(CurrentSong,audioElement,tracks);
+
+                } else{
+
+                    oldCurrentSong = findTrackIndexById(currentId);
+                    CurrentSong = findTrackIndexById(selectedTrackId);
+                    setTrack(CurrentSong,audioElement,tracks);
+                }
+            }
+
+            if (!state) document.getElementById("play-pause").click();
+
+            audioElement.play();
+
+        } else if (! document.getElementsByTagName("audio")[0]) {
+            tracks = [];
+            for (var i in trackList) {
                 tracks.push(trackList[i]);
             }
+
+
             // Buttons
             var playButton = document.getElementById("play-pause");
             var next = document.getElementById("next");
             var previous = document.getElementById("previous");
-//            var fullScreenButton = document.getElementById("full-screen");
+            //            var fullScreenButton = document.getElementById("full-screen");
             var volumeOff = document.getElementById("volume-off");
             var volumeUp = document.getElementById("volume-up");
             var shuffle = document.getElementById("shuffle");
@@ -1271,10 +1370,10 @@ function setupPlayer(trackId, shuffle){
             audio.addEventListener("ended", function () {
                 oldCurrentSong = CurrentSong;
                 CurrentSong++;
-                if (tracks[CurrentSong]){
+                if (tracks[CurrentSong]) {
                     setTrack(CurrentSong, audio, tracks);
                     audio.play();
-                } else{
+                } else {
                     CurrentSong = 0;
                     setTrack(CurrentSong, audio, tracks);
                     // Update the seek bar
@@ -1308,13 +1407,13 @@ function setupPlayer(trackId, shuffle){
             });
             next.addEventListener("click", function () {
                 var state;
-                if(audio.paused == false) state = true;
+                if (audio.paused == false) state = true;
                 oldCurrentSong = CurrentSong;
                 CurrentSong++;
-                if (tracks[CurrentSong]){
+                if (tracks[CurrentSong]) {
                     setTrack(CurrentSong, audio, tracks);
-                    if(state) audio.play();
-                } else{
+                    if (state) audio.play();
+                } else {
                     CurrentSong = 0;
                     setTrack(CurrentSong, audio, tracks);
                     // Update the seek bar
@@ -1330,13 +1429,13 @@ function setupPlayer(trackId, shuffle){
 
             previous.addEventListener("click", function () {
                 var state;
-                if(audio.paused == false) state = true;
+                if (audio.paused == false) state = true;
                 oldCurrentSong = CurrentSong;
                 CurrentSong--;
-                if (tracks[CurrentSong]){
+                if (tracks[CurrentSong]) {
                     setTrack(CurrentSong, audio, tracks);
-                    if(state) audio.play();
-                } else{
+                    if (state) audio.play();
+                } else {
                     CurrentSong = 0;
                     setTrack(CurrentSong, audio, tracks);
                     // Update the seek bar
@@ -1362,15 +1461,15 @@ function setupPlayer(trackId, shuffle){
 
             shuffle.addEventListener("click", function () {
                 var currentId;
-                if(shuffle.innerHTML == "normal"){
+                if (shuffle.innerHTML == "normal") {
 
                     shuffle.innerHTML = "shuffle";
 
                     currentId = tracks[CurrentSong]._id;
 
                     tracks = shuffleArray(tracks);
-                    for( var i = 0 , j = tracks.length; i < j ; i++ ) {
-                        if(tracks[i]._id == currentId){
+                    for (var i = 0 , j = tracks.length; i < j; i++) {
+                        if (tracks[i]._id == currentId) {
                             var b = tracks[i];
                             tracks[i] = tracks[0];
                             tracks[0] = b;
@@ -1378,18 +1477,18 @@ function setupPlayer(trackId, shuffle){
                             return
                         }
                     }
-                } else{
+                } else {
                     shuffle.innerHTML = "normal";
 
                     currentId = tracks[CurrentSong]._id;
 
                     tracks = [];
-                    for(var i in trackList){
+                    for (var i in trackList) {
                         tracks.push(trackList[i]);
                     }
 
-                    for( var i = 0 , j = tracks.length; i < j ; i++ ) {
-                        if(tracks[i]._id == currentId){
+                    for (var i = 0 , j = tracks.length; i < j; i++) {
+                        if (tracks[i]._id == currentId) {
                             CurrentSong = i;
                         }
                     }
@@ -1443,9 +1542,10 @@ function setupPlayer(trackId, shuffle){
                 volumeOff.classList.remove("active")
             });
         }
+        else {
+            changeTrackColor(tracks[CurrentSong]._id,"#ff0000");
+        }
     }
-
-
 }
 
 /* Player */

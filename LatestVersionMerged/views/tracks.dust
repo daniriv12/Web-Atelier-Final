@@ -8,7 +8,7 @@
 		<div class="fl-tl-th fl-tl-delete"></div>
 	</div>
 	{#tracks}
-	<div id="{_id}" class="fl-tl-row" draggable="true" ondragstart="drag(event)">
+	<div id="{_id}" class="fl-tl-row" draggable="true" ondragstart="drag(event)" ondblclick = "setupPlayer(this)">
 		<div class="fl-tl-cell fl-tl-name">
 			<span href="tracks/{_id}">
 				{name}
