@@ -674,6 +674,7 @@ function setupSearch(){
   searchBox.addEventListener("input", function(){
     var split = this.value.split(" ");
 
+      console.log(model.tracks)
     result = fuzzyFind(model.tracks, "name", this.value);
 
     if(this.value.trim() === ""){
