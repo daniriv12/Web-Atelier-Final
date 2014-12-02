@@ -1052,38 +1052,45 @@ function drawForm(evt) {
     });
 }
 
-function sendData() {
-    var data = (document.getElementById("upload-form"));
-    var XHR = new XMLHttpRequest();
-    var urlEncodedData;
-    var urlEncodedDataPairs = [];
-
-    // We turn the data object into an array of URL encoded key value pairs.
-    for(var i = 1; i < data.length; i++) {
-        console.log(data[i].name + "," + data[i].value);
-        urlEncodedDataPairs.push(encodeURIComponent(data[i].name) + '=' + encodeURIComponent(data[i].value));
+function upload() {
+    var form = document.getElementById("upload-form");
+    formData = {};
+    var file, filename;
+    var audioType = "audio/mp3";
+    for (var i = 0; i < form.length - 1; i++) {
+        var elem = form.elements[i];
+        var name = elem.name;
+        var value = elem.value;
+        if (name == "file") {
+            file = elem.files[0];
+            filename = value;
+        } else if (name == "duration") {
+            formData[name] = convertDuration(value);
+        } else {
+            formData[name] = value;
+        }
     }
-
-    // We combine the pairs into a single string and replace all encoded spaces to
-    // the plus character to match the behaviour of the web browser form submit.
-    urlEncodedData = urlEncodedDataPairs.join('&').replace(/%20/g, '+');
-
-    // We define what will happen if the data is successfully sent
-    XHR.addEventListener('load', function(event) {
-        alert('Yeah! Data sent and response loaded.');
-    });
-
-    // We define what will happen in case of error
-    XHR.addEventListener('error', function(event) {
-        alert('Oups! Something goes wrong.');
-    });
-
-    // We setup our request
-    XHR.open('POST', '/tracks');
-
-    // We add the required HTTP header to handle a form data POST request
-    XHR.setRequestHeader('Content-Type', 'multipart/form-data');
-
-    // And finally, We send our data.
-    XHR.send(urlEncodedData);
+    if (file && file.type === audioType) {
+        var reader = new FileReader();
+        reader.readAsBinaryString(file);
+//        reader.readAsDataURL(file);
+        reader.onload = function(e) {
+            var filedata = e.target.result;
+            formData["file"] = {
+                "filename": filename,
+                "filedata": filedata
+            };
+            sendAjaxForm("/upload", "post", formData, function () {
+                alert("upload successful!!!");
+                loadPage();
+            });
+        };
+    } else {
+        throw new Error("file not supported");
+    }
 }
+
+var convertDuration = function (duration) {
+    var time = duration.split(':');
+    return parseInt(time[0]) * 60 + parseInt(time[1]);
+};

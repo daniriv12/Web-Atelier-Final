@@ -153,22 +153,48 @@ function doRequestChecks(method, isAsynchronous, data) {
 //<!-- /build -->
 
 /* AJAX */
-function doFormRequest(method, url, data, callback) {
+
+function sendAjaxForm(url, method, data, callback) {
     if (arguments.length != 4) {
         throw new Error('Illegal argument count');
     }
-    if (method != "POST") {
+    if (method.toLowerCase() != "post") {
         throw new Error('Illegal method: ' + method + ". It should be: POST.");
     }
-    var r = new XMLHttpRequest();
-    r.open(method, url, true);
-    r.onreadystatechange = function () {
-        //correctly handle the errors based on the HTTP status returned by the called API
-        if (r.readyState != 4 || (r.status != 200 && r.status != 201 && r.status != 204)) {
-            return;
-        } else {
-            callback();
+    try {
+        var xml = new XMLHttpRequest();
+        var multipart = "";
+        xml.open(method, url, true);
+        if (method.search(/post/i) != -1) {
+            var boundary = Math.random().toString().substr(2);
+            for (var key in data) {
+                if (key == "file") {
+                    multipart += "--" + boundary
+                        + "\r\nContent-Disposition: form-data; name=" + key + "; filename=" + data[key]["filename"]
+                        + "\r\nContent-Type: audio/mp3"
+                        + "\r\nContent-Transfer-Encoding: binary"
+                        + "\r\n\r\n" + data[key]["filedata"] + "\r\n";
+                } else {
+                    multipart += "--" + boundary
+                        + "\r\nContent-Disposition: form-data; name=" + key
+                        + "\r\n\r\n" + data[key] + "\r\n";
+                }
+            }
+            multipart += "--" + boundary + "--\r\n";
+            xml.setRequestHeader("content-type", "multipart/form-data; charset=\"UTF-8\"; boundary=" + boundary);
         }
-    };
-    r.send(data);
+        xml.onreadystatechange = function () {
+            if (xml.status != 201) {
+                alert("oops!!! upload failed");
+                return;
+            } else {
+                callback();
+                return;
+            }
+        };
+        xml.send(multipart);
+    }
+    catch (e) {
+        console.log(e);
+    }
 }

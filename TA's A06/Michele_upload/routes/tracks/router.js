@@ -10,7 +10,6 @@ var Track = mongoose.model('Track');
 var Artist = mongoose.model('Artist');
 var Album = mongoose.model('Album');
 var config = require("../../config");
-var multer = require('multer');
 
 //fields we don't want to show to the client
 var fieldsFilter = { '__v': 0 };
@@ -18,14 +17,6 @@ var fieldsFilter = { '__v': 0 };
 //supported methods
 router.all('/:trackid', middleware.supportedMethods('GET, PUT, DELETE, OPTIONS'));
 router.all('/', middleware.supportedMethods('GET, POST, OPTIONS'));
-
-// use multer for track uploads
-router.use(multer({
-    dest: './uploads',
-    rename: function (fieldname, filename) {
-        return filename;
-    }
-}));
 
 //list tracks
 router.get('/', function (req, res, next) {
@@ -51,77 +42,10 @@ router.get('/', function (req, res, next) {
     });
 });
 
-var convertDuration = function (duration) {
-    var time = duration.split(':');
-    return parseInt(time[0]) * 60 + parseInt(time[1]);
-};
-
-var onAlbumFound = function (req, res, next) {
-    return function (err, found) {
-        if (err) return next(err);
-        if (found.length == 1) {
-            console.log("album found");
-            req.body.album = found[0]._id;
-            console.log(req.body);
-            var newTrack = new Track(req.body);
-            newTrack.save();
-            newTrack.save(onModelSave(res, 201, true));
-        } else {
-            console.log("new album created");
-            var newAlbum = new Album({
-                name: req.body.album,
-                artist: req.body.artist
-            });
-            newAlbum.save(function (err, saved) {
-                if (err) return next(err);
-                if (saved) {
-                    req.body.album = saved._id;
-                    console.log("album saved");
-                    console.log(req.body);
-                    var newTrack = new Track(req.body);
-                    newTrack.save(onModelSave(res, 201, true));
-                }
-            });
-        }
-    }
-};
-
-var onArtistFound = function (req, res, next) {
-    return function (err, found) {
-        if (err) return next(err);
-        if (found.length == 1) {
-            console.log("artist found");
-            req.body.artist = found[0]._id;
-            Album.find({ name: req.body.album }, onAlbumFound(req, res, next));
-        } else {
-            console.log("new artist created");
-            var newArtist = new Artist({
-                name: req.body.artist
-            });
-            newArtist.save(function (err, saved) {
-                if (err) return next(err);
-                if (saved) {
-                    req.body.artist = saved._id;
-                    console.log("artist saved");
-                    Album.find({ name: req.body.album }, onAlbumFound(req, res, next));
-                }
-            });
-        }
-    }
-};
-
 //create new track
 router.post('/', function (req, res, next) {
-    console.log(req);
-    if (req.body.submit) {
-        delete req.body.submit;
-        req.body.file = req.files.file.path;
-        req.body.duration = convertDuration(req.body.duration);
-        Artist.find({ name: req.body.artist }, onArtistFound(req, res, next));
-    } else {
-        var newTrack = new Track(req.body);
-        newTrack.save(onModelSave(res, 201, true));
-    }
+    var newTrack = new Track(req.body);
+    newTrack.save(onModelSave(res, 201, true));
 });
 
 //get a track
@@ -231,9 +155,9 @@ function onModelSave(res, status, sendItAsResponse) {
                 });
             }
         }
-//        else {
-//            return next(err);
-//        }
+        else {
+            return next(err);
+        }
         if (sendItAsResponse) {
             var obj = saved.toObject();
             delete obj.password;
