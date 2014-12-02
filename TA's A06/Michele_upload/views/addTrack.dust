@@ -1,7 +1,7 @@
 <script src="/public/js/ajax.js"></script>
 <script src="/public/js/app.js"></script>
 <section class="form-section">
-    <form id="upload-form" enctype="multipart/form-data" action="/tracks" method="post">
+    <form id="upload-form" enctype="multipart/form-data" action="javascript:upload()">
         <input name="name" type="text" placeholder="Title"><br>
         <input name="artist" type="text" placeholder="Artist"><br>
         <input name="album" type="text" placeholder="Album"><br>

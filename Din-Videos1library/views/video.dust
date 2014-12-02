@@ -1,0 +1,44 @@
+<section class="flex-tracklist" id="tracks-list">
+	<div class="fl-tl-thead fl-tl-row">
+		<div class="fl-tl-th fl-tl-name">Song</div>
+
+	</div>
+
+	{#tracks}
+	<div id="{_id}" class="fl-tl-row" draggable="true" ondragstart="drag(event)">
+		<div class="fl-tl-cell fl-tl-name">
+			<span href="tracks/{_id}">
+				{name}
+				<br>
+				<a href="http://www.youtube.com/watch?v={vid}">abc</a>
+			</span>
+			<br/>
+			<span href="albums/{album._id}>
+			    {album.name}
+			</span>
+			<br/>
+			<span href="artists/{artist._id}>
+			    {artist.name}
+			</span>
+
+
+			<a class="edit-btn" href="#"><i class="fa fa-pencil fl-tl-pencil"></i></a>
+		</div>
+
+		<div class="fl-tl-th fl-tl-video"> <a href="http://www.youtube.com/watch?v={vid}">&Yacute;</a> </div>
+
+		<div class="fl-tl-th fl-tl-delete"><a href="tracks/{_id}">&times;</a></div>
+
+
+		<div class="videoPlayer">
+		<iframe width="500" height="350" src="//www.youtube.com/embed/{vid}" frameborder="2" allowfullscreen></iframe>
+		</div>
+
+	</div>
+
+	{/tracks}
+</section>
+
+
+
+
