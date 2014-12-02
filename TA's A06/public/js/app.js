@@ -75,7 +75,7 @@ function drawLibrary(e, addHistory){
 }
 
 //called onlick - sort library alphabetically > tracks
-function sortTracks() {
+function sortTracks(e) {
     //console.log("reached sortTracks")
 
     doJSONRequest("GET", "/tracks", null, null, renderOrderedTracks);
@@ -108,7 +108,161 @@ function sortTracks() {
 
 }
 
-//called onclick - sort library alphabetically > artists
+//@DIN from single Album page - to display songs in order
+function sortAlbumTracks() {
+    var href = window.location.href
+
+    var albumID = "albums/" + href.split("/")[4]
+
+    //execute the AJAX call to the get a single album
+    doJSONRequest("GET", albumID, null, null, renderAlbum);
+
+    function renderAlbum(album) {
+        doJSONRequest("GET", "/tracks?filter=" + encodeURIComponent(JSON.stringify({'album': album._id})), null, null, renderShowAlbum);
+
+
+        function renderShowAlbum(tracks) {
+
+            var albumData = [];
+            var albumTracks = buildTracksData(tracks);
+            var orderedTracks = sortTracksAlphabetically(albumTracks)
+
+            albumData.artist = {};
+
+            albumData.artwork = album.artwork;
+            albumData._id = album._id;
+            albumData.name = album.name;
+            albumData.label = album.label;
+            albumData.dateReleased = album.dateReleased.split("T")[0];
+            albumData.artist._id = album.artist._id;
+            albumData.artist.name = album.artist.name;
+
+            var data = {
+                "album": albumData,
+                "tracks": orderedTracks
+            };
+
+            dust.render("album", data, function (err, out) {
+
+                var content = document.getElementById("content");
+
+                content.innerHTML = out;
+
+                bindAlbumLink();
+
+                bindArtistLink();
+
+                bindTracksDelete();
+
+                bindEditTrackName();
+
+            });
+
+        }
+    }
+
+}
+
+//@DIN from single Artist page - to display songs in order
+function sortArtistTracks() {
+    var href = window.location.href
+
+    var artistID = "artists/" + href.split("/")[4]
+
+    //execute the AJAX call to the get a single album
+    doJSONRequest("GET", artistID, null, null, renderArtist);
+
+    function renderArtist(artist) {
+        doJSONRequest("GET", "/tracks?filter=" + encodeURIComponent(JSON.stringify({'artist': artist._id})), null, null, renderShowArtist);
+
+
+        function renderShowArtist(tracks) {
+
+            var artistData = [];
+            var artistTracks = buildTracksData(tracks);
+            var orderedTracks = sortTracksAlphabetically(artistTracks)
+
+            artistData.artwork = artist.artwork;
+            artistData._id = artist._id;
+            artistData.name = artist.name;
+            artistData.genre = artist.genre;
+
+            var data = {
+                "artist" : artistData,
+                "tracks" : orderedTracks
+            };
+
+            dust.render("artist", data, function(err, out) {
+
+                var content = document.getElementById("content");
+
+                content.innerHTML = out;
+
+                bindArtistLink();
+
+                bindAlbumLink();
+
+                bindTracksDelete();
+
+                bindEditTrackName();
+
+            });
+        }
+    }
+
+
+}
+
+//@DIN from single Artist page - to display albums in order
+function sortArtistAlbums() {
+    var href = window.location.href
+
+    var artistID = href.split("/")[4]
+    var getArtistID = "artists/" + artistID
+
+    //execute the AJAX call to the get a single album
+    doJSONRequest("GET", getArtistID, null, null, renderArtist);
+
+    function renderArtist(artist) {
+
+        doJSONRequest("GET", "/tracks?filter=" + encodeURIComponent(JSON.stringify({'artist': artist._id})), null, null, renderShowArtist);
+
+        function renderShowArtist(tracks) {
+
+            var artistData = [];
+            var artistTracks = buildTracksData(tracks)
+            var orderedAlbums = sortAlbumsAlphabetically(artistTracks)
+
+            artistData.artwork = artist.artwork;
+            artistData._id = artist._id;
+            artistData.name = artist.name;
+            artistData.genre = artist.genre;
+
+            var data = {
+                "artist": artistData,
+                "tracks": orderedAlbums
+            };
+
+            dust.render("artist", data, function (err, out) {
+
+                var content = document.getElementById("content");
+
+                content.innerHTML = out;
+
+                bindArtistLink();
+
+                bindAlbumLink();
+
+                bindTracksDelete();
+
+                bindEditTrackName();
+
+            });
+        }
+    }
+}
+
+//@DIN called onclick - sort library alphabetically > artists
 function sortArtists() {
     //console.log("reached sortArtists")
 
@@ -142,7 +296,7 @@ function sortArtists() {
 
 }
 
-//called onclick - sort library alphabetically > albums
+//@DIN called onclick - sort library alphabetically > albums
 function sortAlbums() {
     //console.log("reached sortTracks")
 
@@ -228,7 +382,7 @@ function sortTracksAlphabetically(tracksList) {
 
 }
 
-//@DIN order the tracks-list alphabetically
+//@DIN order the artist-list alphabetically
 function sortArtistsAlphabetically(tracksList) {
 
     var artistNames = [];
@@ -253,6 +407,7 @@ function sortArtistsAlphabetically(tracksList) {
     return sortedTracksList
 }
 
+//@DIN order the albums-list alphabetically
 function sortAlbumsAlphabetically(tracksList) {
 
     var albumNames = [];
@@ -277,6 +432,8 @@ function sortAlbumsAlphabetically(tracksList) {
 
     return sortedTracksList
 }
+
+
 
 function addLibraryToHistory(addHistory){
   if((("undefined" == typeof addHistory) 
