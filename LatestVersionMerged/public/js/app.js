@@ -121,25 +121,6 @@ function addLibraryToHistory(addHistory){
   }
 }
 
-//NOTE: Still used by setupSearch
-function createHTMLLibrary(tracks){
-
-  var newHtml = "";
-  tracks.forEach(function(track){
-    var artist = findOne(model.artists, "_id", track.artist);
-    var album = findOne(model.albums, "_id", track.album);
-
-    newHtml+= '<div id="'+ track._id +'"" class="fl-tl-row" draggable="true" ondragstart="drag(event)" ondblclick="setupPlayer(this)">';
-    newHtml+= '<div class="fl-tl-cell fl-tl-name"><a href="#">'+ track.name + '</a></div>\n';
-    newHtml+= '<div class="fl-tl-cell fl-tl-artist"><a href="artists/'+ encodeURI(artist.name)+ '">'+ artist.name +'</a></div>\n';
-    newHtml+= '<div class="fl-tl-cell fl-tl-album"><a href="albums/'+ encodeURI(album.name)+ '">'+ album.name +'</a></div>\n';
-    newHtml+= '<div class="fl-tl-cell fl-tl-time">'+ formatTime(track.duration) + '</div>\n';
-    newHtml+= '</div>\n';
-  })
-
-  return newHtml;
-}
-
 function bindTracksDelete(){
   var tracks = document.querySelectorAll(".fl-tl-delete a");
 
@@ -932,60 +913,6 @@ window.onpopstate = updatePage;
 
 /* History Navigation */
 
-/* Search */
-
-function setupSearch(){
-  var searchBox = document.getElementById("main-search");
-  searchBox.addEventListener("input", function(){
-    var split = this.value.split(" ");
-
-    result = fuzzyFind(model.tracks, "name", this.value);
-
-    if(this.value.trim() === ""){
-      drawLibrary();
-      return;
-    }
-
-
-    var container = document.getElementById('tracks-list');
-    var classList = container.classList;
-
-    var newHtml = '<div class="fl-tl-thead fl-tl-row">\n\
-    <div class="fl-tl-th fl-tl-name">Song</div>\n\
-    <div class="fl-tl-th fl-tl-artist">Artist</div>\n\
-    <div class="fl-tl-th fl-tl-album">Album</div>\n\
-    <div class="fl-tl-th fl-tl-time">Time</div>\n\
-    </div>';
-
-    newHtml += createHTMLLibrary(result);
-
-    container.innerHTML = newHtml;
-  })
-}
-
-function find(arr, prop, val){
-  var res = [];
-  arr.forEach(function(item){
-    if("undefined" !== item[prop]
-      && item[prop] === val){
-      res.push(item)
-  }
-});
-  return res;
-}
-
-function findOne(arr, prop, val){
-  for (var i=0, l=arr.length; i<l; i++){
-    var item = arr[i];
-    if("undefined" !== item[prop]
-      && item[prop] === val){
-      return item;
-  }
-}
-}
-
-/* Search */
-
 /* Playlist: Not working after the switch to AJAX */
 function setupPlaylists(){
   loadPlaylistsFromLocalStorage();
@@ -1238,6 +1165,39 @@ function setupPlayer(selectedTrack){
         changeTrackColor(tracks[index]._id,"#ff0000");
     }
 
+    function SetPlayback(selectedTrackId, currentId, audioElement){
+        if (document.getElementById("shuffle").innerHTML == "shuffle"){
+
+            tracks = shuffleArray(tracks);
+
+            var index = findTrackIndexById(selectedTrackId);
+            var b = tracks[index];
+            tracks[index] = tracks[0];
+            tracks[0] = b;
+
+            CurrentSong = [0];
+            oldCurrentSong = findTrackIndexById(currentId);
+
+            setTrack(CurrentSong,audioElement,tracks);
+
+        } else {
+
+            oldCurrentSong = findTrackIndexById(currentId);
+            CurrentSong = findTrackIndexById(selectedTrackId);
+            setTrack(CurrentSong,audioElement,tracks);
+        }
+    }
+
+    function shuffleArray(array) {
+        for (var i = array.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
+        return array;
+    }
+
     function changeTrackColor(id,color){
         try{
             var childNodes = document.querySelector('#tracks-list').childNodes;
@@ -1266,26 +1226,7 @@ function setupPlayer(selectedTrack){
                 for (var i in trackList) {
                     tracks.push(trackList[i]);
                 }
-                if (document.getElementById("shuffle").innerHTML == "shuffle"){
-
-                    tracks = shuffleArray(tracks);
-
-                    var index = findTrackIndexById(selectedTrackId);
-                    var b = tracks[index];
-                    tracks[index] = tracks[0];
-                    tracks[0] = b;
-
-                    CurrentSong = [0];
-                    oldCurrentSong = findTrackIndexById(currentId);
-
-                    setTrack(CurrentSong,audioElement,tracks);
-
-                } else{
-
-                    oldCurrentSong = findTrackIndexById(currentId);
-                    CurrentSong = findTrackIndexById(selectedTrackId);
-                    setTrack(CurrentSong,audioElement,tracks);
-                }
+                SetPlayback(selectedTrackId, currentId, audioElement);
             } else{
 
                 var songs = [];
@@ -1298,27 +1239,7 @@ function setupPlayer(selectedTrack){
                         tracks.push(trackList[i]);
                     }
                 }
-
-                if (document.getElementById("shuffle").innerHTML == "shuffle"){
-
-                    tracks = shuffleArray(tracks);
-
-                    var index = findTrackIndexById(selectedTrackId);
-                    var b = tracks[index];
-                    tracks[index] = tracks[0];
-                    tracks[0] = b;
-
-                    CurrentSong = [0];
-                    oldCurrentSong = findTrackIndexById(currentId);
-
-                    setTrack(CurrentSong,audioElement,tracks);
-
-                } else{
-
-                    oldCurrentSong = findTrackIndexById(currentId);
-                    CurrentSong = findTrackIndexById(selectedTrackId);
-                    setTrack(CurrentSong,audioElement,tracks);
-                }
+                SetPlayback(selectedTrackId, currentId, audioElement);
             }
 
             if (!state) document.getElementById("play-pause").click();
@@ -1449,16 +1370,6 @@ function setupPlayer(selectedTrack){
                 }
             });
 
-            function shuffleArray(array) {
-                for (var i = array.length - 1; i > 0; i--) {
-                    var j = Math.floor(Math.random() * (i + 1));
-                    var temp = array[i];
-                    array[i] = array[j];
-                    array[j] = temp;
-                }
-                return array;
-            }
-
             shuffle.addEventListener("click", function () {
                 var currentId;
                 if (shuffle.innerHTML == "normal") {
@@ -1550,4 +1461,173 @@ function setupPlayer(selectedTrack){
 
 /* Player */
 
-//<!-- /build -->
+/*-------------   Search  (Mastery 8)-------------   */
+
+function setupSearch(){
+    var lastValue = '';
+    var searchBox = document.getElementById("main-search");
+    searchBox.addEventListener("keyup",function(evt){
+        var term = this.value;
+
+        if (term != lastValue) {
+            lastValue = term;
+            listSuggestions(term);
+        }
+        else if (evt.keyCode == 13){
+            search(window.location.hash,term)
+        }
+    });
+}
+
+function listSuggestions(term) {
+    if (term === '') document.getElementById('auto_completion').innerHTML = '';
+    else{
+        if(window.location.hash.indexOf('#library') == 0) doJSONRequest('GET','/tracks',null,null, function(tracksObj){
+            searchAndDisplay(tracksObj, term)
+        });
+        else if(window.location.hash.indexOf('#artists') == 0) doJSONRequest('GET','/artists',null,null, function(artistsObj){
+            searchAndDisplay(artistsObj, term)
+        });
+        else doJSONRequest('GET','/albums',null,null, function(albumsObj){
+                searchAndDisplay(albumsObj, term)
+            });
+    }
+}
+
+function searchAndDisplay(jsonObj, term){
+    var list = '';
+    jsonObj.forEach(function(item){
+        if(item.name.toLowerCase().indexOf(term.toLowerCase()) > -1){
+            list +='<option value="'+item.name+'">'+item.name+'</option>';
+        }
+    });
+    document.getElementById('auto_completion').innerHTML = list;
+}
+
+function search(location,term) {
+    var tracksHTML = '<h1>Tracks</h1>',
+        albumsHTML = '<h1>Albums</h1>',
+        artistsHTML = '<h1>Artists</h1>',
+        counter = 0;
+
+
+    function contentRender(url) {
+        doJSONRequest('GET', url, null, null, function (jsonObj) {
+            var lis = [];
+            jsonObj.forEach(function (item) {
+                if (item.name.toLowerCase().indexOf(term.toLowerCase()) != -1)
+                    lis.push(item);
+            });
+
+            if (url.indexOf('tracks') > -1) {
+                if (lis.length == 0) tracksHTML = '<h1>No tracks found</h1>';
+                else
+                    dust.render('tracks', {tracks: lis}, function (err, html) {
+                        tracksHTML += html
+                    });
+                displayRes();
+            }
+            else if (url.indexOf('albums') > -1) {
+                if (lis.length == 0) albumsHTML = '<h1>No albums found</h1>';
+                else
+                    dust.render('albums', {albums: lis}, function (err, html) {
+                        albumsHTML += html;
+                    });
+                displayRes();
+            } else if (url.indexOf('artists') > -1) {
+                if (lis.length == 0) artistsHTML = '<h1>No artists found</h1>';
+                else
+                    dust.render('artists', {artists: lis}, function (err, html) {
+                        artistsHTML += html;
+                    });
+                displayRes();
+            }
+        });
+    }
+
+    function displayRes(){
+        counter ++;
+        if (counter == 3){
+            counter = 0;
+            if (location.indexOf('library') > -1) document.getElementById('content').innerHTML = tracksHTML+artistsHTML+albumsHTML;
+            else if (location.indexOf('albums') > -1) document.getElementById('content').innerHTML = albumsHTML+tracksHTML+artistsHTML;
+            else if (location.indexOf('artists') > -1) document.getElementById('content').innerHTML = artistsHTML+tracksHTML+albumsHTML;
+        }
+    }
+    contentRender('/tracks');
+    contentRender('/albums');
+    contentRender('/artists');
+}
+
+/*-------------   Search  -------------   */
+
+
+//function setupSearch(){
+//    var searchBox = document.getElementById("main-search");
+//    searchBox.addEventListener("input", function(){
+//        var split = this.value.split(" ");
+//        console.log(this.value)
+//        result = fuzzyFind(model.tracks, "name", this.value);
+//
+//        if(this.value.trim() === ""){
+//            drawLibrary();
+//            return;
+//        }
+//
+//
+//        var container = document.getElementById('tracks-list');
+//        var classList = container.classList;
+//
+//        var newHtml = '<div class="fl-tl-thead fl-tl-row">\n\
+//    <div class="fl-tl-th fl-tl-name">Song</div>\n\
+//    <div class="fl-tl-th fl-tl-artist">Artist</div>\n\
+//    <div class="fl-tl-th fl-tl-album">Album</div>\n\
+//    <div class="fl-tl-th fl-tl-time">Time</div>\n\
+//    </div>';
+//
+//        newHtml += createHTMLLibrary(result);
+//
+//        container.innerHTML = newHtml;
+//    })
+//}
+//
+//function find(arr, prop, val){
+//    var res = [];
+//    arr.forEach(function(item){
+//        if("undefined" !== item[prop]
+//            && item[prop] === val){
+//            res.push(item)
+//        }
+//    });
+//    return res;
+//}
+//
+//function findOne(arr, prop, val){
+//    for (var i=0, l=arr.length; i<l; i++){
+//        var item = arr[i];
+//        if("undefined" !== item[prop]
+//            && item[prop] === val){
+//            return item;
+//        }
+//    }
+//}
+////NOTE: Still used by setupSearch
+//function createHTMLLibrary(tracks){
+//
+//    var newHtml = "";
+//    tracks.forEach(function(track){
+//        var artist = findOne(model.artists, "_id", track.artist);
+//        var album = findOne(model.albums, "_id", track.album);
+//
+//        newHtml+= '<div id="'+ track._id +'"" class="fl-tl-row" draggable="true" ondragstart="drag(event)" ondblclick="setupPlayer(this)">';
+//        newHtml+= '<div class="fl-tl-cell fl-tl-name"><a href="#">'+ track.name + '</a></div>\n';
+//        newHtml+= '<div class="fl-tl-cell fl-tl-artist"><a href="artists/'+ encodeURI(artist.name)+ '">'+ artist.name +'</a></div>\n';
+//        newHtml+= '<div class="fl-tl-cell fl-tl-album"><a href="albums/'+ encodeURI(album.name)+ '">'+ album.name +'</a></div>\n';
+//        newHtml+= '<div class="fl-tl-cell fl-tl-time">'+ formatTime(track.duration) + '</div>\n';
+//        newHtml+= '</div>\n';
+//    })
+//
+//    return newHtml;
+//}
+
+/* Search */

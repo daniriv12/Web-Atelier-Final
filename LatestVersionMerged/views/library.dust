@@ -21,7 +21,8 @@
         <ul id="main-menu" class="nav-menu">
           <li class="search-item">
            <span class="nav-menu-icon search-icon glyphicon glyphicon-search"></span>
-           <input id="main-search" placeholder="Search" type="search" class="nav-menu-search">
+           <input id="main-search" placeholder="Search" type="search" class="nav-menu-search" list="auto_completion" >
+           <datalist id="auto_completion"></datalist>
           </li>
           <li><a href="library.html"><i class="nav-menu-icon glyphicon glyphicon-music"></i>Library</a></li>
           <li><a href="artists.html"><i class="nav-menu-icon fa fa-users"></i>Artists</a></li>
@@ -60,10 +61,6 @@
           </div>
         </div>
         <div class="pl-wrapper">
-         <!--  <audio id="leplayer" onloadedmetadata=>
-            <source src="https://archive.org/download/testmp3testfile/mpthreetest.mp3" type="audio/mpeg">
-            Your browser does not support the audio tag.
-          </audio> -->
           <div class="pl-controls">
             <button id="previous" class="btn btn-icon fa fa-step-backward"></button>
             <button id="play-pause" class="btn btn-icon fa fa-play"></button>
