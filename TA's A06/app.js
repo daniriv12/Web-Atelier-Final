@@ -5,6 +5,8 @@ var logger = require('morgan');
 var bodyParser = require('body-parser');
 var dustjs = require('adaro');
 var app = express();
+var session = require('express-session');
+
 
 // Connect to MongoDB here
 var mongoose   = require('mongoose');
@@ -23,6 +25,7 @@ app.use(logger('dev'));
 app.use(bodyParser.urlencoded({ extended: false }));    // parse application/x-www-form-urlencoded
 app.use(bodyParser.json());    // parse application/json
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({secret: 'secret'}));
 
 // Initialize routers here
 
@@ -32,5 +35,8 @@ app.use('/albums', routers.albums);
 app.use('/artists', routers.artists);
 app.use('/tracks', routers.tracks);
 app.use('/users', routers.users);
+app.use('/logout', routers.logout);
+app.use('/signup', routers.signup);
+
 
 module.exports = app;

@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="css/standardize.css">
   <link rel="stylesheet" href="css/base.css">
   <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  <script src="js/login.js"></script>
+  <script src="js/ajax.js"></script>
 
 </head>
 <body class="body login">
@@ -17,9 +19,9 @@
         <form action="library.html" method="POST" class="form-login">
           <input class="form-control form-stacked" name="username" placeholder="Username" type="text">
           <input class="form-control form-stacked last" name="password" placeholder="Password" type="password">
-          <input class="btn btn-beats btn-block btn-stacked" value="Tune in" type="submit">
+          <input class="btn btn-beats btn-block btn-stacked" value="Tune in" onclick="login()">
         </form>
-        <p>Don't have an account? <a href="signup.html" class="beats"><strong>sign up</strong></a> now!</p>
+        <p>Don't have an account? <a href="signup" class="beats"><strong>sign up</strong></a> now!</p>
       </div> 
     </div>
   </div>
