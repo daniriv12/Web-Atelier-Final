@@ -7,7 +7,7 @@ var middleware =  require('../middleware');
 var mongoose = require('mongoose');
 var ObjectId = mongoose.Types.ObjectId;
 var User = mongoose.model('User');
-var config = require("../../config")
+var config = require("../../config");
 
 var session;
 
@@ -23,35 +23,30 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/', function (req, res) {
-    console.log("huh");
     var post = req.body;
-    console.log(post);
-
 
     var query = User.where({userName : post.username});
 
     query.findOne(function(err, user){
-        if (err) { return err};
-        if (user){
+        if (err) { return err}
+        if (user) {
             console.log(user);
-            console.log("check this out")
-
-            if (post.password == user.password){
-
-                console.log("yes!");
-                req.session.user_id = user._id;
-                console.log(req.session.user_id);
-                res.redirect('/home');
-           //     res.redirect('/home#' + user.userName );
-            }
-            else{
-                console.log("no")
-                res.redirect('/signup');
-            }
-
-        }
+            user.isValidPassword(post.password, function(n, isMatch){
+                if(isMatch) {
+                    req.session.user_id = user._id;
+                    res.redirect('/home');
+                } else{
+                    res.redirect('/signup');
+                }
+            });}
+           // if (post.password == user.password){
+           //
+           //     req.session.user_id = user._id;
+           //     console.log(req.session.user_id);
+           //     res.redirect('/home');
+           ////     res.redirect('/home#' + user.userName );
+           // }
         else{
-            console.log("no user");
             res.redirect('/signup');
         }
 
