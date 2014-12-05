@@ -36,6 +36,7 @@ router.post('/', function (req, res) {
                     req.session.user_id = user._id;
                     res.redirect('/home');
                 } else{
+
                     res.redirect('/signup');
                 }
             });}
