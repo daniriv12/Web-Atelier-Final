@@ -1181,6 +1181,7 @@ function findTrackIndexById(trackID){
 var tracks = [];
 var CurrentSong = 0;
 var oldCurrentSong;
+var lastSelectedTrack;
 
 function setupPlayer(selectedTrack){
 
@@ -1259,33 +1260,29 @@ function setupPlayer(selectedTrack){
 
     function setupAudioElement(trackList) {
 
+        function setTrackListFromHtml(track){
+            var songs = [];
+            for(var i = 1; i < track.parentNode.childNodes.length; i++){
+                songs.push(track.parentNode.childNodes[i].id)
+            }
+            tracks = [];
+            for (var i in trackList){
+                if (songs.indexOf(trackList[i]._id) > -1){
+                    tracks.push(trackList[i]);
+                }
+            }
+        }
+
         if (selectedTrack) {
+            lastSelectedTrack = selectedTrack;
             var selectedTrackId = selectedTrack.id,
                 currentId = tracks[CurrentSong]._id,
                 audioElement = document.getElementsByTagName("audio")[0],
                 state;
             if (audioElement.paused == false) state = true;
 
-            if(document.location.hash.indexOf("library") > -1){
-                tracks = [];
-                for (var i in trackList) {
-                    tracks.push(trackList[i]);
-                }
-                SetPlayback(selectedTrackId, currentId, audioElement);
-            } else{
-
-                var songs = [];
-                for(var i = 1; i < selectedTrack.parentNode.childNodes.length; i++){
-                    songs.push(selectedTrack.parentNode.childNodes[i].id)
-                }
-                tracks = [];
-                for (var i in trackList){
-                    if (songs.indexOf(trackList[i]._id) > -1){
-                        tracks.push(trackList[i]);
-                    }
-                }
-                SetPlayback(selectedTrackId, currentId, audioElement);
-            }
+            setTrackListFromHtml(selectedTrack);
+            SetPlayback(selectedTrackId, currentId, audioElement);
 
             if (!state) document.getElementById("play-pause").click();
 
@@ -1437,12 +1434,14 @@ function setupPlayer(selectedTrack){
                     shuffle.innerHTML = "normal";
 
                     currentId = tracks[CurrentSong]._id;
-
-                    tracks = [];
-                    for (var i in trackList) {
-                        tracks.push(trackList[i]);
+                    if (lastSelectedTrack){
+                        setTrackListFromHtml(lastSelectedTrack);
+                    } else{
+                        tracks = [];
+                        for (var i in trackList) {
+                            tracks.push(trackList[i]);
+                        }
                     }
-
                     for (var i = 0 , j = tracks.length; i < j; i++) {
                         if (tracks[i]._id == currentId) {
                             CurrentSong = i;
