@@ -1248,6 +1248,14 @@ a.create-playlist:hover, a.create-playlist:active{
 }
 
 /* ---------------- Grid List ---------------- */
+#content{
+    height:520px;
+    overflow:scroll;
+}
+#tracks-list{
+    height:490px;
+    overflow:scroll;
+}
 
 ul.grid-list{
   list-style:none;

@@ -1,12 +1,12 @@
-<section class="flex-tracklist" id="tracks-list">
-	<div class="fl-tl-thead fl-tl-row">
-		<div class="fl-tl-th fl-tl-name">Song</div>
-		<div class="fl-tl-th fl-tl-artist">Artist</div>
-		<div class="fl-tl-th fl-tl-album">Album</div>
-		<div class="fl-tl-th fl-tl-time">Time</div>
-		<div class="fl-tl-th fl-tl-vid"> Vid </div>
-		<div class="fl-tl-th fl-tl-delete"></div>
-	</div>
+<div class="fl-tl-thead fl-tl-row">
+    <div class="fl-tl-th fl-tl-name">Song</div>
+    <div class="fl-tl-th fl-tl-artist">Artist</div>
+    <div class="fl-tl-th fl-tl-album">Album</div>
+    <div class="fl-tl-th fl-tl-time">Time</div>
+    <div class="fl-tl-th fl-tl-vid"> Vid </div>
+    <div class="fl-tl-th fl-tl-delete"></div>
+</div>
+	<section class="flex-tracklist" id="tracks-list">
 	{#tracks}
 	<div id="{_id}" class="fl-tl-row" draggable="true" ondragstart="drag(event)" ondblclick = "setupPlayer(this)">
 		<div class="fl-tl-cell fl-tl-name">
