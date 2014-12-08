@@ -24,6 +24,10 @@ window.onload = function(){
 
 
     var userId = setUser();
+
+    sessionStorage.setItem("user", userId);
+
+
     //must handle errors -daniel
 
 }
@@ -45,6 +49,7 @@ var setUser = function (){
 
 
             user.innerHTML = data.userName;
+            sessionStorage.setItem("userName",data.userName);
         }
 
         return userId;
@@ -101,6 +106,10 @@ function bindMenu(){
       menu[elem].onclick = drawAlbums;
     else if(menu[elem].getAttribute("href").indexOf("videos.html") > -1)
       menu[elem].onclick = drawVideos;
+    else if(menu[elem].getAttribute("href").indexOf("friends.html") > -1)
+        menu[elem].onclick = drawFriends;
+
+
   }
 }
 
@@ -1685,5 +1694,38 @@ function search(location,term) {
     contentRender('/tracks');
     contentRender('/albums');
     contentRender('/artists');
+}
+
+
+function drawFriends(e, addHistory){
+    if(e && e.target)
+        e.preventDefault();
+
+//
+//    var content = document.getElementById("content");
+//
+//    content.innerHTML = <iframe src="http://localhost:3000/friends"></iframe>;
+//
+
+
+    //execute the AJAX call to the get albums
+    // doJSONRequest("GET", "/albums", null, null, renderAlbums);
+//
+//
+        dust.render("test",null, function(err, out) {
+
+            var content = document.getElementById("content");
+
+
+            content.style.height = "550px";
+            content.style.width = "100%";
+            content.innerHTML = out;
+
+
+
+        });
+
+//
+
 }
 

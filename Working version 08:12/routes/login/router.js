@@ -35,6 +35,7 @@ router.post('/', function (req, res) {
                 if(isMatch) {
                     req.session.user_id = user._id;
 
+
                     res.redirect('/home?' + user._id);
                 } else{
 

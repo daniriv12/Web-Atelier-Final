@@ -8,6 +8,7 @@ var app = express()
 
 var session = require('express-session');
 
+
 // Connect to MongoDB here
 var mongoose   = require('mongoose');
 mongoose.connect(config.mongoUrl + config.mongoDbName);
@@ -42,5 +43,6 @@ app.use('/login', routers.login);
 app.use('/signup', routers.signup);
 app.use('/home', routers.root);
 app.use('/logout', routers.logout);
+app.use('/friends', routers.friends)
 
 module.exports = app;
