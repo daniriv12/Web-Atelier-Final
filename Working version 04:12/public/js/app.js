@@ -1,7 +1,8 @@
 /* Setup on Page Load */
 
 //<!-- build:remove -->
-window.onload = function(){
+
+var loadPage = function(){
 
   bindMenu();
 
@@ -21,11 +22,9 @@ window.onload = function(){
         xhr.open('GET', '/logout', false);
         xhr.send(null);
     }, false);
+};
 
-
-}
-
-
+window.onload = loadPage;
 
 var inactivityTime = function () {
 //    var currentUser = document.getElementById("currentUser");
@@ -1520,37 +1519,28 @@ function drawForm(evt) {
 
 function upload() {
     var form = document.getElementById("upload-form");
-    formData = {};
-    var file, filename;
+    var formData = new FormData();
     var audioType = "audio/mp3";
     for (var i = 0; i < form.length - 1; i++) {
         var elem = form.elements[i];
         var name = elem.name;
         var value = elem.value;
         if (name == "file") {
-            file = elem.files[0];
-            filename = value;
+            var file = elem.files[0];
+            var filename = value;
+            formData.append(name, file, filename);
         } else if (name == "duration") {
-            formData[name] = convertDuration(value);
+            var duration = convertDuration(value);
+            formData.append(name, duration);
         } else {
-            formData[name] = value;
+            formData.append(name, value);
         }
     }
     if (file && file.type === audioType) {
-        var reader = new FileReader();
-        reader.readAsBinaryString(file);
-//        reader.readAsDataURL(file);
-        reader.onload = function(e) {
-            var filedata = e.target.result;
-            formData["file"] = {
-                "filename": filename,
-                "filedata": filedata
-            };
-            sendAjaxForm("/upload", "post", formData, function () {
-                alert("upload successful!!!");
-                loadPage();
-            });
-        };
+        sendAjaxForm("/upload", "post", formData, function () {
+            alert("upload successful!!!");
+            loadPage();
+        });
     } else {
         throw new Error("file not supported");
     }
