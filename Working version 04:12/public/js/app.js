@@ -1261,7 +1261,7 @@ function setupPlayer(selectedTrack){
 
         function setTrackListFromHtml(track){
             var songs = [];
-            for(var i = 1; i < track.parentNode.childNodes.length; i++){
+            for(var i = 0; i < track.parentNode.childNodes.length; i++){
                 songs.push(track.parentNode.childNodes[i].id)
             }
             tracks = [];

@@ -22,7 +22,7 @@
 			{/album}
 		</div>
 		<div class="fl-tl-cell fl-tl-time">{duration}</div>
-		<div class="fl-tl-th fl-tl-video"> <a class="video-link" href="http://www.youtube.com/watch?v={vid}">&Yacute;</a> </div>
+		<div class="fl-tl-th fl-tl-video"> <a class="video-link" href="http://www.youtube.com/watch?v={vid}"><i class="nav-menu-icon fa fa-youtube-play"></i></a> </div>
 
 		<div class="fl-tl-th fl-tl-delete"><a href="tracks/{_id}">&times;</a></div>
 	</div>
