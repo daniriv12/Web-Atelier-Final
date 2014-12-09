@@ -943,7 +943,9 @@ ul.nav-menu.horizontal-menu li > a:hover{
 .nav-menu-icon{
   padding: 0 20px;
 }
-
+.user-nav-icon{
+    padding: 0 10px;
+}
 .search-item{
   position:relative;
 }
@@ -1248,6 +1250,14 @@ a.create-playlist:hover, a.create-playlist:active{
 }
 
 /* ---------------- Grid List ---------------- */
+#content{
+    height:520px;
+    overflow:scroll;
+}
+#tracks-list{
+    height:490px;
+    overflow:scroll;
+}
 
 ul.grid-list{
   list-style:none;

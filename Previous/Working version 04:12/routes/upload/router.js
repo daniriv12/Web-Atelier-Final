@@ -20,7 +20,6 @@ router.all('/', middleware.supportedMethods('POST, OPTIONS'));
 // use multer for track uploads
 router.use(multer({
     dest: './uploads',
-    includeEmptyFields: true,
     rename: function (fieldname, filename) {
         return filename;
     }

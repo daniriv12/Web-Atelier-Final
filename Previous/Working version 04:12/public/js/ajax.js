@@ -162,26 +162,7 @@ function sendAjaxForm(url, method, data, callback) {
     }
     try {
         var xml = new XMLHttpRequest();
-        var multipart = "";
         xml.open(method, url, true);
-        if (method.search(/post/i) != -1) {
-            var boundary = Math.random().toString().substr(2);
-            for (var key in data) {
-                if (key == "file") {
-                    multipart += "--" + boundary
-                        + "\r\nContent-Disposition: form-data; name=" + key + "; filename=" + data[key]["filename"]
-                        + "\r\nContent-Type: audio/mp3"
-                        + "\r\nContent-Transfer-Encoding: binary"
-                        + "\r\n\r\n" + data[key]["filedata"] + "\r\n";
-                } else {
-                    multipart += "--" + boundary
-                        + "\r\nContent-Disposition: form-data; name=" + key
-                        + "\r\n\r\n" + data[key] + "\r\n";
-                }
-            }
-            multipart += "--" + boundary + "--\r\n";
-            xml.setRequestHeader("content-type", "multipart/form-data; charset=\"UTF-8\"; boundary=" + boundary);
-        }
         xml.onreadystatechange = function () {
             if (xml.status != 201) {
                 alert("oops!!! upload failed");
@@ -191,7 +172,7 @@ function sendAjaxForm(url, method, data, callback) {
                 return;
             }
         };
-        xml.send(multipart);
+        xml.send(data);
     }
     catch (e) {
         console.log(e);
