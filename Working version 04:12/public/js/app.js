@@ -30,6 +30,34 @@ window.onload = function(){
 
 }
 
+var setUser = function (){
+
+
+    var userId = window.location.search.slice(1);
+    var user = document.getElementById("currentUser");
+    console.log(userId)
+
+    if(user.innerHTML == "User"){
+
+        doJSONRequest("GET", "/users/" + userId, null, null, renderUserName);
+
+
+        function renderUserName(user1){
+            var data = user1;
+
+
+            user.innerHTML = data.userName;
+            sessionStorage.setItem("userName",data.userName);
+        }
+
+        return userId;
+    }
+
+
+    return null;
+
+}
+
 
 
 var inactivityTime = function () {
@@ -88,7 +116,6 @@ function bindMenu(){
 /* Library */
 
 function drawLibrary(e, addHistory){
-
 
 
   if(e && e.target){
@@ -964,78 +991,89 @@ window.onpopstate = updatePage;
 /* History Navigation */
 
 /* Playlist: Not working after the switch to AJAX */
-function setupPlaylists(){
+function setupPlaylists() {
     //currently implemented with specific user from seed: ID -> 547db3471547ae200c3368f3
-    var userID = "547db3471547ae200c3368f3"
-    //need to figure out how to get CURRENT User (user._id)
+    console.log(sessionStorage.getItem("userName"))
+    var userName = sessionStorage.getItem("userName")
 
-    //loadPlaylistsFromLocalStorage(); Needed?
-    loadPlaylistsFromDatabase()
+    var userID = ""
+    doJSONRequest("GET", "/users/", null, null, getUserID)
+    function getUserID(users) {
+        users.forEach(function (user) {
+            if (user.userName == userName) {
+                userID = user._id
+            }
 
-  var createPlBtn = document.getElementById("create-pl-btn");
-  createPlBtn.addEventListener('click', function(){
+        })
 
-      //still used to maintain playlist count.. needed?
-    localStorage.pl_cnt =  localStorage.pl_cnt || 0;
-    var cnt = localStorage.pl_cnt;
-    var _id = "pl-"+cnt
-    var name = 'New Playlist ' + (++cnt);
-    var newPlaylist =  playlist(_id, name, model.users[0]._id, []);
+        loadPlaylistsFromDatabase(userID)
 
-    //update localStorage counter
-    localStorage.pl_cnt = cnt;
+        var createPlBtn = document.getElementById("create-pl-btn");
+        createPlBtn.addEventListener('click', function () {
 
-    //persist to localStorage (??)
-   // savePlaylist(newPlaylist);
+            //still used to maintain playlist count.. needed?
+            localStorage.pl_cnt = localStorage.pl_cnt || 0;
+            var cnt = localStorage.pl_cnt;
+            var _id = "pl-" + cnt
+            var name = 'New Playlist ' + (++cnt);
+            var newPlaylist = playlist(_id, name, model.users[0]._id, []);
 
+            //update localStorage counter
+            localStorage.pl_cnt = cnt;
 
-      //save to DATABASE
-      // >> Get all current playlists
-      // >> Add newly added playlist to list of playlists
-      // >> PUT new list of playlists in database
-      doJSONRequest("GET", "/users/" + userID + "/playlists", null, null, addNewPlaylist);
-
-      function addNewPlaylist(playlists) {
-          console.log(playlists)
-          playlists[playlists.length] = newPlaylist;
-          console.log(playlists)
+            //persist to localStorage (??)
+            // savePlaylist(newPlaylist);
 
 
-      }
+            //save to DATABASE
+            // >> Get all current playlists
+            // >> Add newly added playlist to list of playlists
+            // >> PUT new list of playlists in database
+            doJSONRequest("GET", "/users/" + userID + "/playlists", null, null, addNewPlaylist);
 
-    appendNewPlaylistToMenu(newPlaylist);
-  })
+            function addNewPlaylist(playlists) {
+                console.log(playlists)
+                playlists[playlists.length] = newPlaylist;
+                console.log(playlists)
 
-  document.addEventListener('click', function (e) {
-    if (e.target.classList.contains('edit-btn') ) {
-      return onEditPlaylistClicked(e.target)
+
+            }
+
+            appendNewPlaylistToMenu(newPlaylist);
+        })
+
+        document.addEventListener('click', function (e) {
+            if (e.target.classList.contains('edit-btn')) {
+                return onEditPlaylistClicked(e.target)
+            }
+
+            if (e.target.classList.contains('pl-name-input')) {
+                return e.preventDefault();
+            }
+
+            if (e.target.classList.contains('pl-name')) {
+                e.preventDefault();
+                return onPlaylistClicked(userID, e.target)
+            }
+
+            //the click was outside an edit element, close currently edited ones
+            var currentlyEditing = document.querySelectorAll('#playlists > li.edit .edit-btn');
+            for (var i = currentlyEditing.length - 1; i >= 0; i--) {
+                onEditPlaylistClicked(currentlyEditing[i]);
+            }
+            ;
+
+        });
     }
-
-    if (e.target.classList.contains('pl-name-input') ) {
-      return e.preventDefault();
-    }
-
-    if (e.target.classList.contains('pl-name') ) {
-      e.preventDefault();
-      return onPlaylistClicked(e.target)
-    }
-
-    //the click was outside an edit element, close currently edited ones
-    var currentlyEditing = document.querySelectorAll('#playlists > li.edit .edit-btn');
-    for (var i = currentlyEditing.length - 1; i >= 0; i--) {
-      onEditPlaylistClicked(currentlyEditing[i]);
-    };
-
-  });
 }
 
-function loadPlaylistsFromDatabase() {
+function loadPlaylistsFromDatabase(userID) {
 
     console.log("loadPlaylists")
 
     //get user playlists
     //currently implemented with specific user from seed: ID -> 547db3471547ae200c3368f3
-    var userID = "547db3471547ae200c3368f3"
+    //var userID = "547db3471547ae200c3368f3"
 
     doJSONRequest("GET", "/users/" + userID + "/playlists", null, null, renderPlaylists);
 
@@ -1065,49 +1103,58 @@ function drop(evt) {
   addTrackToPlaylist(playlistId, trackId)
 }
 
-function addTrackToPlaylist(playlistId, trackId){
+function addTrackToPlaylist(playlistId, trackId) {
 
-    //currently implemented with specific user from seed: ID -> 547db3471547ae200c3368f3
-    var userID = "547db3471547ae200c3368f3"
+    var userName = sessionStorage.getItem("userName")
 
-    //get playlist
-    doJSONRequest("GET", "/users/" + userID + "/playlists", null, null, updatePlaylistTracks)
-
-    function updatePlaylistTracks(playlists) {
-
-        var newPlaylists = playlists;
-
-        //find specific playlist
-        playlists.forEach(function(playlist) {
-
-            if (playlist._id == playlistId) {
-
-                console.log("Current tracks: ", playlist.tracks)
-                //add new track to old trackslist
-                playlist.tracks[playlist.tracks.length] = trackId
-                console.log("Updated tracks: ", playlist.tracks)
-
-
-
-                //var tracksArrayJSON = JSON.parse(JSON.stringify(playlist.tracks))
-
-                doJSONRequest("PUT", "/users/" + userID + "/playlists", null, newPlaylists, updatePlaylist)
-
-                function updatePlaylist(something) {
-                    console.log(something)
-                }
-
+    var userID = ""
+    doJSONRequest("GET", "/users/", null, null, getUserID)
+    function getUserID(users) {
+        users.forEach(function (user) {
+            if (user.userName == userName) {
+                userID = user._id
             }
+
         })
+
+        //get playlist
+        doJSONRequest("GET", "/users/" + userID + "/playlists", null, null, updatePlaylistTracks)
+
+        function updatePlaylistTracks(playlists) {
+
+            var newPlaylists = playlists;
+
+            //find specific playlist
+            playlists.forEach(function (playlist) {
+
+                if (playlist._id == playlistId) {
+
+                    console.log("Current tracks: ", playlist.tracks)
+                    //add new track to old trackslist
+                    playlist.tracks[playlist.tracks.length] = trackId
+                    console.log("Updated tracks: ", playlist.tracks)
+
+
+                    //var tracksArrayJSON = JSON.parse(JSON.stringify(playlist.tracks))
+
+                    doJSONRequest("PUT", "/users/" + userID + "/playlists", null, newPlaylists, updatePlaylist)
+
+                    function updatePlaylist(something) {
+                        console.log(something)
+                    }
+
+                }
+            })
+        }
     }
 }
 
-function onPlaylistClicked(link){
+function onPlaylistClicked(userID, link){
 
     console.log("onPlaylistClicked")
 
     //currently implemented with specific user from seed: ID -> 547db3471547ae200c3368f3
-    var userID = "547db3471547ae200c3368f3"
+    //var userID = "547db3471547ae200c3368f3"
 
     //get clicked playlist name
     var href = link.href
