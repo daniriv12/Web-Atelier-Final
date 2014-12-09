@@ -1649,3 +1649,346 @@ function search(location,term) {
     contentRender('/artists');
 }
 
+/**** OrderingUI tracks ****/
+
+//@DIN: called onlick - sort library alphabetically > tracks
+function sortTracks(e) {
+    //console.log("reached sortTracks")
+
+    doJSONRequest("GET", "/tracks", null, null, renderOrderedTracks);
+
+    function renderOrderedTracks(tracks) {
+        var tracksData = buildTracksData(tracks)
+        var orderedTracks = sortTracksAlphabetically(tracksData)
+
+        var data = {
+            "tracks" : orderedTracks
+        };
+
+        dust.render("tracks", data, function(err, out) {
+
+            var content = document.getElementById("content");
+
+            content.innerHTML = out;
+
+            bindAlbumLink();
+
+            bindArtistLink();
+
+            bindTracksDelete();
+
+            bindEditTrackName();
+
+        });
+
+    }
+
+}
+
+//@DIN from single Album page - to display songs in order
+function sortAlbumTracks() {
+    var href = window.location.href
+
+    var albumID = "albums/" + href.split("/")[4]
+
+    //execute the AJAX call to the get a single album
+    doJSONRequest("GET", albumID, null, null, renderAlbum);
+
+    function renderAlbum(album) {
+        doJSONRequest("GET", "/tracks?filter=" + encodeURIComponent(JSON.stringify({'album': album._id})), null, null, renderShowAlbum);
+
+
+        function renderShowAlbum(tracks) {
+
+            console.log(tracks)
+
+            var albumData = [];
+            var albumTracks = buildTracksData(tracks);
+            var orderedTracks = sortTracksAlphabetically(albumTracks)
+
+            albumData.artist = {};
+
+            albumData.artwork = album.artwork;
+            albumData._id = album._id;
+            albumData.name = album.name;
+            albumData.label = album.label;
+            albumData.dateReleased = album.dateReleased.split("T")[0];
+            albumData.artist._id = album.artist._id;
+            albumData.artist.name = album.artist.name;
+
+            var data = {
+                "album": albumData,
+                "tracks": orderedTracks
+            };
+
+            dust.render("album", data, function (err, out) {
+
+                var content = document.getElementById("content");
+
+                content.innerHTML = out;
+
+                bindAlbumLink();
+
+                bindArtistLink();
+
+                bindTracksDelete();
+
+                bindEditTrackName();
+
+            });
+
+        }
+    }
+
+}
+
+//@DIN from single Artist page - to display songs in order
+function sortArtistTracks() {
+    var href = window.location.href
+
+    var artistID = "artists/" + href.split("/")[4]
+
+    //execute the AJAX call to the get a single album
+    doJSONRequest("GET", artistID, null, null, renderArtist);
+
+    function renderArtist(artist) {
+        doJSONRequest("GET", "/tracks?filter=" + encodeURIComponent(JSON.stringify({'artist': artist._id})), null, null, renderShowArtist);
+
+
+        function renderShowArtist(tracks) {
+
+            console.log(tracks)
+
+            var artistData = [];
+            var artistTracks = buildTracksData(tracks);
+            var orderedTracks = sortTracksAlphabetically(artistTracks)
+
+            artistData.artwork = artist.artwork;
+            artistData._id = artist._id;
+            artistData.name = artist.name;
+            artistData.genre = artist.genre;
+
+            var data = {
+                "artist" : artistData,
+                "tracks" : orderedTracks
+            };
+
+            dust.render("artist", data, function(err, out) {
+
+                var content = document.getElementById("content");
+
+                content.innerHTML = out;
+
+                bindArtistLink();
+
+                bindAlbumLink();
+
+                bindTracksDelete();
+
+                bindEditTrackName();
+
+            });
+        }
+    }
+
+
+}
+
+//@DIN from single Artist page - to display albums in order
+function sortArtistAlbums() {
+    var href = window.location.href
+
+    var artistID = href.split("/")[4]
+    var getArtistID = "artists/" + artistID
+
+    //execute the AJAX call to the get a single album
+    doJSONRequest("GET", getArtistID, null, null, renderArtist);
+
+    function renderArtist(artist) {
+
+        doJSONRequest("GET", "/tracks?filter=" + encodeURIComponent(JSON.stringify({'artist': artist._id})), null, null, renderShowArtist);
+
+        function renderShowArtist(tracks) {
+
+            console.log(tracks)
+
+            var artistData = [];
+            var artistTracks = buildTracksData(tracks)
+            var orderedAlbums = sortAlbumsAlphabetically(artistTracks)
+
+            console.log(orderedAlbums)
+
+            artistData.artwork = artist.artwork;
+            artistData._id = artist._id;
+            artistData.name = artist.name;
+            artistData.genre = artist.genre;
+
+            var data = {
+                "artist": artistData,
+                "tracks": orderedAlbums
+            };
+
+            dust.render("artist", data, function (err, out) {
+
+                var content = document.getElementById("content");
+
+                content.innerHTML = out;
+
+                bindArtistLink();
+
+                bindAlbumLink();
+
+                bindTracksDelete();
+
+                bindEditTrackName();
+
+            });
+        }
+    }
+}
+
+//@DIN called onclick - sort library alphabetically > artists
+function sortArtists() {
+    //console.log("reached sortArtists")
+
+    doJSONRequest("GET", "/tracks", null, null, renderOrderedArtists);
+
+    function renderOrderedArtists(tracks) {
+        var tracksData = buildTracksData(tracks)
+        var orderedArtistTracks = sortArtistsAlphabetically(tracksData)
+
+        var data = {
+            "tracks" : orderedArtistTracks
+        };
+
+        dust.render("tracks", data, function(err, out) {
+
+            var content = document.getElementById("content");
+
+            content.innerHTML = out;
+
+            bindAlbumLink();
+
+            bindArtistLink();
+
+            bindTracksDelete();
+
+            bindEditTrackName();
+
+        });
+
+    }
+
+}
+
+//@DIN called onclick - sort library alphabetically > albums
+function sortAlbums() {
+    //console.log("reached sortTracks")
+
+    doJSONRequest("GET", "/tracks", null, null, renderOrderedTracks);
+
+    function renderOrderedTracks(tracks) {
+        var tracksData = buildTracksData(tracks)
+        var orderedTracks = sortAlbumsAlphabetically(tracksData)
+
+        var data = {
+            "tracks" : orderedTracks
+        };
+
+        dust.render("tracks", data, function(err, out) {
+
+            var content = document.getElementById("content");
+
+            content.innerHTML = out;
+
+            bindAlbumLink();
+
+            bindArtistLink();
+
+            bindTracksDelete();
+
+            bindEditTrackName();
+
+        });
+
+    }
+
+}
+
+
+//@DIN order the tracks-list alphabetically
+function sortTracksAlphabetically(tracksList) {
+
+    var tracksNames = [];
+    for (var i = 0; i<tracksList.length; i++) {
+        tracksNames[i] = tracksList[i].name
+    }
+
+    tracksNames.sort()
+
+    var sortedTracksList = [];
+
+    for (var i=0; i<tracksNames.length; i++) {
+        for (var j=0; j<tracksNames.length; j++) {
+            if (tracksNames[i] == tracksList[j].name) {
+                sortedTracksList[i] = tracksList[j]
+            }
+        }
+    }
+
+    return sortedTracksList
+
+}
+
+//@DIN order the artist-list alphabetically
+function sortArtistsAlphabetically(tracksList) {
+
+    var artistNames = [];
+    for (var i = 0; i<tracksList.length; i++) {
+        artistNames[i] = tracksList[i].artist.name
+    }
+
+    artistNames.sort()
+
+    var sortedTracksList = [];
+
+    for (var i=0; i<artistNames.length; i++) {
+        for (var j = 0; j<tracksList.length; j++) {
+            if (artistNames[i] == tracksList[j].artist.name) {
+                sortedTracksList[i] = tracksList[j]
+                tracksList.splice(j, 1)
+                break;
+
+            }
+        }
+    }
+    return sortedTracksList
+}
+
+//@DIN order the albums-list alphabetically
+function sortAlbumsAlphabetically(tracksList) {
+
+    var albumNames = [];
+
+    for (var i = 0; i<tracksList.length; i++) {
+        albumNames[i] = tracksList[i].album.name
+    }
+
+    albumNames.sort()
+
+    var sortedTracksList = []
+
+    for (var i = 0; i < albumNames.length; i++) {
+        for (var j = 0; j < tracksList.length; j++) {
+            if (albumNames[i] == tracksList[j].album.name) {
+                sortedTracksList[i] = tracksList[j]
+                tracksList.splice(j, 1)
+                break;
+            }
+        }
+    }
+
+    return sortedTracksList
+}
+
+/*** OrderingUI tracos <END> ***/

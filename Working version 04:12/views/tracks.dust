@@ -1,7 +1,7 @@
 <div class="fl-tl-thead fl-tl-row">
-    <div class="fl-tl-th fl-tl-name">Song</div>
-    <div class="fl-tl-th fl-tl-artist">Artist</div>
-    <div class="fl-tl-th fl-tl-album">Album</div>
+	<div class="fl-tl-th fl-tl-name"><u onclick="sortTracks()" onmouseover="" style="cursor: pointer;"> SONG </u> </div>
+	<div class="fl-tl-th fl-tl-artist"><u onclick="sortArtists()" onmouseover="" style="cursor: pointer;"> ARTIST </u></div>
+    <div class="fl-tl-th fl-tl-album"><u onclick="sortAlbums()" onmouseover="" style="cursor: pointer;"> ALBUM </u> </div>
     <div class="fl-tl-th fl-tl-time">Time</div>
     <div class="fl-tl-th fl-tl-vid"> Vid </div>
     <div class="fl-tl-th fl-tl-delete"></div>
