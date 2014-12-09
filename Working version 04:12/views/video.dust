@@ -25,18 +25,11 @@
 
 		<div class="fl-tl-cell fl-tl-artist"><a class="artist-link" href="artists/{artist._id}">{artist.name}</a></div>
 
-		<div class="fl-tl-th fl-tl-video"> <a href="http://www.youtube.com/watch?v={vid}"><i class="nav-menu-icon fa fa-youtube-play"></i></a> </div>
+		<div class="fl-tl-th fl-tl-video"> <a href="http://www.youtube.com/watch?v={vid}"><i class="nav-menu-icon fa fa-youtube"></i></a> </div>
 
 		<div class="fl-tl-th fl-tl-delete"><a href="tracks/{_id}">&times;</a></div>
 
 	</div>
-
 	{/tracks}
 
-
-
 </section>
-
-
-
-

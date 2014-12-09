@@ -109,12 +109,13 @@ function drawLibrary(e, addHistory){
 
       content.innerHTML = out;
 
+      content.setAttribute("style","height:520px")
+      document.getElementById('tracks-list').setAttribute("style","height:490px")
+      document.getElementsByClassName('player')[0].setAttribute("style","display:yes")
+
       bindAlbumLink();
-
       bindArtistLink();
-
       bindTracksDelete();
-
       bindEditTrackName();
 
     });
@@ -366,14 +367,14 @@ function drawVideos(e, addHistory){
 
             content.innerHTML = out;
 
+            content.setAttribute("style","height:715px")
+            document.getElementById('tracks-list').setAttribute("style","height:715px")
+            document.getElementsByClassName('player')[0].setAttribute("style","display:none")
+
             bindTracksLink();
-
             bindAlbumLink(); //could be removed, no albums in Video view
-
             bindArtistLink();
-
             bindTracksDelete();
-
             bindEditTrackName();
 
         });
@@ -449,6 +450,10 @@ function playTrackVideo(e, addHistory) {
       var content = document.getElementById("content");
 
       content.innerHTML = out;
+
+        content.setAttribute("style","height:520px")
+        document.getElementById('artists-list').setAttribute("style","height:490px")
+        document.getElementsByClassName('player')[0].setAttribute("style","display:yes")
 
       bindArtistLink();
 
@@ -681,6 +686,10 @@ function deleteArtist(e){
 
       content.innerHTML = out;
 
+      content.setAttribute("style","height:520px")
+      document.getElementById('albums-list').setAttribute("style","height:490px")
+      document.getElementsByClassName('player')[0].setAttribute("style","display:yes")
+
       bindAlbumLink();
 
       bindAlbumDelete();
@@ -753,12 +762,13 @@ function drawAlbum(e, addHistory){
 
             content.innerHTML = out;
 
+            content.setAttribute("style","height:520px")
+            document.getElementById('albums-list').setAttribute("style","height:490px")
+            document.getElementsByClassName('player')[0].setAttribute("style","display:yes")
+
             bindAlbumLink();
-
             bindArtistLink();
-
             bindTracksDelete();
-
             bindEditTrackName();
 
           });
@@ -1139,36 +1149,36 @@ function appendNewPlaylistToMenu(pl){
 /* Player */
 
 /**
-* This function setups the player. More specifically:
-* - It should create an audio element and append it in the body
-*
-* - The audio element should load by default the first track of your library
-*
-* - When the track is paused and you click on the play button of exercise one,
-*   it should play the current track and switch the icon of the button to 'pause'.
-*   You don't need to use the checkbox hack for toggling the icons. You might as well
-*   use Javascript.
-*
-* - When the track is playing and you click on the pause button of exercise one,
-*   it should pause the current track and switch the icon of the button to 'pause'.
-*
-*
-* Optionally:
-* - When the track is playing the progress bar should be updated to reflect the progress
-*
-* - When the progress bar is clicked the current time of the player should skip to
-*  the corresponding time (that is, if the click was on the 2/3 of the total width
-*  of the bar, the track current time should be the 2/3 of the total duration). Also
-*  the progress bar should be updated.
-*
-* - As the track is playing the elapsed time should be updated
-*
-* - Implement a volume bar that does what the progress bar does for sound but for volume.
-*
-* - When a track is clicked from the library, your player should start playing it
-*
-* - When a track finishes your player should play the next one
-*/
+ * This function setups the player. More specifically:
+ * - It should create an audio element and append it in the body
+ *
+ * - The audio element should load by default the first track of your library
+ *
+ * - When the track is paused and you click on the play button of exercise one,
+ *   it should play the current track and switch the icon of the button to 'pause'.
+ *   You don't need to use the checkbox hack for toggling the icons. You might as well
+ *   use Javascript.
+ *
+ * - When the track is playing and you click on the pause button of exercise one,
+ *   it should pause the current track and switch the icon of the button to 'pause'.
+ *
+ *
+ * Optionally:
+ * - When the track is playing the progress bar should be updated to reflect the progress
+ *
+ * - When the progress bar is clicked the current time of the player should skip to
+ *  the corresponding time (that is, if the click was on the 2/3 of the total width
+ *  of the bar, the track current time should be the 2/3 of the total duration). Also
+ *  the progress bar should be updated.
+ *
+ * - As the track is playing the elapsed time should be updated
+ *
+ * - Implement a volume bar that does what the progress bar does for sound but for volume.
+ *
+ * - When a track is clicked from the library, your player should start playing it
+ *
+ * - When a track finishes your player should play the next one
+ */
 
 function findTrackIndexById(trackID){
     for (var i = 0 , j = tracks.length; i < j; i++) {
@@ -1189,7 +1199,7 @@ function setupPlayer(selectedTrack){
         if(oldCurrentSong >= 0){
             try{
                 var oldTrackId = tracks[oldCurrentSong]._id;
-                changeTrackColor(oldTrackId,"black")
+                changePointer(oldTrackId,false)
             } catch (err){}
 
         }
@@ -1200,14 +1210,14 @@ function setupPlayer(selectedTrack){
         // set artwork
         trackInfo.firstChild.firstChild.firstChild.setAttribute("style", "background-image: url("+track.album.artwork+")");
         // set title/album
-        trackInfo.lastChild.firstChild.setAttribute("href", "albums/"+track.album._id);
+        trackInfo.lastChild.firstChild.setAttribute("href", "#albums/"+track.album._id);
         trackInfo.lastChild.firstChild.innerHTML = track.album.name;
         trackInfo.lastChild.lastChild.firstChild.setAttribute("title", track.artist.name);
-        trackInfo.lastChild.lastChild.firstChild.setAttribute("href", "artists/"+track.artist._id);
+        trackInfo.lastChild.lastChild.firstChild.setAttribute("href", "#artists/"+track.artist._id);
         trackInfo.lastChild.lastChild.firstChild.innerHTML = track.name;
 
         audioElement.src = tracks[index].file;
-        changeTrackColor(tracks[index]._id,"#ff0000");
+        changePointer(tracks[index]._id,true);
     }
 
     function SetPlayback(selectedTrackId, currentId, audioElement){
@@ -1243,12 +1253,22 @@ function setupPlayer(selectedTrack){
         return array;
     }
 
-    function changeTrackColor(id,color){
+    function changePointer(id,boolean){
         try{
             var childNodes = document.querySelector('#tracks-list').childNodes;
             for( var i = 0 , j = childNodes.length; i < j ; i++ ){
                 if(childNodes[i].id == id ){
-                    childNodes[i].firstChild.style.color = color;
+                    var pointer = '<i class="fa fa-volume-up"></i>&nbsp;&nbsp;';
+                    var str = childNodes[i].firstChild.firstChild.innerHTML
+                    if(boolean){
+
+                        childNodes[i].firstChild.firstChild.innerHTML = pointer + str;
+                    } else{
+                        childNodes[i].firstChild.firstChild.innerHTML = str.substr(pointer.length)
+                    }
+
+
+
                     return;
                 }
             }
@@ -1330,11 +1350,13 @@ function setupPlayer(selectedTrack){
             document.body.appendChild(audio);
 
             audio.addEventListener("ended", function () {
+                var state = true;
+                if (playButton.classList.contains('fa-play')) state = false;
                 oldCurrentSong = CurrentSong;
                 CurrentSong++;
                 if (tracks[CurrentSong]) {
                     setTrack(CurrentSong, audio, tracks);
-                    audio.play();
+                    if (state) audio.play();
                 } else {
                     CurrentSong = 0;
                     setTrack(CurrentSong, audio, tracks);
@@ -1367,8 +1389,9 @@ function setupPlayer(selectedTrack){
                     playButton.classList.add('fa-play')
                 }
             });
+
             next.addEventListener("click", function () {
-                var state;
+                var state = false;
                 if (audio.paused == false) state = true;
                 oldCurrentSong = CurrentSong;
                 CurrentSong++;
@@ -1387,28 +1410,36 @@ function setupPlayer(selectedTrack){
                     playButton.classList.add('fa-play')
                     playButton.classList.remove('fa-pause')
                 }
+                audio.currentTime = 0;
+                seekBar.style.width = 0 + "%";
+                timeElapsed.innerHTML = formatTime(Math.floor(0));
             });
 
             previous.addEventListener("click", function () {
-                var state;
-                if (audio.paused == false) state = true;
-                oldCurrentSong = CurrentSong;
-                CurrentSong--;
-                if (tracks[CurrentSong]) {
-                    setTrack(CurrentSong, audio, tracks);
-                    if (state) audio.play();
-                } else {
-                    CurrentSong = 0;
-                    setTrack(CurrentSong, audio, tracks);
-                    // Update the seek bar
-                    seekBar.style.width = 0 + "%";
-                    // Update the elapsed time
-                    timeElapsed.innerHTML = formatTime(Math.floor(0));
+                if (audio.currentTime < 1.5) {
+                    var state;
+                    if (audio.paused == false) state = true;
+                    oldCurrentSong = CurrentSong;
+                    CurrentSong--;
+                    if (tracks[CurrentSong]) {
+                        setTrack(CurrentSong, audio, tracks);
+                        if (state) audio.play();
+                    } else {
+                        CurrentSong = 0;
+                        setTrack(CurrentSong, audio, tracks);
+                        // Update the seek bar
+                        seekBar.style.width = 0 + "%";
+                        // Update the elapsed time
+                        timeElapsed.innerHTML = formatTime(Math.floor(0));
 
-                    // Update the button icon to 'Pause'
-                    playButton.classList.add('fa-play')
-                    playButton.classList.remove('fa-pause')
+                        // Update the button icon to 'Pause'
+                        playButton.classList.add('fa-play')
+                        playButton.classList.remove('fa-pause')
+                    }
                 }
+                audio.currentTime = 0;
+                seekBar.style.width = 0 + "%";
+                timeElapsed.innerHTML = formatTime(Math.floor(0));
             });
 
             shuffle.addEventListener("click", function () {
@@ -1459,6 +1490,7 @@ function setupPlayer(selectedTrack){
                 ;
             });
 
+
             // Update the seek bar as the track plays
             audio.addEventListener("timeupdate", function () {
                 // Calculate the slider value
@@ -1478,7 +1510,65 @@ function setupPlayer(selectedTrack){
 
                 audio.volume = frac;
             });
+            var prevCounter = 0;
+            var nextCounter = 0;
 
+            document.addEventListener('keyup',function(evt){
+                if (document.activeElement.id != 'main-search') {
+                    if (evt.keyCode == 32) {
+                        evt.preventDefault()
+                        playButton.click();
+                    }
+                    else if (evt.keyCode == 37) {
+                        evt.preventDefault()
+                        if (prevCounter < 5) previous.click();
+                        prevCounter = 0;
+                    }
+                    else if (evt.keyCode == 39) {
+                        evt.preventDefault()
+                        if (nextCounter < 5) next.click();
+                        nextCounter = 0;
+                    }
+                    else if (evt.keyCode == 80) {
+                        evt.preventDefault()
+                        shuffle.click()
+                    }
+                }
+            });
+
+            document.addEventListener('keydown',function(evt){
+                if (document.activeElement.id != 'main-search') {
+                    if (evt.keyCode == 32) {
+                        evt.preventDefault()
+                    }
+                    else if (evt.keyCode == 38) {
+                        evt.preventDefault()
+                        if (audio.volume + 0.05 > 1) audio.volume = 1;
+                        else audio.volume += 0.05
+                        volumeBar.style.width = (audio.volume * 100) + "%";
+                    }
+                    else if (evt.keyCode == 40) {
+                        evt.preventDefault()
+                        if (audio.volume - 0.05 < 0) audio.volume = 0;
+                        else audio.volume -= 0.05
+                        volumeBar.style.width = (audio.volume * 100) + "%";
+                    }
+                    else if (evt.keyCode == 37) {
+                        evt.preventDefault()
+                        prevCounter += 1;
+                        if (prevCounter > 4) {
+                            audio.currentTime -= 0.001 * prevCounter*prevCounter;
+                        }
+                    }
+                    else if (evt.keyCode == 39) {
+                        evt.preventDefault()
+                        nextCounter += 1;
+                        if (nextCounter > 4) {
+                            audio.currentTime += 0.001 * nextCounter*nextCounter;
+                        }
+                    }
+                }
+            });
             //Click listener for volume buttons
             volumeOff.addEventListener("click", function (evt) {
                 volumeBar.style.width = "0%";
@@ -1497,7 +1587,7 @@ function setupPlayer(selectedTrack){
             });
         }
         else {
-            changeTrackColor(tracks[CurrentSong]._id,"#ff0000");
+            changePointer(tracks[CurrentSong]._id,true);
         }
     }
 }
@@ -1642,6 +1732,14 @@ function search(location,term) {
             if (location.indexOf('library') > -1) document.getElementById('content').innerHTML = tracksHTML+artistsHTML+albumsHTML;
             else if (location.indexOf('albums') > -1) document.getElementById('content').innerHTML = albumsHTML+tracksHTML+artistsHTML;
             else if (location.indexOf('artists') > -1) document.getElementById('content').innerHTML = artistsHTML+tracksHTML+albumsHTML;
+
+            if (document.getElementsByClassName('player')[0].getAttribute('style') == "display:none"){
+                document.getElementById('content').setAttribute("style","height:520px");
+                document.getElementById('tracks-list').setAttribute("style","height:none");
+                document.getElementById('artists-list').setAttribute("style","height:none");
+                document.getElementById('albums-list').setAttribute("style","height:none");
+                document.getElementsByClassName('player')[0].setAttribute("style","display:yes");
+            }
         }
     }
     contentRender('/tracks');
@@ -1649,346 +1747,348 @@ function search(location,term) {
     contentRender('/artists');
 }
 
-/**** OrderingUI tracks ****/
-
-//@DIN: called onlick - sort library alphabetically > tracks
-function sortTracks(e) {
-    //console.log("reached sortTracks")
-
-    doJSONRequest("GET", "/tracks", null, null, renderOrderedTracks);
-
-    function renderOrderedTracks(tracks) {
-        var tracksData = buildTracksData(tracks)
-        var orderedTracks = sortTracksAlphabetically(tracksData)
-
-        var data = {
-            "tracks" : orderedTracks
-        };
-
-        dust.render("tracks", data, function(err, out) {
-
-            var content = document.getElementById("content");
-
-            content.innerHTML = out;
-
-            bindAlbumLink();
-
-            bindArtistLink();
-
-            bindTracksDelete();
-
-            bindEditTrackName();
-
-        });
-
-    }
-
-}
-
-//@DIN from single Album page - to display songs in order
-function sortAlbumTracks() {
-    var href = window.location.href
-
-    var albumID = "albums/" + href.split("/")[4]
-
-    //execute the AJAX call to the get a single album
-    doJSONRequest("GET", albumID, null, null, renderAlbum);
-
-    function renderAlbum(album) {
-        doJSONRequest("GET", "/tracks?filter=" + encodeURIComponent(JSON.stringify({'album': album._id})), null, null, renderShowAlbum);
-
-
-        function renderShowAlbum(tracks) {
-
-            console.log(tracks)
-
-            var albumData = [];
-            var albumTracks = buildTracksData(tracks);
-            var orderedTracks = sortTracksAlphabetically(albumTracks)
-
-            albumData.artist = {};
-
-            albumData.artwork = album.artwork;
-            albumData._id = album._id;
-            albumData.name = album.name;
-            albumData.label = album.label;
-            albumData.dateReleased = album.dateReleased.split("T")[0];
-            albumData.artist._id = album.artist._id;
-            albumData.artist.name = album.artist.name;
-
-            var data = {
-                "album": albumData,
-                "tracks": orderedTracks
-            };
-
-            dust.render("album", data, function (err, out) {
-
-                var content = document.getElementById("content");
-
-                content.innerHTML = out;
-
-                bindAlbumLink();
-
-                bindArtistLink();
-
-                bindTracksDelete();
-
-                bindEditTrackName();
-
-            });
-
-        }
-    }
-
-}
-
-//@DIN from single Artist page - to display songs in order
-function sortArtistTracks() {
-    var href = window.location.href
-
-    var artistID = "artists/" + href.split("/")[4]
-
-    //execute the AJAX call to the get a single album
-    doJSONRequest("GET", artistID, null, null, renderArtist);
-
-    function renderArtist(artist) {
-        doJSONRequest("GET", "/tracks?filter=" + encodeURIComponent(JSON.stringify({'artist': artist._id})), null, null, renderShowArtist);
-
-
-        function renderShowArtist(tracks) {
-
-            console.log(tracks)
-
-            var artistData = [];
-            var artistTracks = buildTracksData(tracks);
-            var orderedTracks = sortTracksAlphabetically(artistTracks)
-
-            artistData.artwork = artist.artwork;
-            artistData._id = artist._id;
-            artistData.name = artist.name;
-            artistData.genre = artist.genre;
-
-            var data = {
-                "artist" : artistData,
-                "tracks" : orderedTracks
-            };
-
-            dust.render("artist", data, function(err, out) {
-
-                var content = document.getElementById("content");
-
-                content.innerHTML = out;
-
-                bindArtistLink();
-
-                bindAlbumLink();
-
-                bindTracksDelete();
-
-                bindEditTrackName();
-
-            });
-        }
-    }
-
-
-}
-
-//@DIN from single Artist page - to display albums in order
-function sortArtistAlbums() {
-    var href = window.location.href
-
-    var artistID = href.split("/")[4]
-    var getArtistID = "artists/" + artistID
-
-    //execute the AJAX call to the get a single album
-    doJSONRequest("GET", getArtistID, null, null, renderArtist);
-
-    function renderArtist(artist) {
-
-        doJSONRequest("GET", "/tracks?filter=" + encodeURIComponent(JSON.stringify({'artist': artist._id})), null, null, renderShowArtist);
-
-        function renderShowArtist(tracks) {
-
-            console.log(tracks)
-
-            var artistData = [];
-            var artistTracks = buildTracksData(tracks)
-            var orderedAlbums = sortAlbumsAlphabetically(artistTracks)
-
-            console.log(orderedAlbums)
-
-            artistData.artwork = artist.artwork;
-            artistData._id = artist._id;
-            artistData.name = artist.name;
-            artistData.genre = artist.genre;
-
-            var data = {
-                "artist": artistData,
-                "tracks": orderedAlbums
-            };
-
-            dust.render("artist", data, function (err, out) {
-
-                var content = document.getElementById("content");
-
-                content.innerHTML = out;
-
-                bindArtistLink();
-
-                bindAlbumLink();
-
-                bindTracksDelete();
-
-                bindEditTrackName();
-
-            });
-        }
-    }
-}
-
-//@DIN called onclick - sort library alphabetically > artists
-function sortArtists() {
-    //console.log("reached sortArtists")
-
-    doJSONRequest("GET", "/tracks", null, null, renderOrderedArtists);
-
-    function renderOrderedArtists(tracks) {
-        var tracksData = buildTracksData(tracks)
-        var orderedArtistTracks = sortArtistsAlphabetically(tracksData)
-
-        var data = {
-            "tracks" : orderedArtistTracks
-        };
-
-        dust.render("tracks", data, function(err, out) {
-
-            var content = document.getElementById("content");
-
-            content.innerHTML = out;
-
-            bindAlbumLink();
-
-            bindArtistLink();
-
-            bindTracksDelete();
-
-            bindEditTrackName();
-
-        });
-
-    }
-
-}
-
-//@DIN called onclick - sort library alphabetically > albums
-function sortAlbums() {
-    //console.log("reached sortTracks")
-
-    doJSONRequest("GET", "/tracks", null, null, renderOrderedTracks);
-
-    function renderOrderedTracks(tracks) {
-        var tracksData = buildTracksData(tracks)
-        var orderedTracks = sortAlbumsAlphabetically(tracksData)
-
-        var data = {
-            "tracks" : orderedTracks
-        };
-
-        dust.render("tracks", data, function(err, out) {
-
-            var content = document.getElementById("content");
-
-            content.innerHTML = out;
-
-            bindAlbumLink();
-
-            bindArtistLink();
-
-            bindTracksDelete();
-
-            bindEditTrackName();
-
-        });
-
-    }
-
-}
-
-
-//@DIN order the tracks-list alphabetically
-function sortTracksAlphabetically(tracksList) {
-
-    var tracksNames = [];
-    for (var i = 0; i<tracksList.length; i++) {
-        tracksNames[i] = tracksList[i].name
-    }
-
-    tracksNames.sort()
-
-    var sortedTracksList = [];
-
-    for (var i=0; i<tracksNames.length; i++) {
-        for (var j=0; j<tracksNames.length; j++) {
-            if (tracksNames[i] == tracksList[j].name) {
-                sortedTracksList[i] = tracksList[j]
-            }
-        }
-    }
-
-    return sortedTracksList
-
-}
-
-//@DIN order the artist-list alphabetically
-function sortArtistsAlphabetically(tracksList) {
-
-    var artistNames = [];
-    for (var i = 0; i<tracksList.length; i++) {
-        artistNames[i] = tracksList[i].artist.name
-    }
-
-    artistNames.sort()
-
-    var sortedTracksList = [];
-
-    for (var i=0; i<artistNames.length; i++) {
-        for (var j = 0; j<tracksList.length; j++) {
-            if (artistNames[i] == tracksList[j].artist.name) {
-                sortedTracksList[i] = tracksList[j]
-                tracksList.splice(j, 1)
-                break;
-
-            }
-        }
-    }
-    return sortedTracksList
-}
-
-//@DIN order the albums-list alphabetically
-function sortAlbumsAlphabetically(tracksList) {
-
-    var albumNames = [];
-
-    for (var i = 0; i<tracksList.length; i++) {
-        albumNames[i] = tracksList[i].album.name
-    }
-
-    albumNames.sort()
-
-    var sortedTracksList = []
-
-    for (var i = 0; i < albumNames.length; i++) {
-        for (var j = 0; j < tracksList.length; j++) {
-            if (albumNames[i] == tracksList[j].album.name) {
-                sortedTracksList[i] = tracksList[j]
-                tracksList.splice(j, 1)
-                break;
-            }
-        }
-    }
-
-    return sortedTracksList
-}
-
-/*** OrderingUI tracos <END> ***/
+/*-------------   Search  (Mastery 8)-------------   */
+
+///**** OrderingUI tracks ****/
+//
+////@DIN: called onlick - sort library alphabetically > tracks
+//function sortTracks(e) {
+//    //console.log("reached sortTracks")
+//
+//    doJSONRequest("GET", "/tracks", null, null, renderOrderedTracks);
+//
+//    function renderOrderedTracks(tracks) {
+//        var tracksData = buildTracksData(tracks)
+//        var orderedTracks = sortTracksAlphabetically(tracksData)
+//
+//        var data = {
+//            "tracks" : orderedTracks
+//        };
+//
+//        dust.render("tracks", data, function(err, out) {
+//
+//            var content = document.getElementById("content");
+//
+//            content.innerHTML = out;
+//
+//            bindAlbumLink();
+//
+//            bindArtistLink();
+//
+//            bindTracksDelete();
+//
+//            bindEditTrackName();
+//
+//        });
+//
+//    }
+//
+//}
+//
+////@DIN from single Album page - to display songs in order
+//function sortAlbumTracks() {
+//    var href = window.location.href
+//
+//    var albumID = "albums/" + href.split("/")[4]
+//
+//    //execute the AJAX call to the get a single album
+//    doJSONRequest("GET", albumID, null, null, renderAlbum);
+//
+//    function renderAlbum(album) {
+//        doJSONRequest("GET", "/tracks?filter=" + encodeURIComponent(JSON.stringify({'album': album._id})), null, null, renderShowAlbum);
+//
+//
+//        function renderShowAlbum(tracks) {
+//
+//            console.log(tracks)
+//
+//            var albumData = [];
+//            var albumTracks = buildTracksData(tracks);
+//            var orderedTracks = sortTracksAlphabetically(albumTracks)
+//
+//            albumData.artist = {};
+//
+//            albumData.artwork = album.artwork;
+//            albumData._id = album._id;
+//            albumData.name = album.name;
+//            albumData.label = album.label;
+//            albumData.dateReleased = album.dateReleased.split("T")[0];
+//            albumData.artist._id = album.artist._id;
+//            albumData.artist.name = album.artist.name;
+//
+//            var data = {
+//                "album": albumData,
+//                "tracks": orderedTracks
+//            };
+//
+//            dust.render("album", data, function (err, out) {
+//
+//                var content = document.getElementById("content");
+//
+//                content.innerHTML = out;
+//
+//                bindAlbumLink();
+//
+//                bindArtistLink();
+//
+//                bindTracksDelete();
+//
+//                bindEditTrackName();
+//
+//            });
+//
+//        }
+//    }
+//
+//}
+//
+////@DIN from single Artist page - to display songs in order
+//function sortArtistTracks() {
+//    var href = window.location.href
+//
+//    var artistID = "artists/" + href.split("/")[4]
+//
+//    //execute the AJAX call to the get a single album
+//    doJSONRequest("GET", artistID, null, null, renderArtist);
+//
+//    function renderArtist(artist) {
+//        doJSONRequest("GET", "/tracks?filter=" + encodeURIComponent(JSON.stringify({'artist': artist._id})), null, null, renderShowArtist);
+//
+//
+//        function renderShowArtist(tracks) {
+//
+//            console.log(tracks)
+//
+//            var artistData = [];
+//            var artistTracks = buildTracksData(tracks);
+//            var orderedTracks = sortTracksAlphabetically(artistTracks)
+//
+//            artistData.artwork = artist.artwork;
+//            artistData._id = artist._id;
+//            artistData.name = artist.name;
+//            artistData.genre = artist.genre;
+//
+//            var data = {
+//                "artist" : artistData,
+//                "tracks" : orderedTracks
+//            };
+//
+//            dust.render("artist", data, function(err, out) {
+//
+//                var content = document.getElementById("content");
+//
+//                content.innerHTML = out;
+//
+//                bindArtistLink();
+//
+//                bindAlbumLink();
+//
+//                bindTracksDelete();
+//
+//                bindEditTrackName();
+//
+//            });
+//        }
+//    }
+//
+//
+//}
+//
+////@DIN from single Artist page - to display albums in order
+//function sortArtistAlbums() {
+//    var href = window.location.href
+//
+//    var artistID = href.split("/")[4]
+//    var getArtistID = "artists/" + artistID
+//
+//    //execute the AJAX call to the get a single album
+//    doJSONRequest("GET", getArtistID, null, null, renderArtist);
+//
+//    function renderArtist(artist) {
+//
+//        doJSONRequest("GET", "/tracks?filter=" + encodeURIComponent(JSON.stringify({'artist': artist._id})), null, null, renderShowArtist);
+//
+//        function renderShowArtist(tracks) {
+//
+//            console.log(tracks)
+//
+//            var artistData = [];
+//            var artistTracks = buildTracksData(tracks)
+//            var orderedAlbums = sortAlbumsAlphabetically(artistTracks)
+//
+//            console.log(orderedAlbums)
+//
+//            artistData.artwork = artist.artwork;
+//            artistData._id = artist._id;
+//            artistData.name = artist.name;
+//            artistData.genre = artist.genre;
+//
+//            var data = {
+//                "artist": artistData,
+//                "tracks": orderedAlbums
+//            };
+//
+//            dust.render("artist", data, function (err, out) {
+//
+//                var content = document.getElementById("content");
+//
+//                content.innerHTML = out;
+//
+//                bindArtistLink();
+//
+//                bindAlbumLink();
+//
+//                bindTracksDelete();
+//
+//                bindEditTrackName();
+//
+//            });
+//        }
+//    }
+//}
+//
+////@DIN called onclick - sort library alphabetically > artists
+//function sortArtists() {
+//    //console.log("reached sortArtists")
+//
+//    doJSONRequest("GET", "/tracks", null, null, renderOrderedArtists);
+//
+//    function renderOrderedArtists(tracks) {
+//        var tracksData = buildTracksData(tracks)
+//        var orderedArtistTracks = sortArtistsAlphabetically(tracksData)
+//
+//        var data = {
+//            "tracks" : orderedArtistTracks
+//        };
+//
+//        dust.render("tracks", data, function(err, out) {
+//
+//            var content = document.getElementById("content");
+//
+//            content.innerHTML = out;
+//
+//            bindAlbumLink();
+//
+//            bindArtistLink();
+//
+//            bindTracksDelete();
+//
+//            bindEditTrackName();
+//
+//        });
+//
+//    }
+//
+//}
+//
+////@DIN called onclick - sort library alphabetically > albums
+//function sortAlbums() {
+//    //console.log("reached sortTracks")
+//
+//    doJSONRequest("GET", "/tracks", null, null, renderOrderedTracks);
+//
+//    function renderOrderedTracks(tracks) {
+//        var tracksData = buildTracksData(tracks)
+//        var orderedTracks = sortAlbumsAlphabetically(tracksData)
+//
+//        var data = {
+//            "tracks" : orderedTracks
+//        };
+//
+//        dust.render("tracks", data, function(err, out) {
+//
+//            var content = document.getElementById("content");
+//
+//            content.innerHTML = out;
+//
+//            bindAlbumLink();
+//
+//            bindArtistLink();
+//
+//            bindTracksDelete();
+//
+//            bindEditTrackName();
+//
+//        });
+//
+//    }
+//
+//}
+//
+//
+////@DIN order the tracks-list alphabetically
+//function sortTracksAlphabetically(tracksList) {
+//
+//    var tracksNames = [];
+//    for (var i = 0; i<tracksList.length; i++) {
+//        tracksNames[i] = tracksList[i].name
+//    }
+//
+//    tracksNames.sort()
+//
+//    var sortedTracksList = [];
+//
+//    for (var i=0; i<tracksNames.length; i++) {
+//        for (var j=0; j<tracksNames.length; j++) {
+//            if (tracksNames[i] == tracksList[j].name) {
+//                sortedTracksList[i] = tracksList[j]
+//            }
+//        }
+//    }
+//
+//    return sortedTracksList
+//
+//}
+//
+////@DIN order the artist-list alphabetically
+//function sortArtistsAlphabetically(tracksList) {
+//
+//    var artistNames = [];
+//    for (var i = 0; i<tracksList.length; i++) {
+//        artistNames[i] = tracksList[i].artist.name
+//    }
+//
+//    artistNames.sort()
+//
+//    var sortedTracksList = [];
+//
+//    for (var i=0; i<artistNames.length; i++) {
+//        for (var j = 0; j<tracksList.length; j++) {
+//            if (artistNames[i] == tracksList[j].artist.name) {
+//                sortedTracksList[i] = tracksList[j]
+//                tracksList.splice(j, 1)
+//                break;
+//
+//            }
+//        }
+//    }
+//    return sortedTracksList
+//}
+//
+////@DIN order the albums-list alphabetically
+//function sortAlbumsAlphabetically(tracksList) {
+//
+//    var albumNames = [];
+//
+//    for (var i = 0; i<tracksList.length; i++) {
+//        albumNames[i] = tracksList[i].album.name
+//    }
+//
+//    albumNames.sort()
+//
+//    var sortedTracksList = []
+//
+//    for (var i = 0; i < albumNames.length; i++) {
+//        for (var j = 0; j < tracksList.length; j++) {
+//            if (albumNames[i] == tracksList[j].album.name) {
+//                sortedTracksList[i] = tracksList[j]
+//                tracksList.splice(j, 1)
+//                break;
+//            }
+//        }
+//    }
+//
+//    return sortedTracksList
+//}
+//
+///*** OrderingUI tracos <END> ***/

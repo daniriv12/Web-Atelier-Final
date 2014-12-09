@@ -1,7 +1,7 @@
 <div class="fl-tl-thead fl-tl-row">
-	<div class="fl-tl-th fl-tl-name"><u onclick="sortTracks()" onmouseover="" style="cursor: pointer;"> SONG </u> </div>
-	<div class="fl-tl-th fl-tl-artist"><u onclick="sortArtists()" onmouseover="" style="cursor: pointer;"> ARTIST </u></div>
-    <div class="fl-tl-th fl-tl-album"><u onclick="sortAlbums()" onmouseover="" style="cursor: pointer;"> ALBUM </u> </div>
+	<div class="fl-tl-th fl-tl-name"> SONG  </div>
+	<div class="fl-tl-th fl-tl-artist"> ARTIST </div>
+    <div class="fl-tl-th fl-tl-album"> ALBUM  </div>
     <div class="fl-tl-th fl-tl-time">Time</div>
     <div class="fl-tl-th fl-tl-vid"> Vid </div>
     <div class="fl-tl-th fl-tl-delete"></div>
@@ -22,7 +22,7 @@
 			{/album}
 		</div>
 		<div class="fl-tl-cell fl-tl-time">{duration}</div>
-		<div class="fl-tl-th fl-tl-video"> <a class="video-link" href="http://www.youtube.com/watch?v={vid}"><i class="nav-menu-icon fa fa-youtube-play"></i></a> </div>
+		<div class="fl-tl-th fl-tl-video"> <a class="video-link" href="http://www.youtube.com/watch?v={vid}"><i class="nav-menu-icon fa fa-youtube"></i></a></div>
 
 		<div class="fl-tl-th fl-tl-delete"><a href="tracks/{_id}">&times;</a></div>
 	</div>
