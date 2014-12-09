@@ -16,11 +16,10 @@ var ObjectId = mongoose.Schema.Types.ObjectId;
 /** @constructor
 * @param {Object} definition
 */
-var PlaylistSchema = new mongoose.Schema(
+var FollowPlaylistSchema = new mongoose.Schema(
   {
-    name : { type: String, required: true },
-    tracks : { type: [ObjectId], ref: "Track" },
-    dateCreated : { type: Date, default: Date.now }
+    ownerID : { type: String, required: true },
+    playlistID : { type: String, required: true }
   }
 
 );
@@ -28,5 +27,5 @@ var PlaylistSchema = new mongoose.Schema(
 
 //register model
 
-mongoose.model('Playlist', PlaylistSchema);
-module.exports = PlaylistSchema;
+mongoose.model('FollowPlaylist', FollowPlaylistSchema);
+module.exports = FollowPlaylistSchema;

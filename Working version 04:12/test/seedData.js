@@ -2,6 +2,7 @@
 
 var mongoose = require('mongoose');
 var Playlist = mongoose.model('Playlist');
+var FollowPlaylist = mongoose.model('FollowPlaylist')
 var ObjectId = mongoose.Types.ObjectId;
 
 var artists = {
@@ -1042,14 +1043,15 @@ var users = {
       "dateCreated"  : "Sat Sep 27 2014 10:26:46 GMT+0200 (CEST)",
       "playlists"    : [
          new Playlist ({
-          "name" : 'Thrash Metal favs',
+          "name" : 'User1 Playlist1',
           "tracks": [tracks.data[0]._id, tracks.data[1]._id]
         }),
           new Playlist ({
-          "name" : 'Thrash Metal favs 2',
+          "name" : 'User1 Playlist1',
           "tracks": [tracks.data[3]._id, tracks.data[4]._id]
         })
-      ]
+      ],
+      "followedPlaylists" : []
     },
 
     {
@@ -1062,14 +1064,15 @@ var users = {
       "dateCreated"  : "Sat Sep 27 2014 10:26:46 GMT+0200 (CEST)",
       "playlists"    : [
          new Playlist ({
-          "name" : 'Thrash Metal favs',
+          "name" : 'User2 Playlist1',
           "tracks": [tracks.data[0]._id, tracks.data[1]._id]
         }),
           new Playlist ({
-          "name" : 'Thrash Metal favs 2',
+          "name" : 'User2 Playlist2',
           "tracks": [tracks.data[6]._id, tracks.data[7]._id]
         })
-      ]
+      ],
+     "followedPlaylists" : []
     },
 
     { 
@@ -1082,14 +1085,15 @@ var users = {
       "dateCreated"  : "Sat Sep 27 2014 10:28:21 GMT+0200 (CEST)",
       "playlists"    : [
          new Playlist ({
-          "name" : 'Iron maiden',
+          "name" : 'User3 Playlist1',
           "tracks": [tracks.data[0]._id, tracks.data[1]._id]
         }),
           new Playlist ({
-          "name" : 'Thrash Metal favs 3',
+          "name" : 'User3 Playlist2',
           "tracks": [tracks.data[5]._id, tracks.data[6]._id]
         })
-      ]
+      ],
+      "followedPlaylists" : []
     }
   ]
 }

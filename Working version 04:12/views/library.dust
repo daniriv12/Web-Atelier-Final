@@ -36,9 +36,17 @@
 
        <a href="#" class="create-playlist" id="create-track-btn"><i class="fa fa-plus"></i> new track</a><br>
        <a href="#" class="create-playlist" id="create-pl-btn"><i class="fa fa-plus"></i> new playlist</a>
+
+       <a href="#" class="create-playlist" id="create-follow-btn"><i class="fa fa-plus"></i> Follow Playlist </a>
+
         <ul class="nav-menu" id="playlists">
         <!-- Playlists will be rendered here -->
         </ul>
+
+        <ul class="nav-menu" id="followedPlaylists">
+        <!-- Followed Playlists will be rendered here -->
+        <ul>
+
       </div> <!-- /.main-nav-content -->
     </nav>
     <section class="main-content main-content-float-menu clearfix">

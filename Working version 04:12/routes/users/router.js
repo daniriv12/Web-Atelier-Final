@@ -7,12 +7,14 @@ var middleware =  require('../middleware');
 var mongoose = require('mongoose');
 var ObjectId = mongoose.Types.ObjectId;
 var User = mongoose.model('User');
+var Playlist = mongoose.model('Playlist')
 var config = require("../../config");
 
 //fields we don't want to show to the client
 var fieldsFilter = { 'password': 0, '__v': 0 };
 
 //supported methods
+router.all('/:userid/playlists/:playlistid', middleware.supportedMethods('GET, PUT, DELETE, OPTIONS'));
 router.all('/:userid/playlists', middleware.supportedMethods('GET, PUT, OPTIONS'));
 router.all('/:userid', middleware.supportedMethods('GET, PUT, DELETE, OPTIONS'));
 router.all('/', middleware.supportedMethods('GET, POST, OPTIONS'));
@@ -129,9 +131,40 @@ router.put('/:userid/playlists', function(req, res, next) {
       return;
     }
     user.playlists = req.body;
+      console.log("server side PUT playlist: ", req.body)
     user.save(onModelSave(res));
   });
 });
+
+router.put('/:userid/playlists/:playlistid', function(req, res, next) {
+    var data = req.body;
+
+});
+
+router.get('/:userid/playlists/:playlistid', function(req, res, next) {
+    User.findById(req.params.userid, fieldsFilter , function(err, user){
+        if (err) return next (err);
+        if (!user) {
+            res.status(404);
+            res.json({
+                statusCode: 404,
+                message: "Not Found"
+            });
+            return;
+        }
+
+        var id = req.params.playlistid;
+        user.playlists.forEach(function(playlist){
+           if (playlist._id == id) {
+               res.json(playlist);
+           }
+        });
+
+        //res.json(user.playlists);
+
+    });
+})
+
 
 function onModelSave(res, status, sendItAsResponse){
   var statusCode = status || 204;

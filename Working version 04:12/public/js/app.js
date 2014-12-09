@@ -9,7 +9,12 @@ window.onload = function(){
 
   setupPlayer();
 
-  //setupPlaylists();
+    //uncommented to fix
+  setupPlaylists();
+
+  //@DIN: mastery 9 - shared playlists
+  //setupFollowedPlaylists();
+
   setupSearch();
 
     inactivityTime();
@@ -960,11 +965,17 @@ window.onpopstate = updatePage;
 
 /* Playlist: Not working after the switch to AJAX */
 function setupPlaylists(){
-  loadPlaylistsFromLocalStorage();
+    //currently implemented with specific user from seed: ID -> 547db3471547ae200c3368f3
+    var userID = "547db3471547ae200c3368f3"
+    //need to figure out how to get CURRENT User (user._id)
+
+    //loadPlaylistsFromLocalStorage(); Needed?
+    loadPlaylistsFromDatabase()
 
   var createPlBtn = document.getElementById("create-pl-btn");
   createPlBtn.addEventListener('click', function(){
 
+      //still used to maintain playlist count.. needed?
     localStorage.pl_cnt =  localStorage.pl_cnt || 0;
     var cnt = localStorage.pl_cnt;
     var _id = "pl-"+cnt
@@ -974,8 +985,24 @@ function setupPlaylists(){
     //update localStorage counter
     localStorage.pl_cnt = cnt;
 
-    //persist to localStorage
-    savePlaylist(newPlaylist);
+    //persist to localStorage (??)
+   // savePlaylist(newPlaylist);
+
+
+      //save to DATABASE
+      // >> Get all current playlists
+      // >> Add newly added playlist to list of playlists
+      // >> PUT new list of playlists in database
+      doJSONRequest("GET", "/users/" + userID + "/playlists", null, null, addNewPlaylist);
+
+      function addNewPlaylist(playlists) {
+          console.log(playlists)
+          playlists[playlists.length] = newPlaylist;
+          console.log(playlists)
+
+
+      }
+
     appendNewPlaylistToMenu(newPlaylist);
   })
 
@@ -1002,6 +1029,27 @@ function setupPlaylists(){
   });
 }
 
+function loadPlaylistsFromDatabase() {
+
+    console.log("loadPlaylists")
+
+    //get user playlists
+    //currently implemented with specific user from seed: ID -> 547db3471547ae200c3368f3
+    var userID = "547db3471547ae200c3368f3"
+
+    doJSONRequest("GET", "/users/" + userID + "/playlists", null, null, renderPlaylists);
+
+    function renderPlaylists(playlists) {
+
+        console.log("renderPlaylists")
+
+        playlists.forEach(function(pl) {
+
+            appendNewPlaylistToMenu(pl)
+        })
+    }
+
+}
 function allowDrop(evt) {
   evt.preventDefault();
 }
@@ -1018,58 +1066,123 @@ function drop(evt) {
 }
 
 function addTrackToPlaylist(playlistId, trackId){
-  var playlists =  JSON.parse(localStorage.playlists);
-  var pl = playlists[playlistId];
-  if(typeof pl === "undefined"){
-    throw new Error("playlist doesn't exist in localStorage")
-  }
 
-  var track = findOne(model.tracks, "_id", trackId);
-  if(typeof track === "undefined" || track === null){
-    throw new Error("track doesn't exist in the model")
-  }
+    //currently implemented with specific user from seed: ID -> 547db3471547ae200c3368f3
+    var userID = "547db3471547ae200c3368f3"
 
-  pl.tracks.push(trackId);
+    //get playlist
+    doJSONRequest("GET", "/users/" + userID + "/playlists", null, null, updatePlaylistTracks)
 
-  //persist
-  playlists[playlistId]= pl;
-  localStorage.playlists = JSON.stringify(playlists);
+    function updatePlaylistTracks(playlists) {
+
+        var newPlaylists = playlists;
+
+        //find specific playlist
+        playlists.forEach(function(playlist) {
+
+            if (playlist._id == playlistId) {
+
+                console.log("Current tracks: ", playlist.tracks)
+                //add new track to old trackslist
+                playlist.tracks[playlist.tracks.length] = trackId
+                console.log("Updated tracks: ", playlist.tracks)
+
+
+
+                //var tracksArrayJSON = JSON.parse(JSON.stringify(playlist.tracks))
+
+                doJSONRequest("PUT", "/users/" + userID + "/playlists", null, newPlaylists, updatePlaylist)
+
+                function updatePlaylist(something) {
+                    console.log(something)
+                }
+
+            }
+        })
+    }
 }
 
 function onPlaylistClicked(link){
-  localStorage.playlists = localStorage.playlists || JSON.stringify({});
-  var playlists =  JSON.parse(localStorage.playlists);
-  var id = link.dataset["for"];
-  var playlist = playlists[id];
-  var tracks = playlist.tracks;
-  var container = document.getElementById('tracks-list');
-  var classList = container.classList;
 
-  if (tracks.length < 1){
-    return container.innerHTML = "Playlist " + playlist.name + " is empty."
-  }
+    console.log("onPlaylistClicked")
 
-  var newHtml = '<div class="fl-tl-thead fl-tl-row">\n\
-  <div class="fl-tl-th fl-tl-name">Song</div>\n\
-  <div class="fl-tl-th fl-tl-artist">Artist</div>\n\
-  <div class="fl-tl-th fl-tl-album">Album</div>\n\
-  <div class="fl-tl-th fl-tl-time">Time</div>\n\
-  </div>';
+    //currently implemented with specific user from seed: ID -> 547db3471547ae200c3368f3
+    var userID = "547db3471547ae200c3368f3"
 
-  tracks.forEach(function(track){
-    track = findOne(model.tracks, "_id", track)
-    var artist = findOne(model.artists, "_id", track.artist);
-    var album = findOne(model.albums, "_id", track.album);
+    //get clicked playlist name
+    var href = link.href
+    var hrefElements = href.split("/")
+    var playlistName = decodeURI(href.split("/")[hrefElements.length-1])
+    console.log(playlistName)
 
-    newHtml+= '<div id="'+ track._id +'"" class="fl-tl-row" draggable="true">'
-    newHtml+= '<div class="fl-tl-cell fl-tl-name"><a href="#">'+ track.name + '</a></div>\n';
-    newHtml+= '<div class="fl-tl-cell fl-tl-artist"><a href="artists/'+ encodeURI(artist.name)+ '">'+ artist.name +'</a></div>\n';
-    newHtml+= '<div class="fl-tl-cell fl-tl-album"><a href="albums/'+ encodeURI(album.name)+ '">'+ album.name +'</a></div>\n';
-    newHtml+= '<div class="fl-tl-cell fl-tl-time">'+ formatTime(track.duration) + '</div>\n';
-    newHtml+= '</div>\n';
-  })
+    //find playlist with corresponding tracks
+    doJSONRequest("GET", "users/" + userID + "/playlists", null, null, renderPlaylistTracks);
 
-  container.innerHTML = newHtml;
+    function renderPlaylistTracks(playlists) {
+
+        playlists.forEach(function(playlist) {
+            if (playlist.name == playlistName) {
+                console.log("Found playlist: ", playlist.name, playlistName)
+
+                //in case playlist just added with no added tracks
+                var container = document.getElementById('content')
+                if (tracks.length < 1) {
+                    container.innerHTML = playlist.name + " is empty."
+                }
+
+                else {
+
+                    var tracksList = []
+
+                    //get all tracks
+                    doJSONRequest("GET", "/tracks", null, null, renderPlaylistTracks)
+
+                    function renderPlaylistTracks(tracks) {
+
+                        //find matching track objects with given track IDs
+                        for (var i = 0; i < playlist.tracks.length; i++) {
+                            for (var j = 0; j < tracks.length; j++) {
+                                if (playlist.tracks[i] == tracks[j]._id) {
+                                    tracksList[i] = tracks[j]
+                                }
+                            }
+                        }
+
+                        //console.log(tracksList)
+
+                        //render view with new content
+                        var tracksData = buildTracksData(tracksList);
+
+                        var data = {
+                            "tracks" : tracksData
+                        };
+
+                        dust.render("tracks", data, function(err, out) {
+
+                            var content = document.getElementById("content");
+
+                            content.innerHTML = out;
+
+                            bindAlbumLink();
+
+                            bindArtistLink();
+
+                            bindTracksDelete();
+
+                            bindEditTrackName();
+
+                        });
+
+                    }
+
+                }
+
+
+            }
+        })
+        //need to get tracks for SPECIFIC playlist -> maybe better to do new GET server side (/:userid/:playlistid)
+    }
+
 }
 
 function onEditPlaylistClicked(btn){
@@ -1100,28 +1213,11 @@ function onEditPlaylistClicked(btn){
   }
 }
 
-function loadPlaylistsFromLocalStorage(){
-  localStorage.playlists = localStorage.playlists || JSON.stringify({});
-  var playlists =  JSON.parse(localStorage.playlists);
-  //merge localStorage playlists with model playlists
-  /*
-  model.playlists.forEach(function(playlist){
-    if (!playlists.hasOwnProperty(playlist._id))
-      playlists[playlist._id] = playlist;
-  });
-*/
 
-var keys = Object.keys(playlists);
-var newHtml ='';
-keys.forEach(function(key){
-  appendNewPlaylistToMenu(playlists[key]);
-});
 
-  //persist playlists
-  localStorage.playlists = JSON.stringify(playlists);
-}
 
 function appendNewPlaylistToMenu(pl){
+    console.log("reached appendPlaylist")
   var id = pl._id;
   var name = pl.name;
   var newHtml ='';
@@ -1136,6 +1232,13 @@ function appendNewPlaylistToMenu(pl){
   document.getElementById('playlists').innerHTML += newHtml;
 }
 /* Playlist: Not working after the switch to AJAX */
+
+
+
+
+
+
+
 
 /* Player */
 
@@ -1660,3 +1763,121 @@ function search(location,term) {
     contentRender('/artists');
 }
 
+/*-------------   Search  (Mastery 8)-------------   */
+
+/*@culo Playlist Sharing */
+/*
+function setupFollowedPlaylists() {
+    console.log("reached")
+
+
+
+    var followPlBtn = document.getElementById("create-follow-btn");
+    followPlBtn.addEventListener('click', function () {
+
+        console.log("following")
+        findAllUserPlaylists()
+
+    })
+
+    document.addEventListener('click', function (e) {
+        if (e.target.classList.contains('edit-btn')) {
+            return onEditPlaylistClicked(e.target)
+        }
+
+        if (e.target.classList.contains('pl-name-input')) {
+            return e.preventDefault();
+        }
+
+        if (e.target.classList.contains('pl-name')) {
+            e.preventDefault();
+            return onFollowedPlaylistClicked(e.target)
+        }
+
+
+    })
+}
+
+function findAllUserPlaylists() {
+
+    doJSONRequest("GET", "/users", null, null, getUserPlaylists)
+
+    function getUserPlaylists(userList) {
+        userList.forEach(function(user) {
+
+            console.log("USER: ", user)
+
+            var userID = user._id;
+            var getUserIDPlaylists = "/users/" + userID + "/playlists"
+
+            doJSONRequest("GET", getUserIDPlaylists, null, null, renderUserPlaylists);
+
+            function renderUserPlaylists(playlists) {
+
+                console.log("Playlists: ", playlists)
+
+                playlists.forEach(function(pl) {
+
+                    appendNewFollowedPlaylistToMenu(pl)
+                })
+            }
+        })
+    }
+}
+
+
+function appendNewFollowedPlaylistToMenu(pl) {
+    var id = pl._id;
+    var name = pl.name;
+    var newHtml = '';
+    newHtml += '  <li id="' + id + '" ondrop="drop(event)" ondragover="allowDrop(event)">';
+    newHtml += '    <a class="pl-name" data-for="' + id + '" href="playlists/' + encodeURI(name) + '">';
+    newHtml += '      <i class="nav-menu-icon fa fa-bars"></i>' + name;
+    newHtml += '    </a>';
+    newHtml += '    <a class="edit-btn" data-for="' + id + '" href="#"><i class="fa fa-pencil"></i></a>';
+    newHtml += '    <input  class="pl-name-input" name="' + id + '" type="text" value="' + name + '">';
+    newHtml += '  </li>';
+
+    document.getElementById('followedPlaylists').innerHTML += newHtml;
+}
+
+
+function onFollowedPlaylistClicked(link){
+
+    console.log(link)
+    /*
+    localStorage.playlists = localStorage.playlists || JSON.stringify({});
+    var playlists =  JSON.parse(localStorage.playlists);
+    var id = link.dataset["for"];
+    var playlist = playlists[id];
+    var tracks = playlist.tracks;
+    var container = document.getElementById('tracks-list');
+    var classList = container.classList;
+
+    if (tracks.length < 1){
+        return container.innerHTML = "Playlist " + playlist.name + " is empty."
+    }
+
+    var newHtml = '<div class="fl-tl-thead fl-tl-row">\n\
+  <div class="fl-tl-th fl-tl-name">Song</div>\n\
+  <div class="fl-tl-th fl-tl-artist">Artist</div>\n\
+  <div class="fl-tl-th fl-tl-album">Album</div>\n\
+  <div class="fl-tl-th fl-tl-time">Time</div>\n\
+  </div>';
+
+    tracks.forEach(function(track){
+        track = findOne(model.tracks, "_id", track)
+        var artist = findOne(model.artists, "_id", track.artist);
+        var album = findOne(model.albums, "_id", track.album);
+
+        newHtml+= '<div id="'+ track._id +'"" class="fl-tl-row" draggable="true">'
+        newHtml+= '<div class="fl-tl-cell fl-tl-name"><a href="#">'+ track.name + '</a></div>\n';
+        newHtml+= '<div class="fl-tl-cell fl-tl-artist"><a href="artists/'+ encodeURI(artist.name)+ '">'+ artist.name +'</a></div>\n';
+        newHtml+= '<div class="fl-tl-cell fl-tl-album"><a href="albums/'+ encodeURI(album.name)+ '">'+ album.name +'</a></div>\n';
+        newHtml+= '<div class="fl-tl-cell fl-tl-time">'+ formatTime(track.duration) + '</div>\n';
+        newHtml+= '</div>\n';
+    })
+
+    container.innerHTML = newHtml;
+    */
+//}
