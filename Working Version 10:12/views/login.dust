@@ -10,6 +10,10 @@
 
 </head>
 <body class="body login">
+  <script>
+    var int = Math.floor((Math.random() * 10) + 1);
+    document.getElementsByClassName("login")[0].setAttribute("style","background-image:url('../images/Wallpapers/"+int+".jpg')")
+  </script>
   <div class="vertical-align-wrapper">
     <div class="vertical-align-box">
       <h1 class="slogan">Gotta <i class="fa fa-heart beats pulse" style="color:#B13A3D;"></i> that sound.</h1>

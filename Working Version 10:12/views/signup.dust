@@ -15,6 +15,10 @@
     <script src="js/app.js"></script>
 </head>
 <body class="body signup">
+  <script>
+    var int = Math.floor((Math.random() * 10) + 1);
+    document.getElementsByClassName("signup")[0].setAttribute("style","background-image:url('../images/Wallpapers/"+int+".jpg')")
+  </script>
   <div class="vertical-align-wrapper">
     <div class="vertical-align-box">
       <h1 class="slogan">Now listen.</h1>

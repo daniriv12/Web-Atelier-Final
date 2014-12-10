@@ -5,12 +5,12 @@ window.onload = loadpage;
 
 function loadpage(){
 
+
   bindMenu();
 
   updatePage();
 
   setupPlayer();
-
 
   setupSearch();
 
@@ -18,7 +18,7 @@ function loadpage(){
 
   setupAddTrack();
 
-    var userId = setUser();
+  var userId = setUser();
 
     sessionStorage.setItem("user", userId);
 
@@ -41,8 +41,6 @@ function displayPlayer(){
     document.getElementsByClassName('player')[0].removeAttribute("style")
 }
 
-
-
 var setUser = function (){
 
 
@@ -62,7 +60,7 @@ var setUser = function (){
             sessionStorage.setItem("userName",data.userName);
 
         }
-
+//        window.location.href ="http://localhost:3000/#library";
         return userId;
     }
 
@@ -83,7 +81,6 @@ var inactivityTime = function () {
 
     document.onmousemove = resetTimer;
     document.onkeypress = resetTimer;
-
 
 
 
@@ -135,8 +132,6 @@ function bindMenu(){
 
 function drawLibrary(e, addHistory){
 
-
-
   if(e && e.target){
     e.preventDefault();
   }
@@ -155,7 +150,7 @@ function drawLibrary(e, addHistory){
       "tracks" : tracksData
     };
 
-    dust.render("tracks", data, function(err, out) {
+      dust.render("tracks", data, function(err, out) {
 
       var content = document.getElementById("content");
 
@@ -177,6 +172,7 @@ function drawLibrary(e, addHistory){
 }
 
 function buildTracksData(tracks){
+    console.log("ciao")
 
   var tracksData = [];
 
@@ -423,6 +419,8 @@ function drawVideos(e, addHistory){
             content.setAttribute("style","height:715px")
             document.getElementById('tracks-list').setAttribute("style","height:715px")
             document.getElementsByClassName('player')[0].setAttribute("style","display:none")
+
+            setupPlayer();
 
             bindTracksLink();
 
@@ -1034,7 +1032,7 @@ function setupPlaylists() {
     var userID = sessionStorage.getItem("user")
 
 
-    loadPlaylistsFromDatabase(userID)
+    loadPlaylistsFromDatabase();
 
     var createPlBtn = document.getElementById("create-pl-btn");
     createPlBtn.addEventListener('click', function () {
@@ -1244,6 +1242,10 @@ function onPlaylistClicked(link){
                             var content = document.getElementById("content");
 
                             content.innerHTML = out;
+
+                            displayPlayer();
+
+                            setupPlayer();
 
                             bindAlbumLink();
 
@@ -1683,7 +1685,7 @@ function setupPlayer(selectedTrack){
             var nextCounter = 0;
 
             document.addEventListener('keyup',function(evt){
-                if (document.activeElement.id != 'main-search') {
+                if (document.activeElement.id != 'main-search' && document.getElementsByClassName('player')[0].getAttribute("style") != "display:none") {
                     if (evt.keyCode == 32) {
                         evt.preventDefault()
                         playButton.click();
@@ -1706,7 +1708,7 @@ function setupPlayer(selectedTrack){
             });
 
             document.addEventListener('keydown',function(evt){
-                if (document.activeElement.id != 'main-search') {
+                if (document.activeElement.id != 'main-search' && document.getElementsByClassName('player')[0].getAttribute("style") != "display:none") {
                     if (evt.keyCode == 32) {
                         evt.preventDefault()
                     }
@@ -1907,6 +1909,8 @@ function search(location,term) {
             if (location.indexOf('library') > -1) document.getElementById('content').innerHTML = tracksHTML+artistsHTML+albumsHTML;
             else if (location.indexOf('albums') > -1) document.getElementById('content').innerHTML = albumsHTML+tracksHTML+artistsHTML;
             else if (location.indexOf('artists') > -1) document.getElementById('content').innerHTML = artistsHTML+tracksHTML+albumsHTML;
+
+            setupPlayer();
         }
     }
     contentRender('/tracks');
@@ -1937,10 +1941,11 @@ function drawFriends(e, addHistory){
 
             content.style.height = "550px";
             content.style.width = "100%";
+
             content.innerHTML = out;
 
-
-
+            content.setAttribute("style","height:715px")
+            document.getElementsByClassName('player')[0].setAttribute("style","display:none")
         });
 
 //

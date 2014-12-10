@@ -28,12 +28,12 @@
           <li><a href="library.html"><i class="nav-menu-icon glyphicon glyphicon-music"></i>Library</a></li>
           <li><a href="artists.html"><i class="nav-menu-icon fa fa-users"></i>Artists</a></li>
           <li><a href="albums.html"><i class="nav-menu-icon icons8-music-record"></i>Albums</a></li>
-          <li><a href="videos.html"><i class="nav-menu-icon icons8-music-record"></i>Videos</a></li>
+          <li><a href="videos.html"><i class="nav-menu-icon fa fa-youtube-play"></i>Videos</a></li>
           <li><a href="friends.html"><i class="nav-menu-icon fa fa-users"></i>Friends</a></li>
         </ul>
 
-       <a href="#" class="create-playlist" id="create-track-btn"><i class="fa fa-plus"></i> new track</a><br>
-       <a href="#" class="create-playlist" id="create-pl-btn"><i class="fa fa-plus"></i> new playlist</a>
+       <a class="create-playlist" id="create-track-btn"><i class="fa fa-plus"></i> new track</a><br>
+       <a class="create-playlist" id="create-pl-btn"><i class="fa fa-plus"></i> new playlist</a>
         <ul class="nav-menu" id="playlists">
         <!-- Playlists will be rendered here -->
         </ul>
@@ -43,7 +43,7 @@
       <nav id="user-nav" class="clearfix">
         <ul class="nav-menu horizontal-menu float-right clearfix">
           <li><a id="currentUser" href="#">User</a></li>
-          <li><a href="/logout">logout</a></li>
+          <li><a href="/logout"><i class="user-nav-icon fa fa-sign-out"></i>logout</a></li>
         </ul>
       </nav>
       <section class="player">
@@ -76,8 +76,10 @@
             <div class="time time-total" id="time-total"></div>
 
           </div>
+          <div class="pl-controls">
+            <button id="shuffle" class="btn btn-icon fa fa-retweet" value="normal"></button>
+          </div>
 
-          <button id="shuffle" class="">normal</button>
 
           <div class="pl-volume">
             <i class="btn-icon fa fa-volume-off" id="volume-off"></i>

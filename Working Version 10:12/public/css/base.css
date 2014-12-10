@@ -49,7 +49,7 @@
 
   body {
     background: #F0F0F0;
-    font-weight: 300;
+    font-weight: 200;
     font-family: 'Lato', Calibri, Arial, sans-serif;
     -webkit-font-smoothing:auto;
   }
@@ -67,11 +67,11 @@
   }
 
   body.login {
-    background-image: url('../images/headphones.jpg');
+    /*background-image: url('../images/Wallpapers/1.jpg');*/
   }
 
   body.signup {
-    background-image: url('../images/singer.jpg');
+    /*background-image: url('../images/Wallpapers/2.jpg');*/
   }
 
 
@@ -82,7 +82,7 @@
   }
 
   .container.main-wrapper{
-    background-color:  #a44b4d;
+    background-color:  #364761;
   }
 
   /* ---------------- Typography ---------------- */
@@ -223,11 +223,10 @@
   }
 
   a.beats{
-    color: #D35B5D;
+    color: white;
   }
 
   a.beats:hover, a.beats:focus {
-    color: #8a2932;
     text-decoration: underline;
   }
 
@@ -238,7 +237,7 @@
     font-size: 58px;
     font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue",  Helvetica, Arial, "Lucida Grande", sans-serif;
     text-transform: uppercase;
-    font-weight: 300;
+    font-weight: 400;
     text-shadow: 1px 1px 0 rgba(0,0,0,0.5);
     font-style: italic;
   }
@@ -373,28 +372,28 @@
     transition: all 0.2s ease-out
   }
 
-  .btn-primary {
-    color: #fff;
-    background-color: rgb(35, 91, 180);
-    border-color: rgb(18, 64, 163);
-  }
+  /*.btn-primary {*/
+    /*color: #fff;*/
+    /*background-color: rgb(35, 91, 180);*/
+    /*border-color: rgb(18, 64, 163);*/
+  /*}*/
 
-  .btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active {
-    color: #fff;
-    background-color: rgb(20, 67, 143);
-    border-color: rgb(18, 53, 109);
-  }
+  /*.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active {*/
+    /*color: #fff;*/
+    /*background-color: rgb(20, 67, 143);*/
+    /*border-color: rgb(18, 53, 109);*/
+  /*}*/
 
   .btn-beats{
     color: #fff;
-    background-color: #a44b4d;
-    border-color: #633133;
+    background-color: #364761;
+    border-color: #1D293B;
   }
 
   .btn-beats:hover, .btn-beats:focus, .btn-beats:active, .btn-beats.active {
     color: #fff;
-    background-color: #8a2932;
-    border-color: #70403e;
+    background-color: #1D293B;
+    border-color: #364761;
   }
 
   .btn-icon:hover, .btn-icon:focus, .btn-icon.active{
@@ -419,7 +418,7 @@
   }
 
   .pl-controls{
-    flex: 0 0 auto;
+    /*flex: 0 0 auto;*/
     padding: 2px 5px;
   }
 
@@ -471,7 +470,7 @@
     position:absolute;
     height: 3px;
     top:4px;left:0;
-    background: #a44b4d;
+    background: #000000;
   }
 
   .pl-volume{
@@ -761,7 +760,7 @@
     max-width: 330px;
     background: rgba(0, 0, 0, 0.65);
     border-radius: 6px;
-    border: 2px dashed #ffffff;
+    border: 2px solid #ffffff;
     padding: 25px;
   }
 
@@ -821,15 +820,15 @@
   input[type="password"].form-stacked:first-of-type,
   .form-stacked.first {
     margin-bottom: -1px;
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
   }
 
   input[type="text"].form-stacked:last-of-type,
   input[type="password"].form-stacked:last-of-type,
   .form-stacked.last {
-    border-bottom-left-radius: 4px;
-    border-bottom-right-radius: 4px;
+    border-bottom-left-radius: 10Px;
+    border-bottom-right-radius: 10px;
     margin-bottom: 10px;
   }
 
@@ -862,7 +861,7 @@
 #main-nav{
   width:300px;
   height: 100%;
-  background: #a44b4d;
+  background: #364761;
   font-size: 16px;
   transition:width 150ms ease-out;
 }
@@ -883,7 +882,7 @@
 }
 
 #main-menu{
-  margin-bottom:60px;
+  margin-bottom:30px;
 }
 
 ul.nav-menu{
@@ -942,6 +941,9 @@ ul.nav-menu.horizontal-menu li > a:hover{
 
 .nav-menu-icon{
   padding: 0 20px;
+}
+.user-nav-icon{
+    padding: 0 10px;
 }
 
 .search-item{
@@ -1058,7 +1060,10 @@ a.create-playlist:hover, a.create-playlist:active{
   color: rgba(0,0,0,0.4);
 }
 
-
+#playlists{
+    height: 180px;
+    overflow: scroll;
+}
 
 #playlists > li:hover .edit-btn,
 #playlists > li.edit .edit-btn
@@ -1236,7 +1241,7 @@ a.create-playlist:hover, a.create-playlist:active{
 /* ---------------- User nav ---------------- */
 
 #user-nav{
-  background: #a44b4d;
+  background: #364761;
   width:100%;
   height:60px;
 }
@@ -1246,9 +1251,15 @@ a.create-playlist:hover, a.create-playlist:active{
     display:none;
   }
 }
-
 /* ---------------- Grid List ---------------- */
-
+#content{
+    height:520px;
+    overflow:scroll;
+}
+#tracks-list{
+    height:490px;
+    overflow:scroll;
+}
 ul.grid-list{
   list-style:none;
   margin: 5px; 
