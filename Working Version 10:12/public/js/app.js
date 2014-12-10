@@ -5,10 +5,11 @@ window.onload = loadpage;
 
 function loadpage(){
 
-
     bindMenu();
 
     updatePage();
+
+    setUser();
 
     setupPlayer();
 
@@ -18,17 +19,9 @@ function loadpage(){
 
     setupAddTrack();
 
-    setUser();
-
-//  var userId = setUser();
-//
-//    sessionStorage.setItem("user", userId);
-
-
     //must handle errors -daniel
 
     setupPlaylists();
-
 
     //@DIN: mastery 9 - shared playlists - working on.
     //setupFollowedPlaylists();
@@ -58,6 +51,7 @@ function setUser(){
         user.innerHTML = sessionStorage.getItem("userName");
     }
 //    console.log(sessionStorage)
+//    document.get
     window.location.href ="http://localhost:3000/#library";
 }
 
@@ -1751,6 +1745,7 @@ function setupPlayer(selectedTrack){
                 volumeUp.classList.add("active")
                 volumeOff.classList.remove("active")
             });
+            console.log("ECCOMIIIII")
         }
         else {
             changePointer(tracks[CurrentSong]._id,true);
