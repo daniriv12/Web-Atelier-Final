@@ -1216,6 +1216,8 @@ function onPlaylistClicked(link){
                             }
                         }
 
+                        var playlistID = playlist._id
+
                         console.log("trackslist: ", tracksList)
 
                         //render view with new content
@@ -1239,11 +1241,11 @@ function onPlaylistClicked(link){
 
                             bindArtistLink();
 
-                            bindTracksDelete();
+                            //bindTracksDelete();
 
                             bindPLTracksDelete(playlistID);
 
-                            bindEditTrackName();
+                            //bindEditTrackName();
 
                         });
 

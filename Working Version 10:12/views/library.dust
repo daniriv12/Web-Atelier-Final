@@ -36,8 +36,7 @@
 
        <a class="create-playlist" id="create-track-btn"><i class="fa fa-plus"></i> new track</a><br>
        <a class="create-playlist" id="create-pl-btn"><i class="fa fa-plus"></i> new playlist</a>
-
-              <a class="create-playlist" id="create-follow-btn"><i class="fa fa-plus"></i> Follow A Playlist</a>
+       <a class="create-playlist" id="create-follow-btn"><i class="fa fa-plus"></i> Follow A Playlist</a>
 
                <p> Current Playlists </p>
 
