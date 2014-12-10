@@ -6,21 +6,23 @@ window.onload = loadpage;
 function loadpage(){
 
 
-  bindMenu();
+    bindMenu();
 
-  updatePage();
+    updatePage();
 
-  setupPlayer();
+    setupPlayer();
 
-  setupSearch();
+    setupSearch();
 
-  inactivityTime();
+    inactivityTime();
 
-  setupAddTrack();
+    setupAddTrack();
 
-  var userId = setUser();
+    setUser();
 
-    sessionStorage.setItem("user", userId);
+//  var userId = setUser();
+//
+//    sessionStorage.setItem("user", userId);
 
 
     //must handle errors -daniel
@@ -41,31 +43,22 @@ function displayPlayer(){
     document.getElementsByClassName('player')[0].removeAttribute("style")
 }
 
-var setUser = function (){
-
-
-    var userId = window.location.search.slice(1);
-    var user = document.getElementById("currentUser");
-
-    if(user.innerHTML == "User"){
-
-        doJSONRequest("GET", "/users/" + userId, null, null, renderUserName);
-
-
-        function renderUserName(user1){
-            var data = user1;
-
-
-            user.innerHTML = data.userName;
+function setUser(){
+    if (window.location.search.slice(1)){
+        var userId = window.location.search.slice(1);
+        doJSONRequest("GET", "/users/" + userId, null, null, function(data){
             sessionStorage.setItem("userName",data.userName);
+            sessionStorage.setItem("user", userId);
 
-        }
-//        window.location.href ="http://localhost:3000/#library";
-        return userId;
+        });
     }
 
-    return null;
-
+    var user = document.getElementById("currentUser");
+    if(user.innerHTML == "User"){
+        user.innerHTML = sessionStorage.getItem("userName");
+    }
+//    console.log(sessionStorage)
+    window.location.href ="http://localhost:3000/#library";
 }
 
 
