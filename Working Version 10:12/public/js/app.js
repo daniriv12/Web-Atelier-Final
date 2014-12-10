@@ -80,6 +80,7 @@ var inactivityTime = function () {
     function logout() {
 
         window.location.href = "/logout";
+        sessionStorage.clear()
         alert("Bye bye, 10 minutes have passed")
         //location.href = 'logout.php'
 
