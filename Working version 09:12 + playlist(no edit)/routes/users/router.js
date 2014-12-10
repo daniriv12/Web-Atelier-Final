@@ -14,6 +14,8 @@ var config = require("../../config");
 var fieldsFilter = { 'password': 0, '__v': 0 };
 
 //supported methods
+
+router.all('/:userid/:playlistid/:trackid', middleware.supportedMethods('GET, PUT, DELETE, OPTIONS'));
 router.all('/:userid/followedPlaylists/:followedPlaylistsid', middleware.supportedMethods('GET, PUT, DELETE, OPTIONS'));
 router.all('/:userid/followedPlaylists', middleware.supportedMethods('GET, PUT, DELETE, OPTIONS'));
 
@@ -138,7 +140,7 @@ router.put('/:userid/playlists', function(req, res, next) {
   });
 });
 
-
+//get a single playlist
 router.get('/:userid/playlists/:playlistid', function(req, res, next) {
     User.findById(req.params.userid, fieldsFilter , function(err, user){
         if (err) return next (err);
@@ -161,6 +163,45 @@ router.get('/:userid/playlists/:playlistid', function(req, res, next) {
 
     });
 })
+
+//remove a specific track from specific playlist
+router.delete('/:userid/:playlistid/:trackid', function(req, res, next) {
+    User.findById(req.params.userid, fieldsFilter , function(err, user){
+        if (err) return next (err);
+        if (!user) {
+            res.status(404);
+            res.json({
+                statusCode: 404,
+                message: "Not Found"
+            });
+            return;
+        }
+
+        var playlistID = req.params.playlistid;
+        var trackID = req.params.trackid
+        console.log("Entered delete - with playlistID, ", playlistID, "  trackID: ", trackID)
+
+        user.playlists.forEach(function(playlist) {
+            console.log("playlistIDs: ", playlist._id, playlistID)
+            if(playlist._id == playlistID) {
+                console.log("playlist before: ", playlist)
+
+                for (var i = 0; i<playlist.tracks.length; i++) {
+                    console.log(playlist.tracks[i], trackID)
+                    if (playlist.tracks[i] == trackID) {
+                        playlist.tracks.splice(i, 1)
+                        console.log("playlist after splice: ", playlist)
+                        break;
+
+                    }
+                }
+            }
+        })
+
+        user.save(onModelSave(res))
+
+    });
+});
 
 /*** SHARE PLAYLISTS ****/
 

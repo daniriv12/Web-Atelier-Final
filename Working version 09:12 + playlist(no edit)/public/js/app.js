@@ -210,6 +210,7 @@ function addLibraryToHistory(addHistory){
 }
 
 function bindTracksDelete(){
+
   var tracks = document.querySelectorAll(".fl-tl-delete a");
 
   for (var elem = 0; elem < tracks.length; ++elem) {
@@ -219,6 +220,7 @@ function bindTracksDelete(){
 
 //@DIN: DELETE FUNCTIONALITY DATABASE CONSISTENCY
 function deleteTrack(e){
+    console.log("deleting")
 
     var href;
     var target = e.target;
@@ -1174,6 +1176,8 @@ function onPlaylistClicked(link){
             if (playlist.name == playlistName) {
                 console.log("Found playlist: ", playlist.name, playlistName)
 
+                var playlistID = playlist._id;
+
                 //in case playlist just added with no added tracks
                 var container = document.getElementById('content')
                 if (tracks.length < 1) {
@@ -1217,7 +1221,7 @@ function onPlaylistClicked(link){
 
                             bindArtistLink();
 
-                            bindTracksDelete();
+                            bindPLTracksDelete(playlistID);
 
                             bindEditTrackName();
 
@@ -1229,6 +1233,52 @@ function onPlaylistClicked(link){
             }
         })
     }
+
+}
+
+function bindPLTracksDelete(playlistID){
+
+    console.log("reached bindPL")
+
+    var tracks = document.querySelectorAll(".fl-tl-delete a");
+
+    for (var elem = 0; elem < tracks.length; ++elem) {
+        tracks[elem].setAttribute("plID", playlistID)
+        tracks[elem].onclick = deletePLTrack;
+    }
+
+    console.log(tracks)
+}
+function deletePLTrack(e) {
+    var href;
+    var target = e.target;
+
+    if(e && e.target){
+        e.preventDefault();
+        href = target.getAttribute("href");
+    }
+
+    console.log("deletePLTrack")
+    console.log(e)
+    console.log(e.target.getAttribute("plid"))
+
+    var trackID = href.split("/")[1]
+    var playlistID = e.target.getAttribute("plid")
+    var userID = sessionStorage.getItem("user")
+
+
+
+    doJSONRequest("DELETE", "users/" + userID +"/" + playlistID + "/" + trackID, null, null, trackRemoved)
+        //execute the AJAX call to the delete a single album
+
+        function trackRemoved() {
+            console.log("removed PLtrack")
+
+            var toDelete = target.parentNode.parentNode;
+            var parent = document.getElementById("tracks-list");
+
+            parent.removeChild(toDelete);
+        }
 
 }
 
@@ -2112,10 +2162,11 @@ function renderFollowedPlaylist(pl) {
     console.log("this is the playlist: ", pl)
     var tracksList = []
 
+    var playlistID = pl._id
     //get all tracks
-    doJSONRequest("GET", "/tracks", null, null, renderPlaylistTracks)
+    doJSONRequest("GET", "/tracks", null, null, renderFLPlaylistTracks)
 
-    function renderPlaylistTracks(tracks) {
+    function renderFLPlaylistTracks(tracks) {
 
         //find matching track objects with given track IDs
         for (var i = 0; i < playlist.tracks.length; i++) {
@@ -2145,9 +2196,9 @@ function renderFollowedPlaylist(pl) {
 
             bindArtistLink();
 
-            bindTracksDelete();
+            bindPLTracksDelete(playlistID);
 
-            bindEditTrackName();
+            //bindPlaylistEditTrackName();
 
         });
 
@@ -2157,5 +2208,3 @@ function renderFollowedPlaylist(pl) {
 
 
 
-
-//* COME UP TO HEEEEEEERRRRRR *//
