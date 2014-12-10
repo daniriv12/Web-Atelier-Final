@@ -14,6 +14,9 @@ var config = require("../../config");
 var fieldsFilter = { 'password': 0, '__v': 0 };
 
 //supported methods
+router.all('/:userid/followedPlaylists/:followedPlaylistsid', middleware.supportedMethods('GET, PUT, DELETE, OPTIONS'));
+router.all('/:userid/followedPlaylists', middleware.supportedMethods('GET, PUT, DELETE, OPTIONS'));
+
 router.all('/:userid/playlists/:playlistid', middleware.supportedMethods('GET, PUT, DELETE, OPTIONS'));
 router.all('/:userid/playlists', middleware.supportedMethods('GET, PUT, OPTIONS'));
 router.all('/:userid', middleware.supportedMethods('GET, PUT, DELETE, OPTIONS'));
@@ -135,10 +138,6 @@ router.put('/:userid/playlists', function(req, res, next) {
   });
 });
 
-//router.put('/:userid/playlists/:playlistid', function(req, res, next) {
-//    var data = req.body;
-//
-//});
 
 router.get('/:userid/playlists/:playlistid', function(req, res, next) {
     User.findById(req.params.userid, fieldsFilter , function(err, user){
@@ -159,10 +158,72 @@ router.get('/:userid/playlists/:playlistid', function(req, res, next) {
             }
         });
 
-        //res.json(user.playlists);
 
     });
 })
+
+/*** SHARE PLAYLISTS ****/
+
+//get a user's FollowedPlaylists
+router.get('/:userid/followedPlaylists', function(req, res, next) {
+    User.findById(req.params.userid, fieldsFilter , function(err, user){
+        if (err) return next (err);
+        if (!user) {
+            res.status(404);
+            res.json({
+                statusCode: 404,
+                message: "Not Found"
+            });
+            return;
+        }
+        res.json(user.followedPlaylists);
+    });
+});
+
+//get a user's single followedPlaylist
+router.get('/:userid/followedPlaylists/:followedPlaylistsid', function(req, res, next) {
+    User.findById(req.params.userid, fieldsFilter , function(err, user){
+        if (err) return next (err);
+        if (!user) {
+            res.status(404);
+            res.json({
+                statusCode: 404,
+                message: "Not Found"
+            });
+            return;
+        }
+
+        var id = req.params.followedPlaylistsid;
+        user.followedPlaylists.forEach(function(playlist){
+            if (playlist._id == id) {
+                res.json(playlist);
+            }
+        });
+    });
+})
+
+//update a user's followedPlaylists
+router.put('/:userid/followedPlaylists', function(req, res, next) {
+    var data = req.body;
+
+    User.findById(req.params.userid, fieldsFilter , function(err, user){
+        if (err) return next (err);
+        if (!user) {
+            res.status(404);
+            res.json({
+                statusCode: 404,
+                message: "Not Found"
+            });
+            return;
+        }
+
+        console.log("about to save FLplaylist")
+        console.log(user.followedPlaylists)
+        console.log(req.body)
+        user.followedPlaylists = req.body;
+        user.save(onModelSave(res));
+    });
+});
 
 function onModelSave(res, status, sendItAsResponse){
   var statusCode = status || 204;

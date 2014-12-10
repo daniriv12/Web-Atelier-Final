@@ -1042,7 +1042,7 @@ var users = {
       "dateCreated"  : "Sat Sep 27 2014 10:26:46 GMT+0200 (CEST)",
       "playlists"    : [
          new Playlist ({
-          "name" : 'Thrash Metal favs',
+          "name" : 'Thrash Metal favs 1',
           "tracks": [tracks.data[0]._id, tracks.data[1]._id]
         }),
           new Playlist ({
@@ -1062,11 +1062,11 @@ var users = {
       "dateCreated"  : "Sat Sep 27 2014 10:26:46 GMT+0200 (CEST)",
       "playlists"    : [
          new Playlist ({
-          "name" : 'Thrash Metal favs',
+          "name" : 'Thrash Metal favs 3',
           "tracks": [tracks.data[0]._id, tracks.data[1]._id]
         }),
           new Playlist ({
-          "name" : 'Thrash Metal favs 2',
+          "name" : 'Thrash Metal favs 4',
           "tracks": [tracks.data[6]._id, tracks.data[7]._id]
         })
       ]
@@ -1086,7 +1086,7 @@ var users = {
           "tracks": [tracks.data[0]._id, tracks.data[1]._id]
         }),
           new Playlist ({
-          "name" : 'Thrash Metal favs 3',
+          "name" : 'Thrash Metal favs 5',
           "tracks": [tracks.data[5]._id, tracks.data[6]._id]
         })
       ]

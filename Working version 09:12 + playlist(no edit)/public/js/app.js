@@ -34,7 +34,7 @@ window.onload = function(){
 
 
     //@DIN: mastery 9 - shared playlists - working on.
-    //setupFollowedPlaylists();
+    setupFollowedPlaylists();
 
 }
 
@@ -1003,12 +1003,10 @@ window.onpopstate = updatePage;
 
 /* Playlist: Not working after the switch to AJAX */
 function setupPlaylists() {
-    //currently implemented with specific user from seed: ID -> 547db3471547ae200c3368f3
-    //var userID = "5486d72319bd68a12accbf0e"
+    //get userID
     var userID = sessionStorage.getItem("user")
 
-
-    loadPlaylistsFromDatabase(userID)
+    loadPlaylistsFromDatabase()
 
     var createPlBtn = document.getElementById("create-pl-btn");
     createPlBtn.addEventListener('click', function () {
@@ -1023,9 +1021,6 @@ function setupPlaylists() {
 
         //update localStorage counter
         localStorage.pl_cnt = cnt;
-
-        //persist to localStorage (??)
-        // savePlaylist(newPlaylist);
 
 
         //save to DATABASE
@@ -1840,3 +1835,327 @@ function drawFriends(e, addHistory){
 
 }
 
+/*****@ Playlist Sharing ******/
+
+function setupFollowedPlaylists() {
+    console.log("reached")
+
+    loadFollowedPlaylistsFromDatabase()
+
+    var followPlBtn = document.getElementById("create-follow-btn");
+    followPlBtn.addEventListener('click', function () {
+
+        console.log("following")
+        choosePlaylist()
+
+    })
+
+    document.addEventListener('click', function (e) {
+        if (e.target.classList.contains('edit-btn')) {
+            return onEditPlaylistClicked(e.target)
+        }
+
+        if (e.target.classList.contains('pl-name-input')) {
+            return e.preventDefault();
+        }
+
+        if (e.target.classList.contains('pl-name')) {
+            e.preventDefault();
+            return onFollowedPlaylistClicked(e.target)
+        }
+
+
+    })
+}
+
+function choosePlaylist() {
+
+    console.log("choosePlaylist")
+
+    //will consist of every playlist from each user (will need to remove OWN playlists (if userID != user._id)
+    var allPlaylists = []
+    var i = 0;
+
+    //get all users
+    doJSONRequest("GET", "users/", null, null, getUserPlaylist)
+
+    function getUserPlaylist(users) {
+        users.forEach(function(user) {
+
+            //get all playlists of single user
+            doJSONRequest("GET", "users/" + user._id + "/playlists", null, null, collectPlaylists)
+
+            //collect all playlists together
+            function collectPlaylists(playlists) {
+                playlists.forEach(function(playlist){
+                    allPlaylists[i] = playlist;
+                    i++
+                })
+
+                console.log(allPlaylists)
+
+                //render chooseFLplaylists view
+                renderPlaylists(allPlaylists)
+
+
+            }
+        })
+    }
+
+}
+function renderPlaylists(playlists) {
+
+    var data = {
+        "playlists" : playlists
+    };
+
+    dust.render("tempFollowPlaylist", data, function(err, out) {
+
+        var content = document.getElementById("content");
+
+        content.innerHTML = out;
+    })
+    //attach event to each playlist
+    bindPlaylist()
+
+}
+
+function bindPlaylist() {
+    var playlists = document.querySelectorAll(".followPl");
+    console.log("Playlists: ", playlists)
+
+    for (var elem = 0; elem < playlists.length; ++elem) {
+        //console.log(playlists[elem].attributes.value.value)
+        //var playlistID = playlists[elem].attributes.id.value
+        playlists[elem].onclick = followPlaylist;
+    }
+}
+
+function followPlaylist(e) {
+
+    var userID = sessionStorage.getItem("user")
+
+    console.log("followplaylist - e following")
+    console.log(e)
+
+    console.log("lets try")
+    console.log(e.srcElement.innerText)
+    console.log(e.srcElement.id)
+
+    var playlistName = e.srcElement.innerText;
+    var playlistID = e.srcElement.id;
+
+
+    var playlistObject = { "name" : playlistName,
+                            "playlistID" : playlistID}
+
+    //put new followedPlaylist in database
+    doJSONRequest("GET", "users/" + userID + "/followedPlaylists", null, null, currentFollowedPlaylists)
+
+    function currentFollowedPlaylists(followedPlaylists) {
+
+        var newFollowedPlaylistList = followedPlaylists;
+        newFollowedPlaylistList[newFollowedPlaylistList.length] = playlistObject;
+
+        doJSONRequest("PUT", "users/" + userID + "/followedPlaylists", null, newFollowedPlaylistList, updated)
+
+        function updated() {
+            console.log("updated")
+
+            doJSONRequest("GET", "users/" + userID + "/followedPlaylists", null, null, updatedFollowedPlaylists)
+            function updatedFollowedPlaylists(FLplaylists) {
+                var newlyAddedFLPlaylist = FLplaylists[FLplaylists.length-1]
+
+                console.log("about to append new FL playlist")
+                console.log(newlyAddedFLPlaylist)
+                appendNewFollowedPlaylistToMenu(newlyAddedFLPlaylist)
+
+            }
+
+        }
+    }
+}
+
+
+function loadFollowedPlaylistsFromDatabase() {
+
+    console.log("loadFollowedPlaylists")
+
+    //get user playlists
+    //currently implemented with specific user from seed: ID -> 547db3471547ae200c3368f3
+    //var userID = "5486d72319bd68a12accbf0e"
+    var userID = sessionStorage.getItem("user")
+
+
+    doJSONRequest("GET", "/users/" + userID + "/FollowedPlaylists", null, null, renderFollowedPlaylists);
+
+    function renderFollowedPlaylists(FLplaylists) {
+
+        console.log("renderFollowedPlaylists")
+
+        FLplaylists.forEach(function(pl) {
+
+            appendNewFollowedPlaylistToMenu(pl)
+        })
+    }
+
+}
+
+
+function appendNewFollowedPlaylistToMenu(pl) {
+    console.log("cefkjbvbwkbvkbvjaebvkbkjb")
+
+    var FLplaylists = document.querySelectorAll("#followedPlaylists > li");
+    console.log("querySelector: ", FLplaylists)
+    console.log(typeof(FLplaylists))
+
+    var playlistID = pl.playlistID
+    var id = pl._id;
+    var name = pl.name;
+
+    var alreadyExists = false;
+    for (var i=0; i<FLplaylists.length; i++){
+        console.log(FLplaylists[i])
+        console.log(typeof(FLplaylists[i]))
+        console.log(FLplaylists[i].getAttribute("plid"))
+        if (FLplaylists[i].getAttribute("plid") == playlistID) {
+            alreadyExists = true;
+        }
+    }
+
+
+    if (!alreadyExists) {
+
+        var newHtml = '';
+        newHtml += '  <li id="' + playlistID + '" plID="' + playlistID + '" +  ondrop="drop(event)" ondragover="allowDrop(event)">';
+        newHtml += '    <a class="pl-name" data-for="' + playlistID + '" href="playlists/' + encodeURI(name) + '">';
+        newHtml += '      <i class="nav-menu-icon fa fa-bars"></i>' + name;
+        newHtml += '    </a>';
+        newHtml += '  </li>';
+
+        document.getElementById('followedPlaylists').innerHTML += newHtml;
+    }
+}
+
+
+function onFollowedPlaylistClicked(link){
+    console.log("onfollowedplaylistclicked")
+
+    var FLplaylistID = link.dataset["for"]
+    console.log("FLPLID: ", FLplaylistID)
+
+
+//        //get clicked playlist name
+//        var href = link.href
+//        var hrefElements = href.split("/")
+//        var FLplaylistName = decodeURI(href.split("/")[hrefElements.length-1])
+
+        //find playlist with corresponding tracks
+        doJSONRequest("GET", "users/", null, null, searchInUsers)
+        function searchInUsers(users) {
+
+            users.forEach(function(user) {
+
+                doJSONRequest("GET", "/users/" + user._id +"/playlists", null, null, renderFollowedPlaylistTracks)
+
+                function renderFollowedPlaylistTracks(playlists) {
+                    playlists.forEach(function(playlist){
+                        if(playlist._id == FLplaylistID) {
+                            renderFollowedPlaylist(playlist)
+                        }
+                    })
+                }
+            })
+
+        }
+
+}
+
+function getOriginalFLPlaylist(playlistID) {
+
+    doJSONRequest("GET", "users/", null, null, searchUser)
+
+    function searchUser(users) {
+
+        users.forEach(function(user) {
+
+            doJSONRequest("GET", "users/" + user._id + "/playlists", null, null, searchPlaylists)
+
+            function searchPlaylists(playlists) {
+
+                console.log("looking into playlists")
+
+                playlists.forEach(function(playlist) {
+                    //console.log("PLID given: ", playlistID)
+
+                    //console.log(playlist)
+                    if (playlist._id == playlistID) {
+
+                        console.log("current PLID: ", playlist._id)
+
+                        console.log("FOUND THE PLAYLIST!!!")
+                        console.log(playlist)
+                        //return playlist;
+
+                        renderFollowedPlaylist(playlist)
+                    }
+                })
+            }
+        })
+    }
+}
+
+function renderFollowedPlaylist(pl) {
+
+    console.log("about to render playlist")
+    var playlist = pl
+    console.log("this is the playlist: ", pl)
+    var tracksList = []
+
+    //get all tracks
+    doJSONRequest("GET", "/tracks", null, null, renderPlaylistTracks)
+
+    function renderPlaylistTracks(tracks) {
+
+        //find matching track objects with given track IDs
+        for (var i = 0; i < playlist.tracks.length; i++) {
+            for (var j = 0; j < tracks.length; j++) {
+                if (playlist.tracks[i] == tracks[j]._id) {
+                    tracksList[i] = tracks[j]
+                }
+            }
+        }
+
+        console.log("trackslist: ", tracksList)
+
+        //render view with new content
+        var tracksData = buildTracksData(tracksList);
+
+        var data = {
+            "tracks" : tracksData
+        };
+
+        dust.render("tracks", data, function(err, out) {
+
+            var content = document.getElementById("content");
+
+            content.innerHTML = out;
+
+            bindAlbumLink();
+
+            bindArtistLink();
+
+            bindTracksDelete();
+
+            bindEditTrackName();
+
+        });
+
+    }
+}
+
+
+
+
+
+//* COME UP TO HEEEEEEERRRRRR *//
