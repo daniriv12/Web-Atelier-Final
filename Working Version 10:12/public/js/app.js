@@ -1466,10 +1466,11 @@ function setupPlayer(selectedTrack){
                     var pointer = '<i class="fa fa-volume-up"></i>&nbsp;&nbsp;';
                     var str = childNodes[i].firstChild.firstChild.innerHTML
                     if(boolean){
-
-                        childNodes[i].firstChild.firstChild.innerHTML = pointer + str;
+                        if (childNodes[i].firstChild.firstChild.innerHTML.indexOf(pointer) == -1)
+                            childNodes[i].firstChild.firstChild.innerHTML = pointer + str;
                     } else{
-                        childNodes[i].firstChild.firstChild.innerHTML = str.substr(pointer.length)
+                        if (childNodes[i].firstChild.firstChild.innerHTML.indexOf(pointer) > -1)
+                            childNodes[i].firstChild.firstChild.innerHTML = str.substr(pointer.length)
                     }
 
 
@@ -2149,7 +2150,6 @@ function loadFollowedPlaylistsFromDatabase() {
 
 
 function appendNewFollowedPlaylistToMenu(pl) {
-    console.log("cefkjbvbwkbvkbvjaebvkbkjb")
 
     var FLplaylists = document.querySelectorAll("#followedPlaylists > li");
     console.log("querySelector: ", FLplaylists)
@@ -2175,7 +2175,7 @@ function appendNewFollowedPlaylistToMenu(pl) {
         var newHtml = '';
         newHtml += '  <li id="' + playlistID + '" plID="' + playlistID + '" +  ondrop="drop(event)" ondragover="allowDrop(event)">';
         newHtml += '    <a class="pl-name" data-for="' + playlistID + '" href="playlists/' + encodeURI(name) + '">';
-        newHtml += '      <i class="nav-menu-icon fa fa-bars"></i>' + name;
+        newHtml += '      <i class="nav-menu-icon fa fa-link"></i>' + name;
         newHtml += '    </a>';
         newHtml += '  </li>';
 

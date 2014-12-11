@@ -99,7 +99,7 @@
   .h5,
   .h6 {
     font-family: inherit;
-    font-weight: 500;
+    font-weight: 100;
     line-height: 1.1;
     color: inherit;
   }
@@ -152,7 +152,7 @@
   .h2 .small,
   h3 .small,
   .h3 .small {
-    font-size: 65%;
+    font-size: 55%;
   }
   h4,
   .h4,
@@ -860,17 +860,18 @@
 /* ---------------- Main Nav ---------------- */
 #main-nav{
   width:300px;
-  height: 100%;
+  height: 775px;
   background: #364761;
   font-size: 16px;
   transition:width 150ms ease-out;
+  overflow: scroll;
 }
 
 #main-nav h2 {
   margin: 0;
-  padding: 1em;
+  padding: .6em;
   color: rgba(0,0,0,0.4);
-  font-size: 2em;
+  font-size: 1.85em;
 }
 
 .main-nav-absolute{
@@ -1058,11 +1059,6 @@ a.create-playlist:hover, a.create-playlist:active{
   box-shadow: none;
   text-shadow: none;
   color: rgba(0,0,0,0.4);
-}
-
-#playlists{
-    height: 180px;
-    overflow: scroll;
 }
 
 #playlists > li:hover .edit-btn,

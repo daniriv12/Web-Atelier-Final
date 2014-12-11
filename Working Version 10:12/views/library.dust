@@ -23,39 +23,29 @@
        <div class="main-nav-content">
         <ul id="main-menu" class="nav-menu">
           <li class="search-item">
-           <span class="nav-menu-icon search-icon glyphicon glyphicon-search"></span>
+           <span class="nav-menu-icon search-icon fa fa-search"></span>
            <input id="main-search" placeholder="Search" type="search" class="nav-menu-search" list="auto_completion" >
            <datalist id="auto_completion"></datalist>
           </li>
-          <li><a href="library.html"><i class="nav-menu-icon glyphicon glyphicon-music"></i>Library</a></li>
+          <li><a href="library.html"><i class="nav-menu-icon fa fa-music"></i>Library</a></li>
           <li><a href="artists.html"><i class="nav-menu-icon fa fa-users"></i>Artists</a></li>
-          <li><a href="albums.html"><i class="nav-menu-icon icons8-music-record"></i>Albums</a></li>
+          <li><a href="albums.html">&nbsp;<i class="nav-menu-icon fa fa-microphone"></i>&nbsp;Albums</a></li>
           <li><a href="videos.html"><i class="nav-menu-icon fa fa-youtube-play"></i>Videos</a></li>
-          <li><a href="friends.html"><i class="nav-menu-icon fa fa-users"></i>Friends</a></li>
+          <li><a href="friends.html"><i class="nav-menu-icon fa fa-comments"></i>Friends</a></li>
         </ul>
 
        <a class="create-playlist" id="create-track-btn"><i class="fa fa-plus"></i> new track</a><br>
        <a class="create-playlist" id="create-pl-btn"><i class="fa fa-plus"></i> new playlist</a>
        <a class="create-playlist" id="create-follow-btn"><i class="fa fa-plus"></i> Follow A Playlist</a>
 
-               <p> Current Playlists </p>
-
-
-        <ul class="nav-menu" id="playlists">
-
-
-
-
-        <!-- Playlists will be rendered here -->
-        </ul>
-
-        <p> Following Playlists: </p>
-                <ul class="nav-menu" id="followedPlaylists">
-                <!-- Playlists will be rendered here -->
-                </ul>
-
-
-      </div> <!-- /.main-nav-content -->
+       <h2 class=""><i class="fa fa-th-list">&nbsp;&nbsp;Playlists</i></h2>
+       <ul class="nav-menu" id="playlists">
+            <!-- Playlists will be rendered here -->
+       </ul>
+       <ul class="nav-menu" id="followedPlaylists">
+            <!-- Playlists will be rendered here -->
+       </ul>
+      </div>
     </nav>
     <section class="main-content main-content-float-menu clearfix">
       <nav id="user-nav" class="clearfix">
