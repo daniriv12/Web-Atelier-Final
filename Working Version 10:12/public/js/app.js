@@ -1838,9 +1838,9 @@ function upload() {
         }
     }
     if (file && file.type === audioType) {
-        sendAjaxForm("/upload", "post", formData, function () {
+        sendAjaxForm("/uploads", "post", formData, function () {
             alert("upload successful!!!");
-            loadPage();
+            drawLibrary();
         });
     } else {
         throw new Error("file not supported");

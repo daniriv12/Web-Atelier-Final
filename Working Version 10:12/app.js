@@ -38,7 +38,7 @@ app.use('/albums', routers.albums);
 app.use('/artists', routers.artists);
 app.use('/tracks', routers.tracks);
 app.use('/users', routers.users);
-app.use('/upload', routers.upload);
+app.use('/uploads', routers.uploads);
 app.use('/login', routers.login);
 app.use('/signup', routers.signup);
 app.use('/home', routers.root);
