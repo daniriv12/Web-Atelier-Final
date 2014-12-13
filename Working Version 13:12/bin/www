@@ -1,0 +1,24 @@
+#!/usr/bin/env node
+var debug = require('debug')('atelierbeats-server');
+var app = require('../app');
+
+app.set('port', process.env.PORT || 3000);
+app.set('host', process.env.HOST || "0.0.0.0");
+var server = app.listen(app.get('port'),app.get("host"), function() {
+  debug('Express server listening on port '+ app.get("host") + server.address().port);
+});
+
+var io = require('socket.io')(server);
+
+io.on('connection', function (socket) {
+    socket.emit('news', { hello: 'world' });
+//    socket.on('my other event', function (data) {
+//        console.log(data);
+//
+//    });
+
+    socket.on('chat message', function(msg){
+        console.log('message: ' + msg);
+        io.emit('chat message', msg);
+    });
+});
