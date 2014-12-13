@@ -30,3 +30,17 @@ From Gustavo (~ 6h 15m):
 Merged Gustavo’s and Michele’s
 
 -Daniel ~9:00
+
+----------------------------------------
+UPDATED working version 13/12 (writted on top of 10/12!)
+
+  issues fixed:
+    - now player works also for playlist (no duplicated items!!)
+  
+  new features:
+    - add button working for "new track", "new playlist" and "follow a playlist" (CSS is not definitive, still working on it!)
+    - new "current song key" : when you press "c" while listening a song shows you the track on the track list.
+    
+  -Gustavo ~8.00 (AM!!!!!!!! )
+
+
