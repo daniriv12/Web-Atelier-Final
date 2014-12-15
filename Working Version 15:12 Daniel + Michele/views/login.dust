@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1.0">
+  <title>Login</title>
+  <link rel="stylesheet" href="css/standardize.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAC0tLSIxMTG4MjIy9zIyMvIzMzO5MjIyTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAyMjLKMzMz/zMzM/8zMzP/MzMz/zIyMv4yMjKeAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMjIy+TMzM/8zMzP/MzMz/zMzM/8zMzP/MzMz/zExMXsAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADIyMrwzMzP/MzMz/zMzM/8zMzP/MzMz/zMzM/8yMjLkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAxMTEpMjIy7TMzM/8zMzP/MzMz/zMzM/8zMzP/MjIy+QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAC4uLiYyMjK/MjIy/jMzM/8zMzP/MzMz/zMzM/oAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAC8vLyswMDBjMjIyZjExMbMzMzP6AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAyMjKXMzMz+gAAAAAAAAAAAAAAAAAAAAAwMDBKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMjIylzMzM/oAAAAAAAAAAAAAAAAAAAAAMzMzrwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADIyMpczMzP6AAAAAAAAAAAAAAAAMTExLjMzM6UAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAyMjKXMzMz+gAAAAAAAAAAAAAAADIyMqsxMTFdAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMjIylzMzM/oAAAAAAAAAADMzM1ozMzP1MzMzDwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADIyMpczMzP6MzMzBTIyMm8yMjL5MjIymQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAyMjKXMjIy/jMzM+szMzP/MjIy8ysrKx0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMjIylzMzM/8zMzP/MjIy/TIyMlsAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADMzM2QyMjL4MzMz1zMzM1AAAAAAAAAAAAAAAAAAAAAA4f8AAMB/AADAfwAAwD8AAOA/AADwPwAA/z8AAP8/AAD/PQAA/z0AAP87AAD/OwAA/zMAAP8HAAD/DwAA/58AAA==" rel="icon" type="image/x-icon" />
+
+</head>
+<body class="body login">
+  <script>
+    var int = Math.floor((Math.random() * 10) + 1);
+    document.getElementsByClassName("login")[0].setAttribute("style","background-image:url('../images/Wallpapers/"+int+".jpg')")
+  </script>
+  <div class="vertical-align-wrapper">
+    <div class="vertical-align-box">
+      <h1 class="slogan">WE <i class="fa fa-heart beats pulse" style="color:#B13A3D;"></i> AB2.</h1>
+      <div class="form-login-wrapper">
+        <form action="/login" method="post" class="form-login">
+          <input class="form-control form-stacked" name="username" placeholder="Username" type="text">
+          <input class="form-control form-stacked last" name="password" placeholder="Password" type="password">
+          <input class="btn btn-beats btn-block btn-stacked" value="Tune in" type="submit">
+        </form>
+        <p>Don't have an account? <a href="signup" class="beats"><strong>sign up</strong></a> now!</p>
+      </div> 
+    </div>
+  </div>
+  <h1 class="fat blue-glow bottom-right">Atelier<span class="pulse" style="display:inline-block;">Beats.</span></h1>
+</body>
+</html>

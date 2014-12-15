@@ -1,0 +1,51 @@
+<div id="FriendsList">
+
+{?friends}
+<table>
+    <tr>
+        <th> Friends </th>
+    </tr>
+{/friends}
+{#friends}
+
+    <tr>
+        <td> <div class="followFriend" id={name}> <a id={name}> </a> {name} <div> <td>
+    <tr>
+
+{/friends}
+
+</table>
+
+</div>
+
+<div id="FriendsPlaylists">
+<br>
+{?playlists}
+<table>
+    <tr>
+        <th> Showing Playlists for {friendName}</th>
+    <tr>
+{:else}
+
+<table>
+<tr>
+    <th> Click on a friends username to display their playlists! </th>
+</tr>
+</table>
+{/playlists}
+
+{#playlists}
+
+    <tr>
+        <td> <div class="followPl"> <a id={._id} > {name} </a> <div> </td>
+    </tr>
+
+{/playlists}
+
+</table>
+</div>
+
+
+
+
+
