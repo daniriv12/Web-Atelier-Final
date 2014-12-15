@@ -14,17 +14,25 @@ var Artist = mongoose.model('Artist');
 var Album = mongoose.model('Album');
 var config = require("../../config");
 var multer = require('multer');
-var fs = require("fs");
 var url = require("url");
 var path = require("path");
+var fs = require("fs");
 
 router.all('/', middleware.supportedMethods('GET, POST, OPTIONS'));
+
+var uploadComplete = false;
 
 // use multer for track uploads
 router.use(multer({
     dest: './public/tracks_folder',
+    onFileUploadStart: function (file) {
+        console.log("upload started");
+        uploadComplete = false;
+    },
     onFileUploadComplete: function (file) {
-        console.log(file.fieldname + ' uploaded to  ' + file.path);
+        console.log(file.fieldname + ' uploaded to : ' + file.path);
+        uploadComplete = true;
+
     },
     rename: function (fieldname, filename) {
         return filename;
@@ -35,10 +43,8 @@ var onAlbumFound = function (req, res, next) {
     return function (err, found) {
         if (err) return next(err);
         if (found.length == 1) {
-
             console.log(req.body.file);
             req.body.album = found[0]._id;
-//            req.body.file = req.body.file;
             console.log(req.body);
             var newTrack = new Track(req.body);
             newTrack.save();
@@ -53,7 +59,6 @@ var onAlbumFound = function (req, res, next) {
                 if (err) return next(err);
                 if (saved) {
                     req.body.album = saved._id;
-//                    req.body.file = req.body.file;
                     console.log("album saved");
                     var newTrack = new Track(req.body);
                     console.log(req.body);
@@ -92,45 +97,21 @@ var onArtistFound = function (req, res, next) {
 // create new track
 router.post('/', function (req, res, next) {
     console.log(req.body);
-    if (req.body.name && req.body.artist && req.body.album && req.body.duration) {
-        console.log("req.files:")
-        console.log(req.files)
-//        req.body.file = req.files.file.path;
-        req.body.file = "tracks_folder/"+req.files.file.originalname
+    console.log(req.files.file);
+    // required fields
+    if (req.body.name && req.body.artist && req.body.album && req.body.duration && req.body.file) {
         Artist.find({ name: req.body.artist }, onArtistFound(req, res, next));
+    } else if (req.files.file) {
+        res.json({
+            statusCode: 206,
+            message: req.files.file.originalname
+        });
+        res.status(206).end();
     } else {
+        console.log("bad request");
         res.status(400).end();
     }
 });
-
-// get an uploaded track
-//router.get('/:filename', function (req, res, next) {
-//    var url_path = "uploads" + url.parse(req.url).pathname;
-//    var file_path = decodeURI(url_path);
-//    var file_name = path.basename(file_path);
-//
-//    fs.exists(file_path, function (exists) {
-//        if (!exists) {
-//            res.writeHead(404, {"Content-Type": "text/plain"});
-//            res.write("404 Not Found");
-//            res.end();
-//        } else {
-//            fs.readFile(file_path, function (err, data) {
-//                if (err) {
-//                    res.writeHead(500, {"Content-Type": "text/plain"});
-//                    res.write(err + "\n");
-//                    res.end();
-//                } else {
-//                    res.writeHead(200, {
-//                        "Content-Type": "audio/*",
-//                        "Content-Disposition": "attachment; filename=\"" + file_name + "\""});
-//                    res.write(data);
-//                    res.end();
-//                }
-//            });
-//        }
-//    });
-//});
 
 function onModelSave(res, status, sendItAsResponse) {
     var statusCode = status || 204;
@@ -139,16 +120,13 @@ function onModelSave(res, status, sendItAsResponse) {
         if (err) {
             if (err.name === 'ValidationError'
                 || err.name === 'TypeError') {
-                res.status(400)
+                res.status(400);
                 return res.json({
                     statusCode: 400,
                     message: "Bad Request"
                 });
             }
         }
-//        else {
-//            return next(err);
-//        }
         if (sendItAsResponse) {
             var obj = saved.toObject();
             delete obj.password;
