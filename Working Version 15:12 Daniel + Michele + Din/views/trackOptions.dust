@@ -1,0 +1,20 @@
+
+<div id="trackPreferences">
+
+<p> Current Track: <br>
+    Name: {trackName} <br>
+    Artist: {artistName} <br>
+    Album: {albumName} <br>
+    </p>
+
+<p> <form id="editForm">
+    New Name: <br>
+    <input id="editTrackName" type="text" name="newTrackName" value=""> <br>
+    <input class="submitNameBtn" type="submit" value="Change!"
+    </form>
+    </p>
+
+
+</div>
+
+
