@@ -60,11 +60,38 @@ router.put('/:artistid', function(req, res, next) {
   Artist.findById(req.params.artistid, fieldsFilter, function(err, artist){
     if (err) return next (err);
     if (artist){
-      artist.name = data.name;
-      artist.genre = data.genre;
-      artist.artwork = data.artwork;
-      artist.dateCreated = data.dateCreated;
 
+        if(data.name) {
+            artist.name = data.name;
+        }
+        else {
+            artist.name = artist.name;
+        }
+
+        if(data.genre) {
+            artist.genre = data.genre;
+        }
+        else {
+            artist.genre = artist.genre
+        }
+
+        if(data.artwork) {
+            artist.artwork = data.artwork
+        }
+        else {
+            artist.artwork = artist.artwork
+        }
+
+        if(data.dateCreated) {
+            artist.dateCreated = data.dateCreated
+        }
+        else {
+            artist.dateCreated = artist.dateCreated
+        }
+
+
+
+      console.log("postArtist: ", artist)
       artist.save(onModelSave(res));
     }else{
       //artist does not exist create it

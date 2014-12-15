@@ -66,54 +66,54 @@ router.get('/:trackid', function (req, res, next) {
 });
 
 //update a track
-router.put('/:trackid', function (req, res, next) {
+router.put('/:trackid', function(req, res, next) {
     var data = req.body;
 
-    Track.findById(req.params.trackid, fieldsFilter, function (err, track) {
-        if (err) return next(err);
-        if (track) {
-            if (data.name)
+    Track.findById(req.params.trackid, fieldsFilter , function(err, track){
+        if (err) return next (err);
+        if (track){
+            if(data.name)
                 track.name = data.name;
             else
                 track.name = track.name;
 
-            if (data.artist)
+            if(data.artist)
                 track.artist = data.artist;
             else
                 track.artist = track.artist;
 
-            if (data.duration)
+            if(data.duration)
                 track.duration = data.duration;
             else
                 track.duration = track.duration;
 
-            if (data.file)
+            if(data.file)
                 track.file = data.file;
             else
                 track.file = track.file;
 
-            if (data.album)
+            if(data.album)
                 track.album = data.album;
             else
                 track.album = track.album;
 
-            if (data.id3Tags)
+            if(data.id3Tags)
                 track.id3Tags = data.id3Tags;
             else
                 track.id3Tags = track.id3Tags;
 
-            if (data.dateReleased)
+            if(data.dateReleased)
                 track.dateReleased = data.dateReleased;
             else
                 track.dateReleased = track.dateReleased;
 
-            if (data.dateReleased)
+            if(data.dateReleased)
                 track.dateReleased = data.dateReleased;
             else
                 track.dateReleased = track.dateReleased;
 
             track.save(onModelSave(res));
-        } else {
+        }else{
             //track does not exist create it
             var newTrack = new Track(data);
             newTrack._id = ObjectId(req.params.trackid);
@@ -123,9 +123,9 @@ router.put('/:trackid', function (req, res, next) {
 });
 
 //remove a track
-router.delete('/:trackid', function (req, res, next) {
-    Track.findById(req.params.trackid, fieldsFilter, function (err, track) {
-        if (err) return next(err);
+router.delete('/:trackid', function(req, res, next) {
+    Track.findById(req.params.trackid, fieldsFilter , function(err, track){
+        if (err) return next (err);
         if (!track) {
             res.status(404);
             res.json({
@@ -134,37 +134,36 @@ router.delete('/:trackid', function (req, res, next) {
             });
             return;
         }
-        track.remove(function (err, removed) {
-            if (err) return next(err);
+        track.remove(function(err, removed){
+            if (err) return next (err);
             res.status(204).end();
         })
     });
 });
 
-function onModelSave(res, status, sendItAsResponse) {
+function onModelSave(res, status, sendItAsResponse){
     var statusCode = status || 204;
     var sendItAsResponse = sendItAsResponse || false;
-    return function (err, saved) {
+    return function(err, saved){
         if (err) {
             if (err.name === 'ValidationError'
-                || err.name === 'TypeError') {
+                || err.name === 'TypeError' ) {
                 res.status(400)
                 return res.json({
                     statusCode: 400,
                     message: "Bad Request"
                 });
+            }else{
+                return next (err);
             }
         }
-        else {
-            return next(err);
-        }
-        if (sendItAsResponse) {
+        if( sendItAsResponse){
             var obj = saved.toObject();
             delete obj.password;
             delete obj.__v;
             addLinks(obj);
             return res.status(statusCode).json(obj);
-        } else {
+        }else{
             return res.status(statusCode).end();
         }
     }

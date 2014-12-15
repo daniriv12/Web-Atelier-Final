@@ -142,6 +142,8 @@ router.put('/:userid/playlists', function(req, res, next) {
 });
 
 
+
+
 router.get('/:userid/playlists/:playlistid', function(req, res, next) {
     User.findById(req.params.userid, fieldsFilter , function(err, user){
         if (err) return next (err);
@@ -163,6 +165,53 @@ router.get('/:userid/playlists/:playlistid', function(req, res, next) {
 
 
 
+    });
+});
+
+//update a user's playlist
+router.put('/:userid/playlists/:playlistid', function(req, res, next) {
+    var data = req.body;
+    User.findById(req.params.userid, fieldsFilter , function(err, user){
+        if (err) return next (err);
+        if (!user) {
+            res.status(404);
+            res.json({
+                statusCode: 404,
+                message: "Not Found"
+            });
+            return;
+        }
+
+        var playlistID = req.params.playlistid
+        user.playlists.forEach(function(playlist) {
+            if (playlist._id == playlistID) {
+                if(data.name) {
+                    playlist.name = data.name
+                }
+                else {
+                    playlist.name = playlist.name
+                }
+
+                if(data.tracks) {
+                    playlist.tracks = data.tracks
+                }
+
+                else {
+                    playlist.tracks = playlist.tracks
+                }
+
+                if(data.dateCreated) {
+                    playlist.dateCreated = data.dateCreated
+                }
+                else {
+                    playlist.dateCreated = playlist.dateCreated
+                }
+
+                user.save(onModelSave(res));
+
+            }
+
+        })
     });
 });
 

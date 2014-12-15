@@ -212,9 +212,7 @@ function deleteTrack(e){
     var getTrack = "tracks/" + trackID
     doJSONRequest("GET", getTrack, null, null, getTrackDetails)
     function getTrackDetails(track) {
-        //console.log(track)
-        //console.log(track.artist._id)
-        //console.log(track.album._id)
+
         var trackArtistID = track.artist._id;
         var trackAlbumID = track.album._id;
 
@@ -290,71 +288,85 @@ function deleteTrack(e){
 
   }
 
-  function editTrackName(e){
+/*Files changed:
+- in tracks.dust    <a class="edit-btn" trackID={_id} href="#"><i class="fa fa-pencil fl-tl-pencil"></i></a>
+- added trackOptions.dust
+ */
 
-    if(e && e.target){
-      e.preventDefault();
-    }
 
-    var target = e.target;
+function editTrackName(e){
 
-    //console.log(target);
+    e.preventDefault()
 
-    var editable = target.previousSibling;
+      document.getElementById('ModalContent').innerHTML = "abc"
+      document.getElementById("openModal").style.visibility = "visible";
 
-    //console.log(editable.contentEditable);
-    //console.log(editable.contentEditable ==  "false");
+      var currentTrackID = e.srcElement.getAttribute("trackid")
 
-    if(editable.contentEditable == "false" || editable.contentEditable == "inherit"){ //we have to enable the editing
+      //get track data
+      doJSONRequest("GET", "/tracks/" + currentTrackID, null, null, createTrackData)
 
-      editable.contentEditable = "true";
+      function createTrackData(track) {
+          var trackName = track.name;
+          var trackArtist = track.artist.name
+          var trackAlbum = track.album.name
 
-      removeClass(target.firstChild, "fa-pencil");
 
-      removeClass(target.firstChild, "fl-tl-pencil");
+          var data = {
+              "trackName": trackName,
+              "artistName": trackArtist,
+              "albumName": trackAlbum
+          }
 
-      addClass(target.firstChild, "fa-check");
+          dust.render("trackOptions", data, function (err, out) {
 
-      addClass(target.firstChild, "fl-tl-check");
+              var content = document.getElementById("ModalContent");
 
-      //set the cursor on the editable element
-      var s = window.getSelection(),
-      r = document.createRange();
-      r.setStart(editable, 0);
-      r.setEnd(editable, 0);
-      s.removeAllRanges();
-      s.addRange(r);
+              content.innerHTML = out;
+          })
 
-    } else { //we have to save the modified name
 
-      var href = editable.getAttribute("href");
+          document.addEventListener('click', function (e) {
+              if (e.target.classList.contains('submitNameBtn')) {
+                  e.preventDefault();
+                  return changeName(e, currentTrackID)
+              }
 
-      //send the data to the server
-      var newName = editable.innerText;
-
-      var updatedTrack = {
-        'name' : newName
+//              if (e.target.classList.contains('deleteTrackBtn')) {
+//                  e.preventDefault();
+//                  return deleteTrack(e)
+//              }
+          })
       }
+}
 
-      doJSONRequest("PUT", href, null, updatedTrack, disableEditing);
+function changeName(e, trackID) {
+    var loc = window.location.hash
+    var form = document.getElementById("editForm")
+    var elements = form.elements
 
-      function disableEditing(){
+    var newTrackName = elements.newTrackName.value;
+//    var newTrackArtist = elements.newTrackArtist.value;
+//    var newTrackAlbum = elements.newTrackAlbum.value;
 
-        editable.contentEditable = "false";
+    if (newTrackName.length > 0) {
+        var updatedTrack = {
+            'name': newTrackName
+        };
 
-        removeClass(target.firstChild, "fa-check");
+        //change TRACK in database
+        doJSONRequest("PUT", "/tracks/" + trackID, null, updatedTrack, updatedTrackName)
 
-        removeClass(target.firstChild, "fl-tl-check");
-
-        addClass(target.firstChild, "fa-pencil");
-
-        addClass(target.firstChild, "fl-tl-pencil");
-
-      }
-
+        function updatedTrackName() {
+            document.getElementById("openModal").style.visibility = "hidden";
+            window.location.href = loc;
+        }
     }
+}
 
-  }
+
+
+
 
   /* Library */
 
@@ -405,7 +417,6 @@ function drawVideos(e, addHistory){
             bindEditTrackName();
 
         });
-
     }
 }
 
@@ -1026,6 +1037,7 @@ function setupNewPlaylist(){
 
             doJSONRequest("PUT", "/users/" + userID + "/playlists", null, newPlaylistList, function() {
 
+                //NEED THIS TO GET NEW UNIQUE ID (FROM MONGODB!)
                 doJSONRequest("GET", "/users/" + userID + "/playlists", null, null, function(newPlaylists) {
 
                     var newlyAddedPlaylist = newPlaylists[newPlaylists.length-1]
@@ -1039,6 +1051,7 @@ function setupNewPlaylist(){
 }
 
 function setupPlaylists() {
+    console.log("ciao")
 
     var userID = sessionStorage.getItem("user");
 
@@ -1049,25 +1062,12 @@ function setupPlaylists() {
             return onEditPlaylistClicked(e.target)
         }
 
-        if (e.target.classList.contains('pl-name-input')) {
-            return e.preventDefault();
-        }
-
         if (e.target.classList.contains('pl-name') && e.target.parentNode.parentNode.id == "playlists") {
             e.preventDefault();
             return onPlaylistClicked(e.target)
         }
 
-        if (e.target.classList.contains('pl-delete')){
-            e.preventDefault();
-            return onDeletePlaylistClicked(e.target)
-        }
 
-        //the click was outside an edit element, close currently edited ones
-        var currentlyEditing = document.querySelectorAll('#playlists > li.edit .edit-btn');
-        for (var i = currentlyEditing.length - 1; i >= 0; i--) {
-            onEditPlaylistClicked(currentlyEditing[i]);
-        }
     });
 }
 
@@ -1226,33 +1226,85 @@ function deletePLTrack(e) {
     }
 
 }
+//added dust file
+function onEditPlaylistClicked(btn) {
 
-function onEditPlaylistClicked(btn){
-//    var id = btn.dataset["for"];
-//    var el = document.getElementById(id);
-//    var input = document.querySelector('#'+id + " > input[type='text']");
-//
-//    if(el.classList.contains("edit")){
-//        el.classList.remove('edit')
-//        btn.innerHTML = '<i class="fa fa-pencil" ></i>'
-//        var input = document.querySelector('#'+id + " > input[type='text']");
-//        var nameLink =  document.querySelector('#'+id + " > .pl-name");
-//
-//        //return on empty string
-//        if(input.value.trim() == '') return;
-//
-//        nameLink.innerHTML = '<i class="nav-menu-icon fa fa-bars"></i> ' + input.value;
-//        nameLink.href = "playlists/" + encodeURI(input.value)
-//
-//        //persist change
-//        var playlists =  JSON.parse(localStorage.playlists);
-//        playlists[id]["name"] = input.value;
-//        localStorage.playlists = JSON.stringify(playlists);
-//    }else{
-//        el.classList.add('edit')
-//        btn.innerHTML = '<i class="fa fa-check" ></i>'
-//        input.focus();
-//    }
+    var userID = sessionStorage.getItem("user")
+
+    document.getElementById("openModal").style.visibility = "visible";
+    console.log(btn)
+
+    var playlistID = btn.dataset["for"]
+
+    doJSONRequest("GET", "/users/" + userID + "/playlists/" + playlistID, null, null, getPlaylistName)
+
+
+        function getPlaylistName(playlist) {
+
+            var playlistName = playlist.name
+            var data = {
+                "playlistName": playlistName
+            }
+            dust.render("editPlaylist", data, function (err, out) {
+                var content = document.getElementById("ModalContent")
+                content.innerHTML = out;
+            })
+
+
+            document.addEventListener('click', function (e) {
+                if (e.target.classList.contains('submitPLNameBtn')) {
+                    e.preventDefault();
+                    return changePLName(e, playlistID)
+                }
+
+                if (e.target.classList.contains('deletePlaylistBtn')) {
+                    e.preventDefault();
+                    return deletePlaylist(e, playlistID)
+                }
+            })
+        }
+
+}
+
+function changePLName(e, playlistID) {
+
+    var userID = sessionStorage.getItem("user")
+
+    var form = document.getElementById("editPlaylistForm")
+    var elements = form.elements
+
+    var newPlaylist = elements.newPlaylistName.value;
+    if (newPlaylist.length > 0) {
+        var updatedPL = {
+            'name': newPlaylist
+        }
+
+        doJSONRequest("PUT", "/users/" + userID + "/playlists/" + playlistID, null, updatedPL, playlistNameEdited)
+
+        function playlistNameEdited() {
+            document.getElementById("openModal").style.visibility = "hidden";
+            document.getElementById('playlists').innerHTML = "";
+            setupPlaylists();
+        }
+    }
+}
+
+function deletePlaylist(e, playlistID) {
+    var userID = sessionStorage.getItem("user")
+
+
+
+
+        doJSONRequest("DELETE", "users/" + userID + "/playlists/" + playlistID, null, null, playlistRemoved)
+
+        function playlistRemoved() {
+
+            document.getElementById("openModal").style.visibility = "hidden";
+            var toRemove = document.getElementById(playlistID)
+            var parent = toRemove.parentNode;
+            parent.removeChild(toRemove)
+        }
+
 }
 
 function appendNewPlaylistToMenu(pl){
@@ -1264,32 +1316,12 @@ function appendNewPlaylistToMenu(pl){
     newHtml += '    </a>';
     newHtml += '    <a class="edit-btn" data-for="' + pl._id + '" href="#"><i class="fa fa-pencil"></i></a>';
     newHtml += '    <input  class="pl-name-input" name="' + pl._id + '" type="text" value="' + pl.name + '">';
-    newHtml += '		<div class="fl-tl-delete"><a class="pl-delete" id="' + pl._id + '">&times;</a></div>' //ADDED FOR DELETE FUNCTIONALITY -> CSS HORRIBLE THOUGH :D!
     newHtml += '  </li>';
 
     document.getElementById('playlists').innerHTML += newHtml;
 }
 
-//delete playlist
-function onDeletePlaylistClicked(e) {
-    console.log("yes")
 
-    console.log(e) //for playlistID > Json it (do router) > remove from page
-
-    var userID = sessionStorage.getItem("user")
-    var playlistID = e.id
-
-    doJSONRequest("DELETE", "users/" + userID + "/playlists/" + playlistID, null, null, playlistRemoved)
-
-    function playlistRemoved() {
-        //has been removed from DB
-        //remove from current page
-        var toRemove = document.getElementById(playlistID)
-        var parent = toRemove.parentNode;
-        parent.removeChild(toRemove)
-    }
-
-}
 
 
 /* ------------------- Playlist ------------------- */
@@ -1963,7 +1995,6 @@ function setupNewFP(){
 }
 
 function setupFollowedPlaylists() {
-    console.log("reached")
 
     loadFollowedPlaylistsFromDatabase()
 
