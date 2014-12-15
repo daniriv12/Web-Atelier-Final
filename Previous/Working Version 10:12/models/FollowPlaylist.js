@@ -18,7 +18,7 @@ var ObjectId = mongoose.Schema.Types.ObjectId;
 */
 var FollowPlaylistSchema = new mongoose.Schema(
   {
-    ownerID : { type: String, required: true },
+    name : { type: String, required: true },
     playlistID : { type: String, required: true }
   }
 

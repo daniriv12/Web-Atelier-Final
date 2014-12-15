@@ -18,7 +18,7 @@
   </script>
   <div class="vertical-align-wrapper">
     <div class="vertical-align-box">
-      <h1 class="slogan">Gotta <i class="fa fa-heart beats pulse" style="color:#B13A3D;"></i> that sound.</h1>
+      <h1 class="slogan">WE <i class="fa fa-heart beats pulse" style="color:#B13A3D;"></i> AB2.</h1>
       <div class="form-login-wrapper">
         <form action="/login" method="post" class="form-login">
           <input class="form-control form-stacked" name="username" placeholder="Username" type="text">

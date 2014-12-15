@@ -994,19 +994,19 @@ a.create-playlist{
   background: rgba(0,0,0,0.1);
   display: inline-block;
   width: auto;
-  padding: 2px 5px 4px;
-  margin: 0 0 20px 10px;
-  font-size: 1.2em;
-  line-height: 1;
+  padding: 10px 10px 10px;
+  margin: 20px 0 15px 20px;
+  font-size: 1.4em;
+  line-height:0;
   white-space: nowrap;
   overflow: hidden;
 }
 
 a.create-playlist:hover, a.create-playlist:active{
+  cursor: pointer;
   background: rgba(0,0,0,0.2);
   color: #f7f7f7;
-  text-decoration: 
-  none;
+  text-decoration: none;
 }
 
 #playlists > li{
@@ -1387,4 +1387,34 @@ ul.grid-list > li{
   position: absolute;
   bottom: 10px;
   right: 10px;
+}
+
+/* ---------------- modal window ---------------- */
+
+#openModal {
+    position: fixed;
+    font-family: Arial, Helvetica, sans-serif;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 99999;
+
+    -webkit-transition: opacity 400ms ease-in;
+    -moz-transition: opacity 400ms ease-in;
+    transition: opacity 400ms ease-in;
+    visibility: hidden;
+}
+
+.modalDialog > div {
+    width: 400px;
+    position: relative;
+    margin: 300px 0 0 33%;
+    /*padding: 5px 20px 13px 20px;*/
+    border-radius: 10px;
+    background: #fff;
+    background: -moz-linear-gradient(#fff, #999);
+    background: -webkit-linear-gradient(#fff, #999);
+    background: -o-linear-gradient(#fff, #999);
 }

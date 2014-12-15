@@ -1,7 +1,3 @@
-
-
-
-
 <!doctype html>
 <html>
   <head>
@@ -10,15 +6,9 @@
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body { background-color:white; font: 13px Helvetica, Arial; }
       form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
-      form input { border: 0; padding: 10px; width: 70%; margin-right: .5%; }
+      form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
       form button { width: 9%; background: green; border: none; padding: 10px; }
-
-      #secondHalf { width 20%;max-width:20%; float:left; background-color:white; height:100%; position:fixed; z-index:10; overflow:auto; border:1px solid}
-      #firstHalf {width: 80%; float: right; background-color:white; height:100%; position:absolute ; margin-left:20%; }
-
-      #availableUsers li {padding: 10px 20px; text-align:center; font-weight:bold;}
-
-      #availableUsers li:nth-child(even) { background-color: Gainsboro; }
+      #firstHalf {width: 100%; float: left; background-color:white; height:100%}
 
       #messages { list-style-type: none; margin-bottom: 40px; padding: 0; z-index: 10;}
       #messages li { padding: 5px 10px; }
@@ -27,11 +17,8 @@
     </style>
   </head>
   <body>
-  <div id="secondHalf">
-  <ul id="availableUsers"><li><b>Online Users, write a message and click a user to send a private message.</b></ul>
-  </div>
   <div id=firstHalf>
-    <ul id="messages"><li><b>Welcome to the Atelier Beats 2 Global Chatroom, start talking to fellow music lovers from all over the world!</b></ul>
+    <ul id="messages"><li><b>Available Music Lovers:</b></ul>
 
     <form action="">
       <input id="m" autocomplete="off" /><button>Send</button>
@@ -58,15 +45,13 @@
 
       var socket = io.connect('http://localhost');
       socket.on('news', function (data) {
-
-        socket.emit('my other event', { me: sessionStorage.getItem("user"), name:sessionStorage.getItem("userName") });
+        console.log(data);
+        socket.emit('my other event', { me: sessionStorage.getItem("user") });
       });
 
 
 
         $('form').submit(function(){
-
-
 
             if($('#m').val()){
 
@@ -80,7 +65,7 @@
 
         socket.on('news', function(msg){
 
-                socket.emit('init', sessionStorage.getItem("user") + " " +sessionStorage.getItem("userName") );
+                socket.emit('init', sessionStorage.getItem("user"));
 
 
 
@@ -89,59 +74,6 @@
 
 
                   });
-
-
-
-
-        socket.on('update', function(availableUsers){
-
-
-        var cntnt = document.getElementById("availableUsers");
-
-
-        while (cntnt.childNodes.length > 1) {
-            cntnt.removeChild(cntnt.lastChild);
-        }
-
-
-
-        for( x = 0 ; x < availableUsers.length ; x++){
-
-            var availableUsersArray = availableUsers[x].split(" ");
-            var string1 = "" + availableUsersArray[0];
-            var string2 = "" + availableUsersArray[1];
-
-
-            $('#availableUsers').append($('<li>').attr('id', string1 ).text(string2).click(function(a) {
-                return function(){
-                    if($('#m').val()){
-
-                        socket.emit('private message', (sessionStorage.getItem("userName")+ ": " + $('#m').val()),  a);
-                    };
-                };
-            }(string1)
-            ));
-
-
-
-
-
-
-
-        }
-
-        });
-
-        function sendPrivateMessage(){
-               console.log("works");
-               if($('#m').val()){
-
-               socket.emit('private message', { msg: (sessionStorage.getItem("userName")+ ": " + $('#m').val()), to: toUserId});
-               }};
-
-
-
-
 
 
 
@@ -161,26 +93,7 @@
 
             window.scrollTo(0,document.body.scrollHeight);
 
-
-
-
           });
-
-          socket.on('private', function(msg){
-
-
-
-
-                      $('#messages').append($('<li>').text(msg));
-
-                      window.scrollTo(0,document.body.scrollHeight);
-
-
-
-
-                    });
-
-
 
 
 
@@ -188,4 +101,3 @@
     </script>
   </body>
 </html>
-
