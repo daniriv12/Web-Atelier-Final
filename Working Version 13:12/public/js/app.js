@@ -1742,14 +1742,52 @@ function setupPlayer(selectedTrack){
 
 /*-------------   AddTrack  (Mastery 10)-------------   */
 function setupAddTrack() {
-    document.getElementById("create-track-btn").addEventListener('click', drawForm);
-}
+    document.getElementById("create-track-btn").addEventListener('click', function(evt) {
+        evt.preventDefault();
+        dust.render("addTrack", null, function (err, out) {
+            document.getElementById("ModalContent").innerHTML = out;
 
-function drawForm(evt) {
-    evt.preventDefault();
-    dust.render("addTrack", null, function (err, out) {
-        var content = document.getElementById("ModalContent");
-        content.innerHTML = out;
+            var lastArtistValue = '',
+                lastAlbumValue = '';
+
+            document.getElementById("inputArtist").addEventListener("keyup", function(){
+                var term = this.value;
+
+                if (term != lastArtistValue) {
+                    lastArtistValue = term;
+                    displaySuggestions(term, "artist");
+                }
+            });
+            document.getElementById("inputAlbum").addEventListener("keyup", function(){
+                var term = this.value;
+
+                if (term != lastAlbumValue) {
+                    lastAlbumValue = term;
+                    displaySuggestions(term, "album");
+                }
+            });
+        });
+    });
+}
+function displaySuggestions(term, input){
+    if(input == "artist")
+        doJSONRequest('GET','/artists',null,null, function(json){
+            var list = '';
+            json.forEach(function(item){
+                if(item.name.toLowerCase().indexOf(term.toLowerCase()) > -1){
+                    list +='<option value="'+item.name+'">'+item.name+'</option>';
+                }
+            });
+            document.getElementById('suggestArtist').innerHTML = list;
+        });
+    else doJSONRequest('GET','/albums',null,null, function(json){
+        var list = '';
+        json.forEach(function(item){
+            if(item.name.toLowerCase().indexOf(term.toLowerCase()) > -1){
+                list +='<option value="'+item.name+'">'+item.name+'</option>';
+            }
+        });
+        document.getElementById('suggestAlbum').innerHTML = list;
     });
 }
 
@@ -1765,14 +1803,16 @@ function upload() {
             var file = elem.files[0];
             var filename = value;
             formData.append(name, file, filename);
-        } else if (name == "duration") {
-            var duration = convertDuration(value);
-            formData.append(name, duration);
-        } else {
+        }
+//        else if (name == "duration") {
+//            var duration = convertDuration(value);
+//            formData.append(name, duration);
+//        }
+        else {
             formData.append(name, value);
         }
     }
-    if (file && file.type === audioType) {
+    if (file && file.type === audioType){
         sendAjaxForm("/uploads", "post", formData, function () {
             alert("upload successful!!!");
             drawLibrary();
@@ -2153,7 +2193,7 @@ function renderFollowedPlaylist(pl) {
 
 function setupAddElement(){
     document.addEventListener('mousedown',function(e){
-        if(e.target.id == "openModal") {
+        if(e.target.id == "openModal" && e.button !=2) {
             resetModalContent()
         }
     });
@@ -2222,30 +2262,26 @@ function addFriend() {
     function compareUsers(friendsList) {
         var currentFriends = friendsList;
         //currently implemented to just show all current users --> better to have an autocomplete search for usernames
-        doJSONRequest("GET", "/users", null, null, renderUsers)
-        function renderUsers(users) {
+        doJSONRequest("GET", "/users", null, null, function(users) {
             //get possible friends = all users - this user - current friends
             var possibleFriends = []
             var i =0;
             console.log("currentFriends: ", currentFriends)
             users.forEach(function (user) {
                 if (user._id != userID && currentFriends.indexOf(user.userName) < 0) {
-                    console.log("adding: ", user)
                     possibleFriends[i] = user;
                     i++
                 }
             })
-            console.log("1")
             var data = {
-                //temporARYYY
                 "playlists": possibleFriends
-            }
+            };
             dust.render("tempAddFriend", data, function (err, out) {
                 var content = document.getElementById("ModalContent");
                 content.innerHTML = out;
             });
             bindFriend()
-        }
+        })
     }
 }
 function bindFriend() {
@@ -2255,17 +2291,15 @@ function bindFriend() {
     }
 }
 function addThisFriend(e) {
-    var friendUserName = e.srcElement.innerText;
-    console.log(friendUserName)
-    var userID = sessionStorage.getItem("user")
-    doJSONRequest("GET", "/users/" + userID + "/friends", null, null, updateFriendList)
-    function updateFriendList(currentFriendList) {
+    var friendUserName = e.srcElement.innerText,
+        userID = sessionStorage.getItem("user")
+    doJSONRequest("GET", "/users/" + userID + "/friends", null, null, function(currentFriendList) {
         var newFriendList = currentFriendList
         newFriendList[newFriendList.length] = friendUserName
         doJSONRequest("PUT", "/users/" + userID + "/friends", null, newFriendList, friendAdded)
         function friendAdded() {
             //should still allow to add more friends...
         }
-    }
+    });
     resetModalContent()
 }
