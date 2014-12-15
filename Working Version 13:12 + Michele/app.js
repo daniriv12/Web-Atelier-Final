@@ -30,9 +30,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({secret: 'secret'}));
 
 
-
-
-
 // Initialize routers here
 
 var routers = require('./routes/routers');

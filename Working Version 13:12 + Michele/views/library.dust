@@ -31,8 +31,7 @@
           <li><a href="artists.html"><i class="nav-menu-icon fa fa-users"></i>Artists</a></li>
           <li><a href="albums.html">&nbsp;<i class="nav-menu-icon fa fa-microphone"></i>&nbsp;Albums</a></li>
           <li><a href="videos.html"><i class="nav-menu-icon fa fa-youtube-play"></i>Videos</a></li>
-          <li><a href="friends.html"><i class="nav-menu-icon fa fa-comments"></i>Chatroom</a></li>
-          <li><a href="friends.html"><i class="nav-menu-icon fa fa-comments"></i>Private Chats</a></li>
+          <li><a href="friends.html"><i class="nav-menu-icon fa fa-comments"></i>Friends</a></li>
         </ul>
 
         <a class="create-playlist" id="AddElement" onclick="addButton()"><i class="fa fa-plus"></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Add..</a>

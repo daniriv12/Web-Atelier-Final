@@ -1,3 +1,7 @@
+
+
+
+
 <!doctype html>
 <html>
   <head>
@@ -18,7 +22,7 @@
   </head>
   <body>
   <div id=firstHalf>
-    <ul id="messages"><li><b>Available Music Lovers:</b></ul>
+    <ul id="messages"><li><b>Welcome to the Atelier Beats 2 Global Chatroom, start talking to fellow music lovers from all over the world!</b></ul>
 
     <form action="">
       <input id="m" autocomplete="off" /><button>Send</button>
@@ -62,23 +66,6 @@
             return false;
         });
 
-
-        socket.on('news', function(msg){
-
-                socket.emit('init', sessionStorage.getItem("user"));
-
-
-
-
-                socket.emit('chat message', selectColor + " " +sessionStorage.getItem("userName")+ " has connected to the chatroom");
-
-
-                  });
-
-
-
-
-
         socket.on('chat message', function(msg){
 
 
@@ -96,8 +83,7 @@
           });
 
 
-
-
     </script>
   </body>
 </html>
+
