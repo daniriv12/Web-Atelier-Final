@@ -2172,13 +2172,15 @@ function addButton(){
         '<a class="create-playlist" id="create-track-btn"><i class="fa fa-plus"></i> track</a>'+
         '<a class="create-playlist" id="create-pl-btn"><i class="fa fa-plus"></i> playlist</a><br>'+
         '<h2> or...</h2>'+
-        '<a class="create-playlist" id="create-follow-btn"><i class="fa fa-plus"></i> Follow A Playlist</a>';
+        '<a class="create-playlist" id="create-follow-btn"><i class="fa fa-plus"></i> Follow A Playlist</a><br>'+
+        '<a class="create-playlist" id="add-friend"><i class="fa fa-plus"></i> Add a friend </a>';
 
     document.getElementById('ModalContent').innerHTML = content;
 
     setupAddTrack();
     setupNewPlaylist();
     setupNewFP();
+    setupAddFriend()
 }
 
 function resetModalContent(){
@@ -2205,3 +2207,65 @@ function getCurrentSong(){
 }
 
 /*------------- GET CURRENT SONG-------------   */
+
+//** ADD FRIENDS **//
+function setupAddFriend() {
+    var addFriendBtn = document.getElementById("add-friend");
+    addFriendBtn.addEventListener('click', function () {
+        addFriend()
+    })
+}
+function addFriend() {
+    var userID = sessionStorage.getItem("user")
+    //get current friendslist
+    doJSONRequest("GET", "/users/" + userID +"/friends", null, null, compareUsers)
+    function compareUsers(friendsList) {
+        var currentFriends = friendsList;
+        //currently implemented to just show all current users --> better to have an autocomplete search for usernames
+        doJSONRequest("GET", "/users", null, null, renderUsers)
+        function renderUsers(users) {
+            //get possible friends = all users - this user - current friends
+            var possibleFriends = []
+            var i =0;
+            console.log("currentFriends: ", currentFriends)
+            users.forEach(function (user) {
+                if (user._id != userID && currentFriends.indexOf(user.userName) < 0) {
+                    console.log("adding: ", user)
+                    possibleFriends[i] = user;
+                    i++
+                }
+            })
+            console.log("1")
+            var data = {
+                //temporARYYY
+                "playlists": possibleFriends
+            }
+            dust.render("tempAddFriend", data, function (err, out) {
+                var content = document.getElementById("ModalContent");
+                content.innerHTML = out;
+            });
+            bindFriend()
+        }
+    }
+}
+function bindFriend() {
+    var friends = document.querySelectorAll(".addFriend"); //tempo
+    for (var elem = 0; elem < friends.length; ++elem) {
+        friends[elem].onclick = addThisFriend;
+    }
+}
+function addThisFriend(e) {
+    var friendUserName = e.srcElement.innerText;
+    console.log(friendUserName)
+    var userID = sessionStorage.getItem("user")
+    doJSONRequest("GET", "/users/" + userID + "/friends", null, null, updateFriendList)
+    function updateFriendList(currentFriendList) {
+        var newFriendList = currentFriendList
+        newFriendList[newFriendList.length] = friendUserName
+        doJSONRequest("PUT", "/users/" + userID + "/friends", null, newFriendList, friendAdded)
+        function friendAdded() {
+            //should still allow to add more friends...
+        }
+    }
+    resetModalContent()
+}

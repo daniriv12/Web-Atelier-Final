@@ -267,6 +267,39 @@ router.put('/:userid/followedPlaylists', function(req, res, next) {
     });
 });
 
+//get user friends
+router.get('/:userid/friends', function(req, res, next) {
+    User.findById(req.params.userid, fieldsFilter , function(err, user){
+        if (err) return next (err);
+        if (!user) {
+            res.status(404);
+            res.json({
+                statusCode: 404,
+                message: "Not Found"
+            });
+            return;
+        }
+        res.json(user.friends);
+    });
+});
+//update user friends
+router.put('/:userid/friends', function(req, res, next) {
+    var data = req.body;
+    User.findById(req.params.userid, fieldsFilter , function(err, user){
+        if (err) return next (err);
+        if (!user) {
+            res.status(404);
+            res.json({
+                statusCode: 404,
+                message: "Not Found"
+            });
+            return;
+        }
+        user.friends = req.body;
+        user.save(onModelSave(res));
+    });
+});
+
 function onModelSave(res, status, sendItAsResponse){
   var statusCode = status || 204;
   var sendItAsResponse = sendItAsResponse || false;
