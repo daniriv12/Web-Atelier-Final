@@ -1,0 +1,5 @@
+{#playlists}
+
+   <div class="followPl"> <a id={._id} > {name} </a> <div>
+
+{/playlists}
