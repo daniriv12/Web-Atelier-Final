@@ -14,7 +14,7 @@ var config = require("../../config");
 var fieldsFilter = { 'password': 0, '__v': 0 };
 
 //supported methods
-
+router.all('/:userid/friends', middleware.supportedMethods('GET, PUT, DELETE, OPTIONS'));
 
 router.all('/:userid/:playlistid/:trackid', middleware.supportedMethods('GET, PUT, DELETE, OPTIONS'));
 router.all('/:userid/followedPlaylists/:followedPlaylistsid', middleware.supportedMethods('GET, PUT, DELETE, OPTIONS'));
@@ -166,6 +166,37 @@ router.get('/:userid/playlists/:playlistid', function(req, res, next) {
     });
 });
 
+//delete entire playlist
+router.delete('/:userid/playlists/:playlistid', function(req, res, next) {
+    console.log("enteredPLdelete serverside")
+    User.findById(req.params.userid, fieldsFilter , function(err, user){
+        if (err) return next (err);
+        if (!user) {
+            res.status(404);
+            res.json({
+                statusCode: 404,
+                message: "Not Found"
+            });
+            return;
+        }
+
+        console.log("user: ", user)
+        var playlistID = req.params.playlistid;
+        var playlists = user.playlists;
+
+        for (var i = 0; i< playlists.length; i++)
+            if (playlists[i]._id == playlistID) {
+                playlists.splice(i, 1)
+                break
+            }
+
+        user.save(onModelSave(res))
+
+
+    })
+})
+
+//delete single track from a playlist
 router.delete('/:userid/:playlistid/:trackid', function(req, res, next) {
     User.findById(req.params.userid, fieldsFilter , function(err, user){
         if (err) return next (err);
@@ -267,6 +298,37 @@ router.put('/:userid/followedPlaylists', function(req, res, next) {
     });
 });
 
+//delete a user's followedPlaylist
+router.delete('/:userid/:FLplaylistid', function(req, res, next) {
+    console.log("DELETION OF SINGLE FOLLOWED PLAYLIST")
+    User.findById(req.params.userid, fieldsFilter , function(err, user){
+        if (err) return next (err);
+        if (!user) {
+            res.status(404);
+            res.json({
+                statusCode: 404,
+                message: "Not Found"
+            });
+            return;
+        }
+
+        var playlistID = req.params.FLplaylistid;
+
+        var followedPlaylists = user.followedPlaylists
+        for (var i = 0; i< followedPlaylists.length; i++) {
+            if (followedPlaylists[i].playlistID == playlistID) {
+                followedPlaylists.splice(i, 1)
+                break;
+            }
+        }
+
+        user.save(onModelSave(res))
+
+    });
+});
+
+//** USER FRIEND FUNCTIONALITY **//
+
 //get user friends
 router.get('/:userid/friends', function(req, res, next) {
     User.findById(req.params.userid, fieldsFilter , function(err, user){
@@ -282,6 +344,7 @@ router.get('/:userid/friends', function(req, res, next) {
         res.json(user.friends);
     });
 });
+
 //update user friends
 router.put('/:userid/friends', function(req, res, next) {
     var data = req.body;

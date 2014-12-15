@@ -1,3 +1,7 @@
+{?playlists}
 {#playlists}
    <div class="addFriend"> <a id={._id}>{userName}</a> <div>
+{/playlists}
+{:else}
+<p> Someone is popular... All current users are your friends! </p>
 {/playlists}
