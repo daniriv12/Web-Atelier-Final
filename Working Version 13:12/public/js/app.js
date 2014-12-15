@@ -1943,18 +1943,6 @@ function setupFollowedPlaylists() {
         }
     });
 
-//    document.addEventListener('click', function (e) {
-//        if (e.target.classList.contains('edit-btn')) {
-//            return onEditPlaylistClicked(e.target)
-//        }
-//        if (e.target.classList.contains('pl-name-input')) {
-//            return e.preventDefault();
-//        }
-//        if (e.target.classList.contains('pl-name')) {
-//            e.preventDefault();
-//            return onFollowedPlaylistClicked(e.target)
-//        }
-//    })
 }
 
 function choosePlaylist() {
@@ -2180,8 +2168,10 @@ function setupAddElement(){
 function addButton(){
     document.getElementById("openModal").style.visibility= "visible";
 
-    var content = '<a class="create-playlist" id="create-track-btn"><i class="fa fa-plus"></i> new track</a><br>'+
-        '<a class="create-playlist" id="create-pl-btn"><i class="fa fa-plus"></i> new playlist</a>'+
+    var content = '<h2> Create a new:</h2>'+
+        '<a class="create-playlist" id="create-track-btn"><i class="fa fa-plus"></i> track</a>'+
+        '<a class="create-playlist" id="create-pl-btn"><i class="fa fa-plus"></i> playlist</a><br>'+
+        '<h2> or...</h2>'+
         '<a class="create-playlist" id="create-follow-btn"><i class="fa fa-plus"></i> Follow A Playlist</a>';
 
     document.getElementById('ModalContent').innerHTML = content;

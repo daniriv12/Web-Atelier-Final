@@ -2,12 +2,12 @@
 <script src="/public/js/app.js"></script>
 <section class="form-section">
     <form id="upload-form" enctype="multipart/form-data" action="javascript:upload()">
-        <input name="name" type="text" placeholder="Title"><br>
-        <input name="artist" type="text" placeholder="Artist"><br>
-        <input name="album" type="text" placeholder="Album"><br>
-        <input name="duration" type="text" placeholder="Duration"><br>
-        <input name="file" type="file"><br>
-        <input name="submit" type="submit">
+        <input name="name" type="text" placeholder="Title" class="form-control"><br>
+        <input name="artist" type="text" placeholder="Artist" class="form-control"><br>
+        <input name="album" type="text" placeholder="Album" class="form-control"><br>
+        <input name="duration" type="text" placeholder="Duration" class="form-control"><br>
+        <input name="file" type="file" class="form-control"><br>
+        <input name="submit" type="submit" value = "save" class="form-control">
     </form>
 
 </section>
