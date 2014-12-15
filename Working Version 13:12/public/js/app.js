@@ -1058,6 +1058,11 @@ function setupPlaylists() {
             return onPlaylistClicked(e.target)
         }
 
+        if (e.target.classList.contains('pl-delete')){
+            e.preventDefault();
+            return onDeletePlaylistClicked(e.target)
+        }
+
         //the click was outside an edit element, close currently edited ones
         var currentlyEditing = document.querySelectorAll('#playlists > li.edit .edit-btn');
         for (var i = currentlyEditing.length - 1; i >= 0; i--) {
@@ -1170,6 +1175,8 @@ function onPlaylistClicked(link){
                             bindPLTracksDelete(plID);
 
                             setupPlayer();
+
+
                         });
                     });
                 }
@@ -1257,10 +1264,34 @@ function appendNewPlaylistToMenu(pl){
     newHtml += '    </a>';
     newHtml += '    <a class="edit-btn" data-for="' + pl._id + '" href="#"><i class="fa fa-pencil"></i></a>';
     newHtml += '    <input  class="pl-name-input" name="' + pl._id + '" type="text" value="' + pl.name + '">';
+    newHtml += '		<div class="fl-tl-delete"><a class="pl-delete" id="' + pl._id + '">&times;</a></div>' //ADDED FOR DELETE FUNCTIONALITY -> CSS HORRIBLE THOUGH :D!
     newHtml += '  </li>';
 
     document.getElementById('playlists').innerHTML += newHtml;
 }
+
+//delete playlist
+function onDeletePlaylistClicked(e) {
+    console.log("yes")
+
+    console.log(e) //for playlistID > Json it (do router) > remove from page
+
+    var userID = sessionStorage.getItem("user")
+    var playlistID = e.id
+
+    doJSONRequest("DELETE", "users/" + userID + "/playlists/" + playlistID, null, null, playlistRemoved)
+
+    function playlistRemoved() {
+        //has been removed from DB
+        //remove from current page
+        var toRemove = document.getElementById(playlistID)
+        var parent = toRemove.parentNode;
+        parent.removeChild(toRemove)
+    }
+
+}
+
+
 /* ------------------- Playlist ------------------- */
 
 /* ------------- Player ------------- */
@@ -1967,7 +1998,7 @@ function drawFriends(e, addHistory){
 function setupNewFP(){
     var followPlBtn = document.getElementById("create-follow-btn");
     followPlBtn.addEventListener('click', function () {
-        choosePlaylist()
+        chooseFriendPlaylist()
     })
 }
 
@@ -1981,44 +2012,138 @@ function setupFollowedPlaylists() {
             e.preventDefault();
             return onFollowedPlaylistClicked(e.target)
         }
+
+        if (e.target.classList.contains('FLpl-delete')){
+            e.preventDefault();
+            return onDeleteFollowedPlaylistClicked(e.target)
+        }
     });
 
 }
 
-function choosePlaylist() {
+function chooseFriendPlaylist() {
+
+
+    console.log("choosePlaylist")
+    var userID = sessionStorage.getItem("user")
+
     //will consist of every playlist from each user (will need to remove OWN playlists (if userID != user._id)
-    var allPlaylists = []
+    //get all users
+    doJSONRequest("GET", "users/" + userID + "/friends", null, null, getFriendsPlaylist)
+
+    function getFriendsPlaylist(friends) {
+        console.log("friends: ", friends)
+
+        //build friend objects from strings
+        var friendsData = []
+        friends.forEach(function (friend) {
+            var newFriendsData = {}
+            newFriendsData.name = friend;
+
+            friendsData.push(newFriendsData)
+        })
+
+        console.log("FriendsData: ", friendsData)
+
+        //render friends in content
+        var data = {
+            "friends": friendsData
+        };
+
+        dust.render("tempFollowPlaylist", data, function (err, out) {
+            var content = document.getElementById("ModalContent");
+            content.innerHTML = out;
+        })
+
+        bindFriendPlaylists()
+
+    }
+}
+
+function bindFriendPlaylists() {
+    var friendslist = document.querySelectorAll(".followFriend");
+    console.log("friendslist: ", friendslist)
+
+    for (var elem = 0; elem < friendslist.length; ++elem) {
+        friendslist[elem].onclick = followFriendPlaylist;
+    }
+}
+
+function followFriendPlaylist(e) {
+
+    var userID = sessionStorage.getItem("user")
+
+    //will need to show friends playlists which user is currently NOT following
+    var playlistCollection = []
     var i = 0;
 
-    //get all users
-    doJSONRequest("GET", "users/", null, null, function(users) {
-        users.forEach(function(user) {
+    var friendUserName = e.target.attributes.id.value
+    doJSONRequest("GET", "/users", null, null, findFriend)
 
-            //get all playlists of single user
-            doJSONRequest("GET", "users/" + user._id + "/playlists", null, null, function(playlists) {
-                playlists.forEach(function(playlist){
-                    allPlaylists[i] = playlist;
-                    i++
-                });
-                //render chooseFLplaylists view
-                renderPlaylists(allPlaylists)
-            })
+    function findFriend(users) {
+        users.forEach(function(user) {
+            if (user.userName == friendUserName) {
+
+                var friendID = user._id
+
+                //get all of friends playlists
+                doJSONRequest("GET", "/users/" + friendID + "/playlists", null, null, getFriendPlaylist)
+
+                function getFriendPlaylist(friendPlaylists) {
+
+                    //compare friends playlists with my own already followed playlists
+                    doJSONRequest("GET", "/users/" + userID + "/followedPlaylists", null, null, createPossiblePlaylists)
+
+                    function createPossiblePlaylists(myFLPlaylists) {
+                        friendPlaylists.forEach(function(friendPL) {
+                            var exists = false;
+
+                            for (var j = 0; j < myFLPlaylists.length; j++) {
+                                if (myFLPlaylists[j].name == friendPL.name) {
+                                    exists = true;
+                                }
+                            }
+
+                            //if a friends playlists name does not exist in my already followed playlists - add it to collection
+                            if (!exists) {
+                                playlistCollection[i] = friendPL;
+                                i++;
+                            }
+                        })
+
+                        renderPlaylists(friendUserName, playlistCollection)
+
+                    }
+                }
+            }
         })
-    })
+    }
 }
 
-function renderPlaylists(playlists) {
+
+function renderPlaylists(friendName, playlists) {
 
     var data = {
-        "playlists" : playlists
+        "playlists" : playlists,
+        "friendName" : friendName
     };
 
-    dust.render("tempFollowPlaylist", data, function(err, out) {
-        var content = document.getElementById("ModalContent");
-        content.innerHTML = out;
-    });
+    if (playlists.length > 0) {
+        dust.render("tempFollowPlaylist", data, function (err, out) {
+
+            var content = document.getElementById("FriendsPlaylists");
+
+            content.innerHTML = out;
+        })
+    }
+
+    else {
+        document.getElementById("FriendsPlaylists").innerHTML = "<br> <table> <tr> <th> Your friend: <u>" + friendName + "</u> has no more playlists for you to follow! </th> </tr> </table>"
+    }
+
     //attach event to each playlist
     bindPlaylist()
+
 }
 
 function bindPlaylist() {
@@ -2056,7 +2181,7 @@ function followPlaylist(e) {
             })
         })
     })
-    resetModalContent();
+    //resetModalContent();
 }
 
 function loadFollowedPlaylistsFromDatabase() {
@@ -2096,6 +2221,8 @@ function appendNewFollowedPlaylistToMenu(pl) {
         newHtml += '    <a class="pl-name" data-for="' + playlistID + '" href="playlists/' + encodeURI(name) + '">';
         newHtml += '      <i class="nav-menu-icon fa fa-link"></i>' + name;
         newHtml += '    </a>';
+        newHtml += '		<div class=" fl-tl-delete"><a class="FLpl-delete" id="' + playlistID + '">&times;</a></div>' //ADDED FOR DELETE FUNCTIONALITY -> CSS HORRIBLE THOUGH :D!
+
         newHtml += '  </li>';
 
         document.getElementById('followedPlaylists').innerHTML += newHtml;
@@ -2122,30 +2249,6 @@ function onFollowedPlaylistClicked(link){
     })
 }
 
-function getOriginalFLPlaylist(playlistID) {
-
-    doJSONRequest("GET", "users/", null, null, searchUser)
-
-    function searchUser(users) {
-
-        users.forEach(function(user) {
-
-            doJSONRequest("GET", "users/" + user._id + "/playlists", null, null, searchPlaylists)
-
-            function searchPlaylists(playlists) {
-
-                playlists.forEach(function(playlist) {
-
-                    if (playlist._id == playlistID) {
-
-                        //return playlist;
-                        renderFollowedPlaylist(playlist)
-                    }
-                })
-            }
-        })
-    }
-}
 
 function renderFollowedPlaylist(pl) {
 
@@ -2183,10 +2286,58 @@ function renderFollowedPlaylist(pl) {
 
             bindPLTracksDelete(playlistID);
 
-            //bindPlaylistEditTrackName();
+            fixEditingOptions();
         });
     })
 }
+
+function onDeleteFollowedPlaylistClicked(e) {
+    console.log("reached delete FL playlist")
+
+    var target = e.target;
+
+    console.log(e)
+    console.log("target: ", e.target)
+
+//    console.log(e.id)
+    var FLplaylistID = e.id;
+    var userID = sessionStorage.getItem("user")
+
+
+    doJSONRequest("DELETE", "users/" + userID + "/" + FLplaylistID, null, null, removeFromView)
+
+    function removeFromView() {
+        //removed from DB
+        //remove from current page
+        var toRemove = document.getElementById(FLplaylistID)
+        var parent = toRemove.parentNode;
+        parent.removeChild(toRemove)
+
+
+
+    }
+}
+
+function fixEditingOptions() {
+    var tracksEdit = document.getElementsByClassName("edit-btn")
+    console.log("tracksEdit: ", tracksEdit)
+    var tracksDelete = document.getElementsByClassName("fl-tl-th fl-tl-delete")
+    console.log(tracksDelete)
+
+
+    for (var i = 0; i<tracksEdit.length ; i++) {
+        tracksEdit[i].innerHTML = ""
+    }
+
+    for (var j = 1; j<tracksDelete.length ; j++) {
+        tracksDelete[j].innerHTML = ""
+
+    }
+
+
+
+}
+
 /*------------- Playlist Sharing-------------   */
 
 /*------------- ADD ELEMENT BUTTON-------------   */
