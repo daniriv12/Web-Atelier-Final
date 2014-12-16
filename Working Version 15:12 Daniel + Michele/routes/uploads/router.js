@@ -53,7 +53,8 @@ var onAlbumFound = function (req, res, next) {
             console.log("new album created");
             var newAlbum = new Album({
                 name: req.body.album,
-                artist: req.body.artist
+                artist: req.body.artist,
+                artwork: req.body.albumArtwork
             });
             newAlbum.save(function (err, saved) {
                 if (err) return next(err);
@@ -61,7 +62,6 @@ var onAlbumFound = function (req, res, next) {
                     req.body.album = saved._id;
                     console.log("album saved");
                     var newTrack = new Track(req.body);
-                    console.log(req.body);
                     console.log("track saved");
                     newTrack.save(onModelSave(res, 201, true));
                 }
@@ -80,7 +80,8 @@ var onArtistFound = function (req, res, next) {
         } else {
             console.log("new artist created");
             var newArtist = new Artist({
-                name: req.body.artist
+                name: req.body.artist,
+                artwork: req.body.artistArtwork
             });
             newArtist.save(function (err, saved) {
                 if (err) return next(err);

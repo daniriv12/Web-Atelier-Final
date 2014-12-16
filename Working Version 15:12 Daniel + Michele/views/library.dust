@@ -116,6 +116,7 @@
   <script src="views/views.js"></script>
   <script src="js/ajax.js"></script>
   <script src="js/app.js"></script>
+  <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
 </body>
 
 
