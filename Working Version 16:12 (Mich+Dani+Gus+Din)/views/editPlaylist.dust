@@ -2,14 +2,12 @@
 
 <div id="playlistPreferences">
 
-<p> Current Playlist: <br>
-    Name: {playlistName} <br>
-    </p>
+ <h1 id="modalTitle">Current Playlist: {playlistName}</h1>
+
 
 <p> <form id="editPlaylistForm">
-    New Name: <br>
-    <input id="editPlaylistName" type="text" name="newPlaylistName" value=""> <br> <br>
-    <input class="submitPLNameBtn" type="submit" value="Change!"
+    <input id="editPlaylistName" type="text" name="newPlaylistName" placeholder="New Name"> <br> <br>
+    <input class="submitPLNameBtn" type="submit" value="CHANGE!"
 
     </form>
     </p>
