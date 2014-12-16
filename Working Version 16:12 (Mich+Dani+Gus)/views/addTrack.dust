@@ -1,0 +1,13 @@
+<script src="/public/js/ajax.js"></script>
+<script src="/public/js/app.js"></script>
+<section class="form-section">
+    <form id="upload-form" enctype="multipart/form-data" action="javascript:upload()">
+        <input name="name" type="text" placeholder="Title" class="form-control"><br>
+        <input id="inputArtist" name="artist" type="text" placeholder="Artist" class="form-control" list="suggestArtist"><br>
+        <datalist id="suggestArtist"></datalist>
+        <input id="inputAlbum" name="album" type="text" placeholder="Album" class="form-control" list="suggestAlbum"><br>
+        <datalist id="suggestAlbum"></datalist>
+        <input name="file" type="file" class="form-control"><br>
+        <input name="submit" type="submit" value = "save" class="form-control">
+    </form>
+</section>
