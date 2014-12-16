@@ -606,6 +606,8 @@ function bindArtistDelete() {
 
 //@DIN DELETE FUNCTIONALITY DATABASE CONSISTENCY
 function deleteArtist(e) {
+    console.log('del artist')
+
 
     var href;
     var target = e.target;
@@ -2050,6 +2052,20 @@ function search(location, term) {
             if (location.indexOf('library') > -1) document.getElementById('content').innerHTML = tracksHTML + artistsHTML + albumsHTML;
             else if (location.indexOf('albums') > -1) document.getElementById('content').innerHTML = albumsHTML + tracksHTML + artistsHTML;
             else if (location.indexOf('artists') > -1) document.getElementById('content').innerHTML = artistsHTML + tracksHTML + albumsHTML;
+
+            bindArtistLink();
+
+            bindArtistDelete();
+
+            bindAlbumLink();
+
+            bindAlbumDelete();
+
+            bindArtistLink();
+
+            bindTracksDelete();
+
+            bindEditTrackName();
 
             setupPlayer();
         }
