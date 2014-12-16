@@ -565,6 +565,9 @@
     flex:1;
     padding: 0 0 0 12px;
   }
+  .fl-tl-th:hover{
+      cursor:pointer;
+  }
 
   .fl-tl-cell{
     height: 40px;

@@ -1,4 +1,4 @@
-<div class="fl-tl-thead fl-tl-row">
+<div class="fl-tl-thead fl-tl-row" id="infoRow">
     <div class="fl-tl-th fl-tl-name">Song</div>
     <div class="fl-tl-th fl-tl-artist">Artist</div>
     <div class="fl-tl-th fl-tl-album">Album</div>

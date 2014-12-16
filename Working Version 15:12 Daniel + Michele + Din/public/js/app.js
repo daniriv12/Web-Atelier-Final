@@ -102,6 +102,11 @@ function bindMenu() {
 
 /* Library */
 
+if (!sortOrder) {
+    var sortOrder = ["artistName", true];
+}
+
+
 function drawLibrary(e, addHistory) {
 
     if (e && e.target) {
@@ -115,6 +120,8 @@ function drawLibrary(e, addHistory) {
     doJSONRequest("GET", "/tracks", null, null, renderTracks);
 
     function renderTracks(tracks) {
+
+        tracks.sort(sort(sortOrder[0], sortOrder[1], null, tracks));
 
         var tracksData = buildTracksData(tracks);
 
@@ -137,6 +144,10 @@ function drawLibrary(e, addHistory) {
             bindTracksDelete();
 
             bindEditTrackName();
+
+            setSort();
+
+            changeSortPointer();
 
         });
 
@@ -1386,7 +1397,8 @@ function setupPlayer(selectedTrack) {
         } else {
             var track = tracks[index];
             // set artwork
-            trackInfo.firstChild.firstChild.firstChild.setAttribute("style", "background-image: url(" + track.album.artwork + ")");
+            if (track.album.artwork) trackInfo.firstChild.firstChild.firstChild.setAttribute("style", "background-image: url(" + track.album.artwork + ")");
+            else trackInfo.firstChild.firstChild.firstChild.setAttribute("style", "background-image: url('./images/albums/noArtwork.png')");
             // set title/album
             trackInfo.lastChild.firstChild.setAttribute("href", "#albums/" + track.album._id);
             trackInfo.lastChild.firstChild.innerHTML = track.album.name;
@@ -2486,4 +2498,95 @@ function addThisFriend(e) {
         }
     });
     resetModalContent()
+}
+
+/* ------------------- SORT ------------------- */
+var lastSort;
+
+function setSort(){
+    lastSort = sortOrder;
+    var row = document.getElementById("infoRow").childNodes;
+    for(var i = 0; i< row.length - 2; i++){
+        if (row[i].classList.contains("fl-tl-name")) row[i].addEventListener("click", function () {
+            if (sortOrder[0] == "name") {
+                sortOrder[1] = !sortOrder[1];
+            } else sortOrder = ["name", true];
+            drawLibrary()
+        });
+        else if (row[i].classList.contains("fl-tl-artist")) row[i].addEventListener("click", function(){
+            if(sortOrder[0] == "artistName"){
+                sortOrder[1] = ! sortOrder[1];
+            } else sortOrder = ["artistName", true];
+            drawLibrary()
+        });
+        else if (row[i].classList.contains("fl-tl-album")) row[i].addEventListener("click", function(){
+            if(sortOrder[0] == "albumName"){
+                sortOrder[1] = ! sortOrder[1];
+            } else sortOrder = ["albumName", true];
+            drawLibrary()
+        })
+        else if (row[i].classList.contains("fl-tl-time")) row[i].addEventListener("click", function(){
+            if(sortOrder[0] == "duration"){
+                sortOrder[1] = ! sortOrder[1];
+            } else sortOrder = ["duration", true];
+            drawLibrary()
+        })
+    }
+}
+
+function changeSortPointer(){
+    console.log(sortOrder)
+
+    var iconDesc = '&nbsp;&nbsp;<i class="fa fa-sort-desc columnSort"></i>'
+    var iconAsc = '&nbsp;&nbsp;<i class="fa fa-sort-asc columnSort"></i>'
+
+    var icon = document.getElementsByClassName("columnSort")[0];
+    if(icon) icon.parentNode.removeChild(icon);
+
+    if(sortOrder[0] == "name") {
+        if(sortOrder[1])
+            document.getElementsByClassName("fl-tl-th fl-tl-name")[0].innerHTML += iconAsc;
+        else
+            document.getElementsByClassName("fl-tl-th fl-tl-name")[0].innerHTML += iconDesc
+    } else if(sortOrder[0] == "artistName") {
+        if(sortOrder[1])
+            document.getElementsByClassName("fl-tl-th fl-tl-artist")[0].innerHTML += iconAsc;
+        else
+            document.getElementsByClassName("fl-tl-th fl-tl-artist")[0].innerHTML += iconDesc;
+    } else if(sortOrder[0] == "albumName") {
+        if(sortOrder[1])
+            document.getElementsByClassName("fl-tl-th fl-tl-album")[0].innerHTML += iconAsc;
+        else
+            document.getElementsByClassName("fl-tl-th fl-tl-album")[0].innerHTML += iconDesc;
+    } else if(sortOrder[0] == "duration") {
+        if(sortOrder[1])
+            document.getElementsByClassName("fl-tl-th fl-tl-time")[0].innerHTML += iconAsc;
+        else
+            document.getElementsByClassName("fl-tl-th fl-tl-time")[0].innerHTML += iconDesc;
+    }
+}
+
+function sort(field, reverse, primer, tracks){
+
+    if(field == "artistName") {
+        for(var i = 0; i < tracks.length; i++) {
+            tracks[i].artistName = tracks[i].artist.name;
+        }
+    }
+
+    if(field == "albumName") {
+        for(var i = 0; i < tracks.length; i++) {
+            tracks[i].albumName = tracks[i].album.name;
+        }
+    }
+
+    var key = primer ?
+        function(x) {return primer(x[field])} :
+        function(x) {return x[field]};
+
+    reverse = [-1, 1][+!!reverse];
+
+    return function (a, b) {
+        return a = key(a), b = key(b), reverse * ((a > b) - (b > a));
+    }
 }
