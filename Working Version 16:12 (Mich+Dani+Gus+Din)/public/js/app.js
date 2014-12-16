@@ -596,7 +596,7 @@ function bindArtistLink() {
 }
 
 function bindArtistDelete() {
-    var artists = document.querySelectorAll(".delete-btn");
+    var artists = document.querySelectorAll(".artist-section > ul > li > .delete-btn");
 
     for (var elem = 0; elem < artists.length; ++elem) {
         //console.log(albums[elem])
@@ -843,7 +843,7 @@ function bindAlbumLink() {
 }
 
 function bindAlbumDelete() {
-    var albums = document.querySelectorAll(".delete-btn");
+    var albums = document.querySelectorAll(".album-section > ul > li > .delete-btn");
 
     for (var elem = 0; elem < albums.length; ++elem) {
         //console.log(albums[elem])
@@ -2022,6 +2022,7 @@ function search(location, term) {
             if (url.indexOf('tracks') > -1) {
                 if (lis.length == 0) tracksHTML = '<h1>No tracks found</h1>';
                 else
+                    lis = buildTracksData(lis)
                     dust.render('tracks', {tracks: lis}, function (err, html) {
                         tracksHTML += html
                     });
