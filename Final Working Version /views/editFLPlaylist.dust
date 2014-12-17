@@ -1,0 +1,14 @@
+
+
+<div id="playlistPreferences">
+
+<p> Current Playlist: <br>
+    Name: {FLplaylistName} <br>
+    </p>
+
+
+<button class="deletePlaylistBtn"> DELETE PLAYLIST </button>
+
+
+</div>
+
