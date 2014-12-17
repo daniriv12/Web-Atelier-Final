@@ -7,9 +7,9 @@
     Album: {albumName} <br>
     </p>
 
-<p> <form id="editForm">
+<p> <form id="editForm"> <br>
     New Name: <br>
-    <input id="editTrackName" type="text" name="newTrackName" value=""> <br>
+    <input id="editTrackName" type="text" name="newTrackName" value=""> <br> <br>
     <input class="submitNameBtn" type="submit" value="Change!"
     </form>
     </p>

@@ -1177,7 +1177,6 @@ function onPlaylistClicked(link) {
 
                             setupPlayer();
 
-
                         });
                     });
                 }
@@ -2328,7 +2327,7 @@ function appendNewFollowedPlaylistToMenu(pl) {
         newHtml += '    <a class="pl-name" data-for="' + playlistID + '" href="playlists/' + encodeURI(name) + '">';
         newHtml += '      <i class="nav-menu-icon fa fa-link"></i>' + name;
         newHtml += '    </a>';
-        newHtml += '    <a class="edit-btn2" data-for="' + playlistID + '" href="#"><i class="fa fa-pencil"></i></a>';
+        newHtml += '    <a class="edit-btn2" data-for="' + playlistID + '" href="#">&times</i></a>';
         newHtml += '  </li>';
 
         document.getElementById('followedPlaylists').innerHTML += newHtml;

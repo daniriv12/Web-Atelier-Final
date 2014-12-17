@@ -1,4 +1,5 @@
 {?playlists}
+<p id="titleFriend"> Available users: </p>
 {#playlists}
    <div class="addFriend"> <a id={._id}>{userName}</a> <div>
 {/playlists}

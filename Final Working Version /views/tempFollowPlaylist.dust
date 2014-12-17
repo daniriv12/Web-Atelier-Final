@@ -9,7 +9,7 @@
 {#friends}
 
     <tr>
-        <td> <div class="followFriend" id={name}> <a id={name}> </a> {name} <div> <td>
+        <td> <div class="followFriend" id={name}> <a id={name}>  {name} </a> <div> <td>
     <tr>
 
 {/friends}

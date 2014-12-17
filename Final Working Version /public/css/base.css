@@ -1460,3 +1460,35 @@ ul.grid-list > li{
 #playlistPreferences {
   min-height: 180px;
 }
+
+.addFriend > a {
+    color: orange
+}
+
+#FriendsList{
+    color:white
+}
+
+#FriendsPlaylists {
+    color: white
+}
+
+.followFriend > a{
+    color: orange
+}
+
+.followPl > a{
+    color: orange
+}
+
+#titleFriend {
+    color: white
+}
+
+#trackPreferences {
+    color: orange
+}
+
+.submitPLNameBtn, .submitNameBtn {
+    background-color: orange;
+}
