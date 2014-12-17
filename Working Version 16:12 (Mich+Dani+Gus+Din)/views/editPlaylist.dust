@@ -1,0 +1,19 @@
+
+
+<div id="playlistPreferences">
+
+ <h1 id="modalTitle">Current Playlist: {playlistName}</h1>
+
+
+<p> <form id="editPlaylistForm">
+    <input id="editPlaylistName" type="text" name="newPlaylistName" placeholder="New Name"> <br> <br>
+    <input class="submitPLNameBtn" type="submit" value="CHANGE!"
+
+    </form>
+    </p>
+
+<button class="deletePlaylistBtn"> DELETE PLAYLIST </button>
+
+
+</div>
+
