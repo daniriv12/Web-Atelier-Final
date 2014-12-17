@@ -1850,45 +1850,43 @@ function upload() {
     var albumArtwork, artistArtwork;
     $.get("http://ws.audioscrobbler.com/2.0/?%20method=Album.getInfo&%20api_key=21dc28ce0ec404931d168d11d3a52a34&%20album=" +
         encodeURI(album) + "&%20artist="+ encodeURI(artist), function (data) {
-        console.log(data);
         var image = data.querySelector("[size=\"extralarge\"]");
         albumArtwork = image.innerHTML;
-    });
-    $.get("http://ws.audioscrobbler.com/2.0/?%20method=Artist.getInfo&%20api_key=21dc28ce0ec404931d168d11d3a52a34&%20artist=" +
-        encodeURI(artist), function (data) {
-        console.log(data);
-        var image = data.querySelector("[size=\"extralarge\"");
-        artistArtwork = image.innerHTML;
-    });
-    var audioType = "audio/mp3";
-    if (file && file.type === audioType) {
-        // first send file
-        sendAjaxForm("/uploads", "post", fileData, function (res) {
-            if (res) {
-                var audio = document.createElement("audio");
-                var obj = JSON.parse(res);
-                var name = obj["message"];
-                var path = "/tracks_folder/" + name;
-                audio.src = path;
-                audio.addEventListener("loadedmetadata", function () {
-                    var duration = formatTime(Math.floor(audio.duration));
-                    formData.append("duration", convertDuration(duration));
-                    formData.append("file", path);
-                    formData.append("artistArtwork", artistArtwork);
-                    formData.append("albumArtwork", albumArtwork);
-                    // then compute duration and send form
-                    sendAjaxForm("/uploads", "post", formData, function () {
-                        drawLibrary();
-                        resetModalContent();
-                    });
+        $.get("http://ws.audioscrobbler.com/2.0/?%20method=Artist.getInfo&%20api_key=21dc28ce0ec404931d168d11d3a52a34&%20artist=" +
+            encodeURI(artist), function (data) {
+            var image = data.querySelector("[size=\"extralarge\"");
+            artistArtwork = image.innerHTML;
+            var audioType = "audio/mp3";
+            if (file && file.type === audioType) {
+                // first send file
+                sendAjaxForm("/uploads", "post", fileData, function (res) {
+                    if (res) {
+                        var audio = document.createElement("audio");
+                        var obj = JSON.parse(res);
+                        var name = obj["message"];
+                        var path = "/tracks_folder/" + name;
+                        audio.src = path;
+                        audio.addEventListener("loadedmetadata", function () {
+                            var duration = formatTime(Math.floor(audio.duration));
+                            formData.append("duration", convertDuration(duration));
+                            formData.append("file", path);
+                            formData.append("artistArtwork", artistArtwork);
+                            formData.append("albumArtwork", albumArtwork);
+                            // then compute duration and send form
+                            sendAjaxForm("/uploads", "post", formData, function () {
+                                drawLibrary();
+                                resetModalContent();
+                            });
+                        });
+                    } else {
+                        return;
+                    }
                 });
             } else {
-                return;
+                throw new Error("file not supported");
             }
         });
-    } else {
-        throw new Error("file not supported");
-    }
+    });
 }
 
 var convertDuration = function (duration) {
