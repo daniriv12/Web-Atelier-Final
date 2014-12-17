@@ -1904,18 +1904,16 @@ function upload() {
     $.get("http://ws.audioscrobbler.com/2.0/?%20method=Album.getInfo&%20api_key=21dc28ce0ec404931d168d11d3a52a34&%20album=" +
         encodeURI(album) + "&%20artist="+ encodeURI(artist), function (data) {
         var image = data.querySelector("[size=\"extralarge\"]");
-        albumArtwork = ""+image.innerHTML;
-        console.log(typeof albumArtwork);
+        albumArtwork = image.innerHTML;
         $.get("http://ws.audioscrobbler.com/2.0/?%20method=Artist.getInfo&%20api_key=21dc28ce0ec404931d168d11d3a52a34&%20artist=" +
             encodeURI(artist), function (data) {
             var image = data.querySelector("[size=\"extralarge\"");
-            artistArtwork = ""+image.innerHTML;
-            console.log(typeof artistArtwork);
+            artistArtwork = image.innerHTML;
             var audioType = "audio/mp3";
             if (file && file.type === audioType) {
                 // first send file
                 sendAjaxForm("/uploads", "post", fileData, function (res) {
-                    if (res) {
+                    if (isJSON(res)) {
                         var audio = document.createElement("audio");
                         var obj = JSON.parse(res);
                         var name = obj["message"];
@@ -1927,7 +1925,6 @@ function upload() {
                             formData.append("file", path);
                             formData.append("artistArtwork", artistArtwork);
                             formData.append("albumArtwork", albumArtwork);
-                            console.log(formData);
                             // then compute duration and send form
                             sendAjaxForm("/uploads", "post", formData, function () {
                                 drawLibrary();
